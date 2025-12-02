@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import * as pdfjs from "pdfjs-dist";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Link2, Upload, Loader2, AlertCircle } from "lucide-react";
+
+// Configuration du worker PDF.js
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 interface ImportModalProps {
   open: boolean;
@@ -49,19 +53,39 @@ export function ImportModal({
   };
 
   const extractTextFromPDF = async (file: File): Promise<string> => {
-    // Simple text extraction - in production, use a proper PDF parser
-    // For now, we'll send the file content as base64 and let AI handle it
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64 = reader.result as string;
-        // Remove data URL prefix
-        const base64Content = base64.split(",")[1] || base64;
-        resolve(base64Content);
-      };
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+    const arrayBuffer = await file.arrayBuffer();
+    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+    
+    let fullText = '';
+    
+    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+      const page = await pdf.getPage(pageNum);
+      const textContent = await page.getTextContent();
+      
+      // Extraire UNIQUEMENT les chaînes de texte
+      const pageText = textContent.items
+        .filter((item) => 'str' in item && typeof (item as any).str === 'string')
+        .map((item) => (item as any).str as string)
+        .join(' ');
+      
+      fullText += pageText + '\n';
+    }
+    
+    // Nettoyage du texte
+    const cleanedText = fullText
+      .replace(/\n{3,}/g, '\n\n')           // Supprimer sauts de ligne excessifs
+      .replace(/Page \d+\/\d+/gi, '')        // Supprimer "Page 1/4"
+      .replace(/Capital social.*$/gim, '')   // Supprimer mentions légales
+      .replace(/RCS.*$/gim, '')              // Supprimer numéros RCS
+      .replace(/SIRET.*$/gim, '')            // Supprimer SIRET
+      .replace(/^\s+|\s+$/g, '')             // Trim
+      .replace(/\s{2,}/g, ' ');              // Espaces multiples → un seul
+    
+    // DEBUG: Afficher dans la console
+    console.log("📄 Texte envoyé à l'IA :", cleanedText);
+    console.log("📊 Nombre de caractères :", cleanedText.length);
+    
+    return cleanedText;
   };
 
   const handleAnalyze = async () => {
@@ -73,21 +97,21 @@ export function ImportModal({
     onOpenChange(false);
 
     try {
-      // Extract PDF content
+      // Extract text from PDF (optimized - text only, no binary)
       const pdfContent = await extractTextFromPDF(selectedFile);
 
-      // Upload to storage (optional, for record keeping)
+      // Upload original PDF to storage (for record keeping)
       const filePath = `${user.id}/${Date.now()}_${selectedFile.name}`;
       await supabase.storage
         .from("bank-statements")
         .upload(filePath, selectedFile);
 
-      // Call the analysis edge function
+      // Call the analysis edge function with cleaned text
       const { data: functionData, error: functionError } = await supabase.functions.invoke(
         "analyze-expenses",
         {
           body: {
-            pdfContent,
+            pdfContent, // Now contains cleaned text, not base64
             userId: user.id,
             fileName: selectedFile.name,
           },
