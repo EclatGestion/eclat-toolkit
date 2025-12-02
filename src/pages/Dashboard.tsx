@@ -1,6 +1,7 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { useWealth } from "@/contexts/WealthContext";
 import { Wallet, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
 import {
   BarChart,
@@ -13,8 +14,8 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
+import { useMemo } from "react";
 
 const monthlyData = [
   { name: "Jan", revenus: 4200, depenses: 2800 },
@@ -25,42 +26,73 @@ const monthlyData = [
   { name: "Juin", revenus: 5000, depenses: 3100 },
 ];
 
-const patrimoineData = [
-  { name: "Immobilier", value: 350000, color: "hsl(227, 100%, 59%)" },
-  { name: "Actions", value: 85000, color: "hsl(172, 66%, 50%)" },
-  { name: "Épargne", value: 45000, color: "hsl(38, 92%, 50%)" },
-  { name: "Crypto", value: 20000, color: "hsl(291, 64%, 42%)" },
-];
+const ASSET_COLORS: Record<string, string> = {
+  Immobilier: "hsl(227, 100%, 59%)",
+  Bourse: "hsl(172, 66%, 50%)",
+  Épargne: "hsl(38, 92%, 50%)",
+  Crypto: "hsl(291, 64%, 42%)",
+  Cash: "hsl(142, 76%, 36%)",
+  Autre: "hsl(0, 0%, 60%)",
+};
 
 export default function Dashboard() {
+  const { assets, totalPatrimoine, totalRevenus, totalDepenses } = useWealth();
+
+  // Données pour le pie chart - agrégées par type d'actif
+  const patrimoineData = useMemo(() => {
+    const grouped = assets.reduce((acc, asset) => {
+      const existing = acc.find((a) => a.name === asset.type);
+      if (existing) {
+        existing.value += asset.value;
+      } else {
+        acc.push({
+          name: asset.type,
+          value: asset.value,
+          color: ASSET_COLORS[asset.type] || ASSET_COLORS.Autre,
+        });
+      }
+      return acc;
+    }, [] as { name: string; value: number; color: string }[]);
+    return grouped;
+  }, [assets]);
+
+  // Calcul épargne mensuelle (revenus - dépenses)
+  const epargneMensuelle = useMemo(() => {
+    return Math.max(0, totalRevenus - totalDepenses);
+  }, [totalRevenus, totalDepenses]);
+
+  const formatCurrency = (value: number) => {
+    return value.toLocaleString("fr-FR") + " €";
+  };
+
   return (
     <MainLayout title="Dashboard">
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <KPICard
           title="Patrimoine Total"
-          value="500 000 €"
+          value={formatCurrency(totalPatrimoine)}
           icon={Wallet}
           iconColor="text-amber-500"
           iconBg="bg-amber-500/10"
         />
         <KPICard
           title="Revenus Annuels"
-          value="54 000 €"
+          value={formatCurrency(totalRevenus)}
           icon={TrendingUp}
           iconColor="text-emerald-500"
           iconBg="bg-emerald-500/10"
         />
         <KPICard
           title="Dépenses Annuelles"
-          value="35 200 €"
+          value={formatCurrency(totalDepenses)}
           icon={TrendingDown}
           iconColor="text-rose-500"
           iconBg="bg-rose-500/10"
         />
         <KPICard
           title="Épargne Mensuelle"
-          value="1 500 €"
+          value={formatCurrency(epargneMensuelle)}
           icon={PiggyBank}
           iconColor="text-teal-500"
           iconBg="bg-teal-500/10"
@@ -93,33 +125,39 @@ export default function Dashboard() {
         {/* Pie Chart */}
         <div className="bg-card rounded-3xl p-6 shadow-card">
           <h3 className="text-lg font-semibold text-foreground mb-4">Répartition Patrimoine</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <PieChart>
-              <Pie
-                data={patrimoineData}
-                cx="50%"
-                cy="50%"
-                innerRadius={50}
-                outerRadius={80}
-                paddingAngle={4}
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                labelLine={false}
-              >
-                {patrimoineData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value: number) => `${value.toLocaleString()} €`}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "12px",
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+          {patrimoineData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie
+                  data={patrimoineData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={80}
+                  paddingAngle={4}
+                  dataKey="value"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {patrimoineData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number) => `${value.toLocaleString()} €`}
+                  contentStyle={{
+                    backgroundColor: "hsl(var(--card))",
+                    border: "1px solid hsl(var(--border))",
+                    borderRadius: "12px",
+                  }}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[280px] flex items-center justify-center text-muted-foreground">
+              Aucun actif enregistré
+            </div>
+          )}
         </div>
       </div>
 
