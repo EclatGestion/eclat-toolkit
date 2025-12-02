@@ -55,7 +55,7 @@ export function Header({ title }: HeaderProps) {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/auth");
+    navigate("/", { replace: true });
   };
 
   const getInitials = () => {
