@@ -30,26 +30,24 @@ serve(async (req) => {
       throw new Error("PDF content is required");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
+    if (!GOOGLE_API_KEY) {
+      throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
 
     console.log("Analyzing expenses from PDF:", fileName);
 
-    // Call Lovable AI with tool calling for structured output
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
+        contents: [
           {
-            role: "system",
-            content: `Tu es un expert en analyse financière. Analyse le relevé bancaire fourni et extrais les informations structurées.
+            parts: [
+              {
+                text: `Tu es un expert en analyse financière. Analyse le relevé bancaire fourni et extrais les informations structurées.
             
 Catégories disponibles: ${EXPENSE_CATEGORIES.join(", ")}
 
@@ -60,107 +58,36 @@ Instructions:
 4. Identifie le top 5 des plus grosses dépenses
 5. Génère 3-5 recommandations personnalisées pour optimiser les dépenses
 
-Sois précis et pertinent dans ton analyse.`
-          },
-          {
-            role: "user",
-            content: `Voici le contenu du relevé bancaire à analyser:\n\n${pdfContent}`
-          }
-        ],
-        tools: [
-          {
-            type: "function",
-            function: {
-              name: "analyze_bank_statement",
-              description: "Analyse structurée d'un relevé bancaire avec catégorisation des dépenses",
-              parameters: {
-                type: "object",
-                properties: {
-                  transactions: {
-                    type: "array",
-                    description: "Liste des transactions extraites",
-                    items: {
-                      type: "object",
-                      properties: {
-                        date: { type: "string", description: "Date de la transaction (DD/MM/YYYY)" },
-                        label: { type: "string", description: "Libellé de la transaction" },
-                        amount: { type: "number", description: "Montant (négatif pour les dépenses)" },
-                        category: { 
-                          type: "string", 
-                          enum: EXPENSE_CATEGORIES,
-                          description: "Catégorie de la dépense" 
-                        }
-                      },
-                      required: ["date", "label", "amount", "category"]
-                    }
-                  },
-                  categorizedExpenses: {
-                    type: "array",
-                    description: "Dépenses agrégées par catégorie",
-                    items: {
-                      type: "object",
-                      properties: {
-                        category: { type: "string" },
-                        total: { type: "number", description: "Total des dépenses pour cette catégorie" },
-                        count: { type: "number", description: "Nombre de transactions" },
-                        percentage: { type: "number", description: "Pourcentage du total des dépenses" }
-                      },
-                      required: ["category", "total", "count", "percentage"]
-                    }
-                  },
-                  topExpenses: {
-                    type: "array",
-                    description: "Top 5 des plus grosses dépenses",
-                    items: {
-                      type: "object",
-                      properties: {
-                        label: { type: "string" },
-                        amount: { type: "number" },
-                        category: { type: "string" },
-                        date: { type: "string" }
-                      },
-                      required: ["label", "amount", "category", "date"]
-                    }
-                  },
-                  recommendations: {
-                    type: "array",
-                    description: "Recommandations personnalisées pour optimiser les dépenses",
-                    items: {
-                      type: "object",
-                      properties: {
-                        title: { type: "string", description: "Titre court de la recommandation" },
-                        description: { type: "string", description: "Description détaillée" },
-                        potentialSavings: { type: "number", description: "Économie potentielle estimée en euros" },
-                        priority: { 
-                          type: "string", 
-                          enum: ["high", "medium", "low"],
-                          description: "Priorité de la recommandation" 
-                        }
-                      },
-                      required: ["title", "description", "priority"]
-                    }
-                  },
-                  totalExpenses: {
-                    type: "number",
-                    description: "Total des dépenses du relevé"
-                  },
-                  period: {
-                    type: "string",
-                    description: "Période couverte par le relevé (ex: Janvier 2024)"
-                  }
-                },
-                required: ["transactions", "categorizedExpenses", "topExpenses", "recommendations", "totalExpenses"]
+IMPORTANT: Tu dois répondre UNIQUEMENT avec un objet JSON valide, sans aucun texte avant ou après. Le JSON doit avoir cette structure exacte:
+{
+  "transactions": [{"date": "DD/MM/YYYY", "label": "description", "amount": -123.45, "category": "Catégorie"}],
+  "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
+  "topExpenses": [{"label": "description", "amount": -123.45, "category": "Catégorie", "date": "DD/MM/YYYY"}],
+  "recommendations": [{"title": "Titre court", "description": "Description détaillée", "potentialSavings": 50, "priority": "high"}],
+  "totalExpenses": 1234.56,
+  "period": "Janvier 2024"
+}
+
+Voici le contenu du relevé bancaire à analyser:
+
+${pdfContent}`
               }
-            }
+            ]
           }
         ],
-        tool_choice: { type: "function", function: { name: "analyze_bank_statement" } }
+        generationConfig: {
+          temperature: 0.1,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192,
+          responseMimeType: "application/json"
+        }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("Google Gemini API error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -168,32 +95,31 @@ Sois précis et pertinent dans ton analyse.`
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Crédits insuffisants. Veuillez ajouter des crédits." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      throw new Error(`AI gateway error: ${response.status}`);
+      throw new Error(`Google Gemini API error: ${response.status}`);
     }
 
-    const aiResponse = await response.json();
-    console.log("AI Response received");
+    const geminiResponse = await response.json();
+    console.log("Gemini Response received");
 
-    // Extract the tool call result
-    const toolCall = aiResponse.choices?.[0]?.message?.tool_calls?.[0];
-    if (!toolCall || toolCall.function.name !== "analyze_bank_statement") {
-      throw new Error("Invalid AI response format");
+    const responseText = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!responseText) {
+      throw new Error("Invalid Gemini response format");
     }
 
-    const analysisResult = JSON.parse(toolCall.function.arguments);
+    let analysisResult;
+    try {
+      analysisResult = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response:", responseText);
+      throw new Error("Failed to parse AI response as JSON");
+    }
+
     console.log("Analysis complete:", {
       transactionCount: analysisResult.transactions?.length,
       categoriesCount: analysisResult.categorizedExpenses?.length,
       totalExpenses: analysisResult.totalExpenses
     });
 
-    // Save to database if user is authenticated
     if (userId) {
       const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
       const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
