@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      expense_analyses: {
+        Row: {
+          analysis_date: string | null
+          categorized_expenses: Json | null
+          created_at: string | null
+          file_name: string | null
+          id: string
+          raw_transactions: Json | null
+          recommendations: Json | null
+          source: string | null
+          top_expenses: Json | null
+          total_amount: number | null
+          user_id: string
+        }
+        Insert: {
+          analysis_date?: string | null
+          categorized_expenses?: Json | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          raw_transactions?: Json | null
+          recommendations?: Json | null
+          source?: string | null
+          top_expenses?: Json | null
+          total_amount?: number | null
+          user_id: string
+        }
+        Update: {
+          analysis_date?: string | null
+          categorized_expenses?: Json | null
+          created_at?: string | null
+          file_name?: string | null
+          id?: string
+          raw_transactions?: Json | null
+          recommendations?: Json | null
+          source?: string | null
+          top_expenses?: Json | null
+          total_amount?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string | null
