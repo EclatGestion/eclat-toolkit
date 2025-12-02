@@ -65,6 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    // Réinitialiser immédiatement l'état local pour éviter le race condition
+    setUser(null);
+    setSession(null);
   };
 
   return (
