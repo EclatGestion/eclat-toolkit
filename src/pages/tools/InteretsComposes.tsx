@@ -9,6 +9,7 @@ import { InputSlider } from "@/components/simulators/interets-composes/InputSlid
 import { ScenarioBadges } from "@/components/simulators/interets-composes/ScenarioBadges";
 import { ComparisonChart } from "@/components/simulators/interets-composes/ComparisonChart";
 import { KPIResults } from "@/components/simulators/interets-composes/KPIResults";
+import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 
 interface ChartDataPoint {
   year: number;
@@ -198,6 +199,14 @@ export default function InteretsComposes() {
               interetsGagnes={interetsGagnes}
             />
           </div>
+        </div>
+
+        {/* Recommended Products */}
+        <div className="mt-6">
+          <RecommendedProducts
+            productIds={["private-equity", "scpi", "compte-titres"]}
+            title="Les véhicules pour booster votre rendement :"
+          />
         </div>
       </div>
     </MainLayout>

@@ -1,10 +1,11 @@
-import { LayoutDashboard, Grid3X3, Save, Settings, Sparkles } from "lucide-react";
+import { LayoutDashboard, Grid3X3, Save, Settings, Sparkles, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3 },
+  { title: "Académie", url: "/academie", icon: GraduationCap },
   { title: "Mes Simulations", url: "/simulations", icon: Save },
   { title: "Profil & Paramètres", url: "/settings", icon: Settings },
 ];

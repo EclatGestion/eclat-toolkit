@@ -9,6 +9,7 @@ import { InputSlider } from "@/components/simulators/interets-composes/InputSlid
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { TMIGauge } from "@/components/simulators/ir/TMIGauge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 
 // ============= CONSTANTES FISCALES 2025 =============
 const TAX_BRACKETS = [
@@ -603,6 +604,14 @@ export default function SimulateurIR() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Recommended Products */}
+        <div className="mt-6">
+          <RecommendedProducts
+            productIds={["per", "girardin"]}
+            title="Comment réduire ce montant ? Nos solutions dédiées :"
+          />
         </div>
       </TooltipProvider>
     </MainLayout>
