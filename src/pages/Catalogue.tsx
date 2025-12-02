@@ -30,9 +30,9 @@ const categories = [
     emoji: "🏠",
     tools: [
       {
-        id: "capacite-emprunt",
-        title: "Capacité d'Emprunt",
-        description: "Découvrez votre budget immobilier maximum",
+        id: "simulateur-immobilier",
+        title: "Simulateur Immobilier 2-en-1",
+        description: "Calculez votre mensualité ou votre capacité d'emprunt",
         icon: Home,
         iconColor: "text-emerald-500",
         iconBg: "bg-emerald-500/10",
