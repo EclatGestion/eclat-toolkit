@@ -9,6 +9,7 @@ import Simulations from "./pages/Simulations";
 import Settings from "./pages/Settings";
 import ToolPage from "./pages/ToolPage";
 import InteretsComposes from "./pages/tools/InteretsComposes";
+import SimulateurImmobilier from "./pages/tools/SimulateurImmobilier";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/simulations" element={<Simulations />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/tools/interets-composes" element={<InteretsComposes />} />
+          <Route path="/tools/simulateur-immobilier" element={<SimulateurImmobilier />} />
           <Route path="/tools/:toolId" element={<ToolPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
