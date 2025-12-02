@@ -24,6 +24,14 @@ export interface Transaction {
   type: "income" | "expense";
 }
 
+export interface FireGoal {
+  id: string;
+  label: string;
+  target: number;
+  color: string;
+  icon?: string;
+}
+
 interface WealthContextType {
   userProfile: UserProfile;
   setUserProfile: (profile: UserProfile) => void;
@@ -35,6 +43,10 @@ interface WealthContextType {
   transactions: Transaction[];
   setTransactions: (transactions: Transaction[]) => void;
   addTransaction: (transaction: Omit<Transaction, "id">) => void;
+  fireGoals: FireGoal[];
+  addFireGoal: (goal: Omit<FireGoal, "id">) => void;
+  updateFireGoal: (id: string, goal: Partial<FireGoal>) => void;
+  removeFireGoal: (id: string) => void;
   totalPatrimoine: number;
   totalRevenus: number;
   totalDepenses: number;
@@ -54,10 +66,17 @@ const initialAssets: Asset[] = [];
 
 const initialTransactions: Transaction[] = [];
 
+const initialFireGoals: FireGoal[] = [
+  { id: "1", label: "Épargne d'urgence", target: 20000, color: "#2D60FF" },
+  { id: "2", label: "Apport immobilier", target: 80000, color: "#16DBCC" },
+  { id: "3", label: "Indépendance FIRE", target: 500000, color: "#FFBB38" },
+];
+
 export function WealthProvider({ children }: { children: ReactNode }) {
   const [userProfile, setUserProfile] = useState<UserProfile>(initialProfile);
   const [assets, setAssets] = useState<Asset[]>(initialAssets);
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions);
+  const [fireGoals, setFireGoals] = useState<FireGoal[]>(initialFireGoals);
 
   const addAsset = (asset: Omit<Asset, "id">) => {
     const newAsset: Asset = {
@@ -83,6 +102,24 @@ export function WealthProvider({ children }: { children: ReactNode }) {
       id: crypto.randomUUID(),
     };
     setTransactions((prev) => [...prev, newTransaction]);
+  };
+
+  const addFireGoal = (goal: Omit<FireGoal, "id">) => {
+    const newGoal: FireGoal = {
+      ...goal,
+      id: crypto.randomUUID(),
+    };
+    setFireGoals((prev) => [...prev, newGoal]);
+  };
+
+  const updateFireGoal = (id: string, updates: Partial<FireGoal>) => {
+    setFireGoals((prev) =>
+      prev.map((g) => (g.id === id ? { ...g, ...updates } : g))
+    );
+  };
+
+  const removeFireGoal = (id: string) => {
+    setFireGoals((prev) => prev.filter((g) => g.id !== id));
   };
 
   // Calculs dynamiques
@@ -120,6 +157,10 @@ export function WealthProvider({ children }: { children: ReactNode }) {
         transactions,
         setTransactions,
         addTransaction,
+        fireGoals,
+        addFireGoal,
+        updateFireGoal,
+        removeFireGoal,
         totalPatrimoine,
         totalRevenus,
         totalDepenses,
