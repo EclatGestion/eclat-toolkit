@@ -6,13 +6,12 @@ import { AddIncomeModal } from "@/components/dashboard/AddIncomeModal";
 import { AddExpenseModal } from "@/components/dashboard/AddExpenseModal";
 import { GoalsModal } from "@/components/dashboard/GoalsModal";
 import { AssetsList } from "@/components/dashboard/AssetsList";
+import { ExpenseAnalysis } from "@/components/dashboard/ExpenseAnalysis";
 import { useWealth, Asset } from "@/contexts/WealthContext";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  BarChart,
-  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -196,43 +195,9 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Bar Chart - Évolution Mensuelle du Solde */}
-        <div className="lg:col-span-2 bg-card rounded-3xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Évolution Mensuelle du Solde</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={balanceHistory} barCategoryGap="20%">
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
-              <XAxis 
-                dataKey="name" 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: "#718EBF", fontSize: 12 }} 
-              />
-              <YAxis 
-                axisLine={false} 
-                tickLine={false} 
-                tick={{ fill: "#718EBF", fontSize: 12 }}
-                tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "hsl(var(--card))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                }}
-                formatter={(value: number) => [`${value.toLocaleString("fr-FR")} €`, "Solde"]}
-                labelStyle={{ color: "#343C6A", fontWeight: 600 }}
-              />
-              <Bar 
-                dataKey="balance" 
-                fill="#2D60FF" 
-                radius={[10, 10, 0, 0]} 
-                barSize={20}
-                name="Solde" 
-              />
-            </BarChart>
-          </ResponsiveContainer>
+        {/* Expense Analysis with AI */}
+        <div className="lg:col-span-2">
+          <ExpenseAnalysis />
         </div>
 
         {/* Pie Chart */}
