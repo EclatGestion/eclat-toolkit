@@ -2,9 +2,10 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddAssetModal } from "@/components/dashboard/AddAssetModal";
+import { GoalsModal } from "@/components/dashboard/GoalsModal";
 import { useWealth } from "@/contexts/WealthContext";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   BarChart,
@@ -52,8 +53,9 @@ const ASSET_COLORS: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { assets, totalPatrimoine, totalRevenus, totalDepenses } = useWealth();
+  const { assets, totalPatrimoine, totalRevenus, totalDepenses, fireGoals } = useWealth();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
   
   // Animated counter for patrimoine
   const animatedPatrimoine = useAnimatedCounter(totalPatrimoine);
@@ -80,31 +82,6 @@ export default function Dashboard() {
   const epargneMensuelle = useMemo(() => {
     return Math.max(0, totalRevenus - totalDepenses);
   }, [totalRevenus, totalDepenses]);
-
-  // Objectifs FIRE dynamiques
-  const goals = useMemo(() => [
-    { 
-      label: "Épargne d'urgence", 
-      current: 0, 
-      target: 20000, 
-      color: "#2D60FF",
-      usePatrimoine: true 
-    },
-    { 
-      label: "Apport immobilier", 
-      current: 0, 
-      target: 80000, 
-      color: "#16DBCC",
-      usePatrimoine: true 
-    },
-    { 
-      label: "Indépendance FIRE", 
-      current: 0, 
-      target: 500000, 
-      color: "#FFBB38",
-      usePatrimoine: true 
-    },
-  ], []);
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("fr-FR") + " €";
@@ -322,41 +299,65 @@ export default function Dashboard() {
         
         {/* Objectifs FIRE - Dynamique */}
         <div className="bg-card rounded-3xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Objectifs FIRE</h3>
-          <div className="space-y-5">
-            {goals.map((goal) => {
-              const current = goal.usePatrimoine ? totalPatrimoine : goal.current;
-              const progress = Math.min((current / goal.target) * 100, 100);
-              
-              return (
-                <div key={goal.label}>
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-foreground font-medium">{goal.label}</span>
-                    <span className="text-muted-foreground">
-                      {current.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
-                    </span>
-                  </div>
-                  <div className="h-3 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full transition-all duration-500 ease-out"
-                      style={{ 
-                        width: `${progress}%`,
-                        backgroundColor: goal.color,
-                      }}
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {progress.toFixed(0)}% atteint
-                  </p>
-                </div>
-              );
-            })}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Objectifs FIRE</h3>
+            <button
+              onClick={() => setIsGoalsModalOpen(true)}
+              className="p-2 hover:bg-muted rounded-lg transition-colors"
+              title="Gérer les objectifs"
+            >
+              <Settings className="w-4 h-4 text-muted-foreground" />
+            </button>
           </div>
+          
+          {fireGoals.length > 0 ? (
+            <div className="space-y-5">
+              {fireGoals.map((goal) => {
+                const progress = Math.min((totalPatrimoine / goal.target) * 100, 100);
+                
+                return (
+                  <div key={goal.id}>
+                    <div className="flex justify-between text-sm mb-2">
+                      <span className="text-foreground font-medium">{goal.label}</span>
+                      <span className="text-muted-foreground">
+                        {totalPatrimoine.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
+                      </span>
+                    </div>
+                    <div className="h-3 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full transition-all duration-500 ease-out"
+                        style={{ 
+                          width: `${progress}%`,
+                          backgroundColor: goal.color,
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {progress.toFixed(0)}% atteint
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground mb-4">Aucun objectif défini</p>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsGoalsModalOpen(true)}
+                className="gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Créer un objectif
+              </Button>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Add Asset Modal */}
+      {/* Modals */}
       <AddAssetModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
+      <GoalsModal open={isGoalsModalOpen} onOpenChange={setIsGoalsModalOpen} />
     </MainLayout>
   );
 }
