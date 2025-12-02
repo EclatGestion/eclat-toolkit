@@ -1,11 +1,11 @@
-import { LayoutDashboard, Grid3X3, Save, Settings } from "lucide-react";
+import { LayoutDashboard, Grid3X3, Save, Settings, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
   { title: "Outils", url: "/catalogue", icon: Grid3X3 },
-  { title: "Simulations", url: "/simulations", icon: Save },
+  { title: "Académie", url: "/academie", icon: GraduationCap },
   { title: "Profil", url: "/settings", icon: Settings },
 ];
 
