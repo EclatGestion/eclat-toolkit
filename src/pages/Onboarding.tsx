@@ -122,7 +122,7 @@ export default function Onboarding() {
 
       // Créer l'actif "Patrimoine Initial" si > 0
       if (values.patrimoine > 0) {
-        addAsset({
+        await addAsset({
           name: "Patrimoine Initial",
           type: "Autre",
           value: values.patrimoine,

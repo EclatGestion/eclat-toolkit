@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      assets: {
+        Row: {
+          bank_name: string | null
+          created_at: string
+          id: string
+          name: string
+          type: string
+          updated_at: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          type: string
+          updated_at?: string
+          user_id: string
+          value?: number
+        }
+        Update: {
+          bank_name?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
       expense_analyses: {
         Row: {
           analysis_date: string | null
@@ -52,6 +85,72 @@ export type Database = {
           source?: string | null
           top_expenses?: Json | null
           total_amount?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          frequency: string
+          id: string
+          label: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          frequency: string
+          id?: string
+          label: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          label?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      incomes: {
+        Row: {
+          amount: number
+          category: string
+          created_at: string
+          frequency: string
+          id: string
+          label: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          category: string
+          created_at?: string
+          frequency: string
+          id?: string
+          label: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          category?: string
+          created_at?: string
+          frequency?: string
+          id?: string
+          label?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []

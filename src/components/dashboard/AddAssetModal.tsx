@@ -98,13 +98,13 @@ export function AddAssetModal({ open, onOpenChange, editAsset }: AddAssetModalPr
       };
       
       if (editAsset) {
-        updateAsset(editAsset.id, assetData);
+        await updateAsset(editAsset.id, assetData);
         toast({
           title: "Actif modifié",
           description: `${values.name} a été mis à jour.`,
         });
       } else {
-        addAsset(assetData);
+        await addAsset(assetData);
         toast({
           title: "Actif ajouté",
           description: `${values.name} a été ajouté à votre patrimoine.`,

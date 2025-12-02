@@ -94,7 +94,7 @@ export function AddExpenseModal({ open, onOpenChange }: AddExpenseModalProps) {
     setShowForm(false);
   };
 
-  const onSubmit = (values: ExpenseFormValues) => {
+  const onSubmit = async (values: ExpenseFormValues) => {
     const expenseData = {
       label: values.label,
       amount: values.amount,
@@ -102,17 +102,17 @@ export function AddExpenseModal({ open, onOpenChange }: AddExpenseModalProps) {
       category: values.category,
     };
     if (editingExpense) {
-      updateExpense(editingExpense.id, expenseData);
+      await updateExpense(editingExpense.id, expenseData);
       toast({ title: "Dépense modifiée" });
     } else {
-      addExpense(expenseData);
+      await addExpense(expenseData);
       toast({ title: "Dépense ajoutée" });
     }
     resetForm();
   };
 
-  const handleDelete = (id: string) => {
-    removeExpense(id);
+  const handleDelete = async (id: string) => {
+    await removeExpense(id);
     toast({ title: "Dépense supprimée" });
   };
 
