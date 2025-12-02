@@ -7,8 +7,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { WealthProvider } from "@/contexts/WealthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
+import { PublicRoute } from "@/components/auth/PublicRoute";
 import Auth from "./pages/Auth";
 import Onboarding from "./pages/Onboarding";
+import Landing from "./pages/Landing";
 import Catalogue from "./pages/Catalogue";
 import Dashboard from "./pages/Dashboard";
 import Simulations from "./pages/Simulations";
@@ -31,9 +33,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/auth" element={<Auth />} />
+              <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+              <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-              <Route path="/" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/catalogue" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />

@@ -39,7 +39,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [user, navigate]);
 
@@ -86,7 +86,7 @@ export default function Auth() {
       title: "Connexion réussie",
       description: "Bienvenue sur Éclat Patrimoine !",
     });
-    navigate("/");
+    navigate("/dashboard");
   };
 
   const handleSignup = async (values: SignupFormValues) => {
@@ -111,7 +111,7 @@ export default function Auth() {
       title: "Inscription réussie",
       description: "Bienvenue sur Éclat Patrimoine !",
     });
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
