@@ -37,17 +37,7 @@ serve(async (req) => {
 
     console.log("Analyzing expenses from PDF:", fileName);
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: `Tu es un expert en analyse financière. Analyse le relevé bancaire fourni et extrais les informations structurées.
+    const systemPrompt = `Tu es un expert en analyse financière. Analyse le relevé bancaire PDF fourni et extrais les informations structurées.
             
 Catégories disponibles: ${EXPENSE_CATEGORIES.join(", ")}
 
@@ -66,11 +56,25 @@ IMPORTANT: Tu dois répondre UNIQUEMENT avec un objet JSON valide, sans aucun te
   "recommendations": [{"title": "Titre court", "description": "Description détaillée", "potentialSavings": 50, "priority": "high"}],
   "totalExpenses": 1234.56,
   "period": "Janvier 2024"
-}
+}`;
 
-Voici le contenu du relevé bancaire à analyser:
-
-${pdfContent}`
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                inline_data: {
+                  mime_type: "application/pdf",
+                  data: pdfContent
+                }
+              },
+              {
+                text: systemPrompt
               }
             ]
           }
