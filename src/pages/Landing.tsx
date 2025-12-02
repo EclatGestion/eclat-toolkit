@@ -3,6 +3,29 @@ import { Button } from "@/components/ui/button";
 import { Shield, TrendingUp, Calculator, Sparkles, ChevronRight } from "lucide-react";
 import { financialProducts } from "@/data/financialProducts";
 import { ProductCard } from "@/components/academy/ProductCard";
+import { motion } from "framer-motion";
+
+// Animation variants
+const fadeUpVariant = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 }
+};
+
+const scaleUpVariant = {
+  hidden: { opacity: 0, scale: 0.95 },
+  visible: { opacity: 1, scale: 1 }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.1
+    }
+  }
+};
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -14,7 +37,12 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100">
+      <motion.header 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-lg border-b border-gray-100"
+      >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-[#2D60FF] rounded-lg flex items-center justify-center">
@@ -23,22 +51,26 @@ export default function Landing() {
             <span className="text-xl font-bold text-gray-900">Éclat Toolkit</span>
           </div>
           <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate("/auth")}
-              className="text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Se connecter
-            </Button>
-            <Button 
-              onClick={() => navigate("/auth")}
-              className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6"
-            >
-              S'inscrire
-            </Button>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("/auth")}
+                className="text-gray-600 hover:text-gray-900 font-medium"
+              >
+                Se connecter
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                onClick={() => navigate("/auth")}
+                className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-6"
+              >
+                S'inscrire
+              </Button>
+            </motion.div>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6">
@@ -46,34 +78,61 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left: Text Content */}
             <div className="space-y-8">
-              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight">
+              <motion.h1 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="text-5xl lg:text-7xl font-bold text-gray-900 leading-[1.1] tracking-tight"
+              >
                 Votre patrimoine.{" "}
                 <span className="text-[#2D60FF]">Éclairé.</span>{" "}
                 <span className="text-gray-400">Optimisé.</span>
-              </h1>
-              <p className="text-xl text-gray-600 leading-relaxed max-w-lg">
+              </motion.h1>
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                className="text-xl text-gray-600 leading-relaxed max-w-lg"
+              >
                 L'application tout-en-un pour simuler vos impôts, préparer votre retraite 
                 et piloter vos investissements. <strong className="text-gray-900">Sans jargon.</strong>
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button 
-                  size="lg"
-                  onClick={() => navigate("/auth")}
-                  className="bg-[#2D60FF] hover:bg-[#2550DD] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-lg shadow-[#2D60FF]/25"
+              </motion.p>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
+                className="flex flex-col sm:flex-row gap-4"
+              >
+                <motion.div 
+                  whileHover={{ y: -2, boxShadow: "0 12px 40px rgba(45,96,255,0.35)" }} 
+                  whileTap={{ scale: 0.98 }}
                 >
-                  Commencer gratuitement
-                  <ChevronRight className="ml-2 w-5 h-5" />
-                </Button>
-                <Button 
-                  variant="outline"
-                  size="lg"
-                  onClick={() => navigate("/auth")}
-                  className="rounded-full px-8 py-6 text-lg font-medium border-gray-300 text-gray-700"
-                >
-                  Voir la démo
-                </Button>
-              </div>
-              <div className="flex items-center gap-6 pt-4 text-sm text-gray-500">
+                  <Button 
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="bg-[#2D60FF] hover:bg-[#2550DD] text-white rounded-full px-8 py-6 text-lg font-semibold shadow-lg shadow-[#2D60FF]/25"
+                  >
+                    Commencer gratuitement
+                    <ChevronRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    variant="outline"
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="rounded-full px-8 py-6 text-lg font-medium border-gray-300 text-gray-700"
+                  >
+                    Voir la démo
+                  </Button>
+                </motion.div>
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
+                className="flex items-center gap-6 pt-4 text-sm text-gray-500"
+              >
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-green-500" />
                   <span>100% sécurisé</span>
@@ -82,14 +141,23 @@ export default function Landing() {
                   <Sparkles className="w-4 h-4 text-amber-500" />
                   <span>Sans engagement</span>
                 </div>
-              </div>
+              </motion.div>
             </div>
 
             {/* Right: Dashboard Preview */}
-            <div className="relative">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+              className="relative"
+            >
               <div className="relative transform lg:rotate-2 lg:translate-x-8">
                 {/* Browser Frame */}
-                <div className="bg-gray-900 rounded-2xl p-2 shadow-2xl shadow-gray-900/20">
+                <motion.div 
+                  whileHover={{ rotate: 0, scale: 1.02 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                  className="bg-gray-900 rounded-2xl p-2 shadow-2xl shadow-gray-900/20"
+                >
                   {/* Browser Header */}
                   <div className="flex items-center gap-2 px-4 py-2">
                     <div className="flex gap-1.5">
@@ -124,19 +192,27 @@ export default function Landing() {
                         <p className="text-[10px] text-gray-500 mb-3">Évolution du patrimoine</p>
                         <div className="h-20 flex items-end gap-1">
                           {[40, 55, 45, 60, 52, 70, 65, 80, 75, 90, 85, 100].map((h, i) => (
-                            <div 
+                            <motion.div 
                               key={i} 
+                              initial={{ height: 0 }}
+                              animate={{ height: `${h}%` }}
+                              transition={{ duration: 0.5, delay: 0.8 + i * 0.05, ease: "easeOut" }}
                               className="flex-1 bg-gradient-to-t from-[#2D60FF] to-[#16DBCC] rounded-t-sm"
-                              style={{ height: `${h}%` }}
                             />
                           ))}
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
                 {/* Floating Badge */}
-                <div className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 shadow-xl border border-gray-100">
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  className="absolute -bottom-4 -left-4 bg-white rounded-2xl p-4 shadow-xl border border-gray-100"
+                >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-emerald-600" />
@@ -146,9 +222,9 @@ export default function Landing() {
                       <p className="text-sm font-bold text-gray-900">68% atteint</p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -156,19 +232,37 @@ export default function Landing() {
       {/* Bento Grid Section */}
       <section className="py-20 px-6 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeUpVariant}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-16"
+          >
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Pourquoi Éclat Toolkit ?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Des outils puissants, une interface simple. Reprenez le contrôle.
             </p>
-          </div>
+          </motion.div>
 
           {/* Bento Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6"
+          >
             {/* Card 1 - Large */}
-            <div className="lg:col-span-2 lg:row-span-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl p-8 text-white relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300">
+            <motion.div 
+              variants={fadeUpVariant}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              className="lg:col-span-2 lg:row-span-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl p-8 text-white relative overflow-hidden cursor-pointer"
+            >
               <div className="relative z-10">
                 <h3 className="text-2xl lg:text-3xl font-bold mb-3">Adieu l'impôt subi.</h3>
                 <p className="text-emerald-100 text-lg mb-8">
@@ -189,10 +283,15 @@ export default function Landing() {
                   <circle cx="50" cy="50" r="28" fill="none" stroke="white" strokeWidth="6" strokeDasharray="120 56" transform="rotate(-90 50 50)" />
                 </svg>
               </div>
-            </div>
+            </motion.div>
 
             {/* Card 2 - Medium */}
-            <div className="lg:col-span-2 bg-white rounded-3xl p-8 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
+            <motion.div 
+              variants={fadeUpVariant}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.1)" }}
+              className="lg:col-span-2 bg-white rounded-3xl p-8 border border-gray-200 cursor-pointer"
+            >
               <div className="w-12 h-12 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
                 <Calculator className="w-6 h-6 text-purple-600" />
               </div>
@@ -200,10 +299,15 @@ export default function Landing() {
               <p className="text-gray-600">
                 Protégez ce que vous transmettez. Optimisez les droits et sécurisez vos proches.
               </p>
-            </div>
+            </motion.div>
 
             {/* Card 3 - Medium */}
-            <div className="bg-[#2D60FF] rounded-3xl p-8 text-white relative overflow-hidden hover:scale-[1.02] transition-transform duration-300">
+            <motion.div 
+              variants={fadeUpVariant}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              className="bg-[#2D60FF] rounded-3xl p-8 text-white relative overflow-hidden cursor-pointer"
+            >
               <h3 className="text-xl font-bold mb-2">Objectif FIRE</h3>
               <p className="text-blue-200 text-sm mb-4">
                 Visualisez votre chemin vers l'indépendance financière.
@@ -218,75 +322,127 @@ export default function Landing() {
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Card 4 - Small */}
-            <div className="bg-gray-900 rounded-3xl p-8 text-white flex flex-col items-center justify-center text-center hover:scale-[1.02] transition-transform duration-300">
+            <motion.div 
+              variants={fadeUpVariant}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+              whileHover={{ scale: 1.02, y: -4 }}
+              className="bg-gray-900 rounded-3xl p-8 text-white flex flex-col items-center justify-center text-center cursor-pointer"
+            >
               <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mb-4">
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-bold">Sécurisé & Privé</h3>
               <p className="text-gray-400 text-sm mt-1">Vos données vous appartiennent.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Academy Teaser Section */}
       <section className="py-20 px-6 bg-[#F9FAFB]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-12">
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeUpVariant}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="text-center mb-12"
+          >
             <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
               Investissez mieux, parce que vous comprenez mieux.
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Notre Académie vous guide à travers les solutions patrimoniales, sans jargon financier.
             </p>
-          </div>
+          </motion.div>
 
           {/* Product Cards */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-3 gap-6 mb-12"
+          >
+            {featuredProducts.map((product, index) => (
+              <motion.div
+                key={product.id}
+                variants={scaleUpVariant}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                whileHover={{ scale: 1.02, y: -4 }}
+              >
+                <ProductCard product={product} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
 
-          <div className="text-center">
-            <Button 
-              variant="outline"
-              size="lg"
-              onClick={() => navigate("/auth")}
-              className="rounded-full px-8 border-gray-300 text-gray-700"
-            >
-              Découvrir l'Académie complète
-              <ChevronRight className="ml-2 w-4 h-4" />
-            </Button>
-          </div>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUpVariant}
+            transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+            className="text-center"
+          >
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="outline"
+                size="lg"
+                onClick={() => navigate("/auth")}
+                className="rounded-full px-8 border-gray-300 text-gray-700"
+              >
+                Découvrir l'Académie complète
+                <ChevronRight className="ml-2 w-4 h-4" />
+              </Button>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 px-6 bg-gray-900">
-        <div className="max-w-4xl mx-auto text-center">
+        <motion.div 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeUpVariant}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="max-w-4xl mx-auto text-center"
+        >
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
             Prêt à éclairer votre patrimoine ?
           </h2>
           <p className="text-xl text-gray-400 mb-8">
             Créez votre compte gratuitement et accédez à tous nos simulateurs.
           </p>
-          <Button 
-            size="lg"
-            onClick={() => navigate("/auth")}
-            className="bg-[#2D60FF] hover:bg-[#2550DD] text-white rounded-full px-10 py-6 text-lg font-semibold"
+          <motion.div 
+            whileHover={{ y: -2, boxShadow: "0 12px 40px rgba(45,96,255,0.4)" }} 
+            whileTap={{ scale: 0.98 }}
           >
-            Commencer maintenant
-            <ChevronRight className="ml-2 w-5 h-5" />
-          </Button>
-        </div>
+            <Button 
+              size="lg"
+              onClick={() => navigate("/auth")}
+              className="bg-[#2D60FF] hover:bg-[#2550DD] text-white rounded-full px-10 py-6 text-lg font-semibold"
+            >
+              Commencer maintenant
+              <ChevronRight className="ml-2 w-5 h-5" />
+            </Button>
+          </motion.div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-6 bg-white border-t border-gray-100">
+      <motion.footer 
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="py-12 px-6 bg-white border-t border-gray-100"
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-2">
@@ -305,7 +461,7 @@ export default function Landing() {
             </p>
           </div>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 }
