@@ -91,7 +91,7 @@ export function AddIncomeModal({ open, onOpenChange }: AddIncomeModalProps) {
     setShowForm(false);
   };
 
-  const onSubmit = (values: IncomeFormValues) => {
+  const onSubmit = async (values: IncomeFormValues) => {
     const incomeData = {
       label: values.label,
       amount: values.amount,
@@ -99,17 +99,17 @@ export function AddIncomeModal({ open, onOpenChange }: AddIncomeModalProps) {
       category: values.category,
     };
     if (editingIncome) {
-      updateIncome(editingIncome.id, incomeData);
+      await updateIncome(editingIncome.id, incomeData);
       toast({ title: "Revenu modifié" });
     } else {
-      addIncome(incomeData);
+      await addIncome(incomeData);
       toast({ title: "Revenu ajouté" });
     }
     resetForm();
   };
 
-  const handleDelete = (id: string) => {
-    removeIncome(id);
+  const handleDelete = async (id: string) => {
+    await removeIncome(id);
     toast({ title: "Revenu supprimé" });
   };
 

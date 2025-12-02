@@ -66,7 +66,7 @@ export function AssetsList({ onAddClick, onEditClick }: AssetsListProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => removeAsset(asset.id)}
+                    onClick={async () => await removeAsset(asset.id)}
                     className="h-8 w-8 hover:text-destructive"
                   >
                     <Trash2 className="w-4 h-4 text-muted-foreground" />
