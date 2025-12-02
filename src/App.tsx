@@ -16,6 +16,7 @@ import Settings from "./pages/Settings";
 import ToolPage from "./pages/ToolPage";
 import InteretsComposes from "./pages/tools/InteretsComposes";
 import SimulateurImmobilier from "./pages/tools/SimulateurImmobilier";
+import SimulateurIR from "./pages/tools/SimulateurIR";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
               <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
+              <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
