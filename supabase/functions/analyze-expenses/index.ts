@@ -38,22 +38,28 @@ serve(async (req) => {
     console.log("Analyzing expenses from PDF:", fileName);
     console.log("Text content length:", pdfContent.length, "characters");
 
-    // Prompt optimisé pour texte brut (plus court = moins de tokens)
-    const systemPrompt = `Analyse ce texte brut extrait d'un relevé bancaire.
-Ignore les en-têtes répétés et mentions légales.
+    // Prompt optimisé pour texte brut
+    const systemPrompt = `Tu es un expert financier. Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
+
+RÈGLES IMPORTANTES:
+- Chaque transaction a un montant UNIQUE et DIFFÉRENT - ne jamais inventer ou dupliquer les montants
+- Les montants sont généralement au format "123,45" ou "-123,45" dans le texte
+- Pour topExpenses: trie les 5 plus GROSSES dépenses par montant absolu (pas les mêmes montants!)
+- Utilise les montants EXACTS du relevé
+
 Catégories: ${EXPENSE_CATEGORIES.join(", ")}
 
-Réponds UNIQUEMENT en JSON:
+Format JSON STRICT:
 {
   "transactions": [{"date": "DD/MM/YYYY", "label": "description", "amount": -123.45, "category": "Catégorie"}],
   "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
-  "topExpenses": [{"label": "description", "amount": -123.45, "category": "Catégorie", "date": "DD/MM/YYYY"}],
-  "recommendations": [{"title": "Titre", "description": "Description", "potentialSavings": 50, "priority": "high"}],
+  "topExpenses": [{"label": "description exacte", "amount": -543.21, "category": "Catégorie", "date": "DD/MM/YYYY"}],
+  "recommendations": [{"title": "Titre", "description": "Conseil", "potentialSavings": 50, "priority": "high"}],
   "totalExpenses": 1234.56,
-  "period": "Janvier 2024"
+  "period": "Mois Année"
 }
 
-Données brutes du relevé:
+Relevé bancaire:
 ${pdfContent}`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
