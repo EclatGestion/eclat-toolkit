@@ -36,27 +36,25 @@ serve(async (req) => {
     }
 
     console.log("Analyzing expenses from PDF:", fileName);
+    console.log("Text content length:", pdfContent.length, "characters");
 
-    const systemPrompt = `Tu es un expert en analyse financière. Analyse le relevé bancaire PDF fourni et extrais les informations structurées.
-            
-Catégories disponibles: ${EXPENSE_CATEGORIES.join(", ")}
+    // Prompt optimisé pour texte brut (plus court = moins de tokens)
+    const systemPrompt = `Analyse ce texte brut extrait d'un relevé bancaire.
+Ignore les en-têtes répétés et mentions légales.
+Catégories: ${EXPENSE_CATEGORIES.join(", ")}
 
-Instructions:
-1. Identifie toutes les transactions (dépenses uniquement, montants négatifs)
-2. Classe chaque transaction dans une catégorie
-3. Calcule le total par catégorie
-4. Identifie le top 5 des plus grosses dépenses
-5. Génère 3-5 recommandations personnalisées pour optimiser les dépenses
-
-IMPORTANT: Tu dois répondre UNIQUEMENT avec un objet JSON valide, sans aucun texte avant ou après. Le JSON doit avoir cette structure exacte:
+Réponds UNIQUEMENT en JSON:
 {
   "transactions": [{"date": "DD/MM/YYYY", "label": "description", "amount": -123.45, "category": "Catégorie"}],
   "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
   "topExpenses": [{"label": "description", "amount": -123.45, "category": "Catégorie", "date": "DD/MM/YYYY"}],
-  "recommendations": [{"title": "Titre court", "description": "Description détaillée", "potentialSavings": 50, "priority": "high"}],
+  "recommendations": [{"title": "Titre", "description": "Description", "potentialSavings": 50, "priority": "high"}],
   "totalExpenses": 1234.56,
   "period": "Janvier 2024"
-}`;
+}
+
+Données brutes du relevé:
+${pdfContent}`;
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: "POST",
@@ -67,12 +65,6 @@ IMPORTANT: Tu dois répondre UNIQUEMENT avec un objet JSON valide, sans aucun te
         contents: [
           {
             parts: [
-              {
-                inline_data: {
-                  mime_type: "application/pdf",
-                  data: pdfContent
-                }
-              },
               {
                 text: systemPrompt
               }
