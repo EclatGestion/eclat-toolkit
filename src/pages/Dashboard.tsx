@@ -1,8 +1,11 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
+import { AddAssetModal } from "@/components/dashboard/AddAssetModal";
 import { useWealth } from "@/contexts/WealthContext";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank } from "lucide-react";
+import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   BarChart,
   Bar,
@@ -15,7 +18,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 const monthlyData = [
   { name: "Jan", revenus: 4200, depenses: 2800 },
@@ -37,6 +40,10 @@ const ASSET_COLORS: Record<string, string> = {
 
 export default function Dashboard() {
   const { assets, totalPatrimoine, totalRevenus, totalDepenses } = useWealth();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+  // Animated counter for patrimoine
+  const animatedPatrimoine = useAnimatedCounter(totalPatrimoine);
 
   // Données pour le pie chart - agrégées par type d'actif
   const patrimoineData = useMemo(() => {
@@ -67,15 +74,41 @@ export default function Dashboard() {
 
   return (
     <MainLayout title="Dashboard">
+      {/* Header with Add Button */}
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-foreground">Vue d'ensemble</h2>
+        <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Ajouter un actif
+        </Button>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <KPICard
-          title="Patrimoine Total"
-          value={formatCurrency(totalPatrimoine)}
-          icon={Wallet}
-          iconColor="text-amber-500"
-          iconBg="bg-amber-500/10"
-        />
+        {/* Patrimoine Card with Edit Button */}
+        <div className="bg-card rounded-3xl p-5 shadow-card">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-amber-500/10">
+              <Wallet className="w-6 h-6 text-amber-500" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Patrimoine Total</p>
+                <button
+                  onClick={() => setIsAddModalOpen(true)}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                  title="Modifier"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+              <p className="text-xl font-semibold text-foreground">
+                {formatCurrency(animatedPatrimoine)}
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <KPICard
           title="Revenus Annuels"
           value={formatCurrency(totalRevenus)}
@@ -192,6 +225,9 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Add Asset Modal */}
+      <AddAssetModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
     </MainLayout>
   );
 }

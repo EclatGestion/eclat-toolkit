@@ -4,20 +4,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWealth } from "@/contexts/WealthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
-import { User, Phone, CheckCircle, Loader2 } from "lucide-react";
+import { User, Phone, Wallet, CheckCircle, Loader2 } from "lucide-react";
 
 const profileSchema = z.object({
   firstName: z.string().min(2, "Le prénom doit contenir au moins 2 caractères"),
   lastName: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
   phone: z.string().regex(/^(\+33|0)[1-9](\d{8})$/, "Numéro de téléphone invalide (format: 0612345678 ou +33612345678)"),
+  revenus: z.number().min(0, "Les revenus doivent être positifs"),
+  patrimoine: z.number().min(0, "Le patrimoine doit être positif"),
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
@@ -25,12 +27,14 @@ type ProfileFormValues = z.infer<typeof profileSchema>;
 const steps = [
   { id: 1, title: "Identité", icon: User },
   { id: 2, title: "Contact", icon: Phone },
-  { id: 3, title: "Confirmation", icon: CheckCircle },
+  { id: 3, title: "Patrimoine", icon: Wallet },
+  { id: 4, title: "Confirmation", icon: CheckCircle },
 ];
 
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { setUserProfile, addAsset } = useWealth();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,6 +44,8 @@ export default function Onboarding() {
       firstName: "",
       lastName: "",
       phone: "",
+      revenus: 0,
+      patrimoine: 0,
     },
   });
 
@@ -63,6 +69,8 @@ export default function Onboarding() {
           firstName: data.first_name || "",
           lastName: data.last_name || "",
           phone: data.phone || "",
+          revenus: 0,
+          patrimoine: 0,
         });
       }
     };
@@ -77,6 +85,9 @@ export default function Onboarding() {
     } else if (currentStep === 2) {
       const isValid = await form.trigger(["phone"]);
       if (isValid) setCurrentStep(3);
+    } else if (currentStep === 3) {
+      const isValid = await form.trigger(["revenus", "patrimoine"]);
+      if (isValid) setCurrentStep(4);
     }
   };
 
@@ -101,12 +112,29 @@ export default function Onboarding() {
 
       if (error) throw error;
 
+      // Sauvegarder dans le WealthContext
+      setUserProfile({
+        name: `${values.firstName} ${values.lastName}`,
+        email: user.email || "",
+        situation: "",
+        goals: [],
+      });
+
+      // Créer l'actif "Patrimoine Initial" si > 0
+      if (values.patrimoine > 0) {
+        addAsset({
+          name: "Patrimoine Initial",
+          type: "Autre",
+          value: values.patrimoine,
+        });
+      }
+
       toast({
         title: "Profil complété",
         description: "Bienvenue sur Éclat Patrimoine !",
       });
 
-      navigate("/");
+      navigate("/dashboard");
     } catch (error) {
       toast({
         title: "Erreur",
@@ -176,12 +204,14 @@ export default function Onboarding() {
             <CardTitle>
               {currentStep === 1 && "Vos informations personnelles"}
               {currentStep === 2 && "Vos coordonnées"}
-              {currentStep === 3 && "Vérification"}
+              {currentStep === 3 && "Votre situation financière"}
+              {currentStep === 4 && "Vérification"}
             </CardTitle>
             <CardDescription>
               {currentStep === 1 && "Ces informations nous permettent de personnaliser votre expérience."}
               {currentStep === 2 && "Pour vous contacter si nécessaire."}
-              {currentStep === 3 && "Vérifiez vos informations avant de valider."}
+              {currentStep === 3 && "Estimez vos revenus et patrimoine actuels."}
+              {currentStep === 4 && "Vérifiez vos informations avant de valider."}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -238,8 +268,50 @@ export default function Onboarding() {
                   </div>
                 )}
 
-                {/* Step 3: Confirmation */}
+                {/* Step 3: Patrimoine */}
                 {currentStep === 3 && (
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="revenus"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Revenus annuels nets (€)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="45000"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="patrimoine"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Patrimoine estimé (€)</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              placeholder="100000"
+                              {...field}
+                              onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                )}
+
+                {/* Step 4: Confirmation */}
+                {currentStep === 4 && (
                   <div className="space-y-4">
                     <div className="bg-muted/50 rounded-xl p-4 space-y-3">
                       <div className="flex justify-between">
@@ -258,6 +330,14 @@ export default function Onboarding() {
                         <span className="text-muted-foreground">Email</span>
                         <span className="font-medium">{user?.email}</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Revenus annuels</span>
+                        <span className="font-medium">{form.getValues("revenus").toLocaleString("fr-FR")} €</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Patrimoine estimé</span>
+                        <span className="font-medium">{form.getValues("patrimoine").toLocaleString("fr-FR")} €</span>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -274,7 +354,7 @@ export default function Onboarding() {
                       Retour
                     </Button>
                   )}
-                  {currentStep < 3 ? (
+                  {currentStep < 4 ? (
                     <Button
                       type="button"
                       onClick={nextStep}
