@@ -2,8 +2,11 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { KPICard } from "@/components/dashboard/KPICard";
 import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddAssetModal } from "@/components/dashboard/AddAssetModal";
+import { AddIncomeModal } from "@/components/dashboard/AddIncomeModal";
+import { AddExpenseModal } from "@/components/dashboard/AddExpenseModal";
 import { GoalsModal } from "@/components/dashboard/GoalsModal";
-import { useWealth } from "@/contexts/WealthContext";
+import { AssetsList } from "@/components/dashboard/AssetsList";
+import { useWealth, Asset } from "@/contexts/WealthContext";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,15 +26,7 @@ import {
 } from "recharts";
 import { useMemo, useState } from "react";
 
-const monthlyData = [
-  { name: "Jan", revenus: 4200, depenses: 2800 },
-  { name: "Fév", revenus: 4500, depenses: 3000 },
-  { name: "Mar", revenus: 4100, depenses: 2600 },
-  { name: "Avr", revenus: 4800, depenses: 3200 },
-  { name: "Mai", revenus: 4600, depenses: 2900 },
-  { name: "Juin", revenus: 5000, depenses: 3100 },
-];
-
+// Données statiques pour l'historique du solde (évolution mensuelle)
 const balanceHistory = [
   { name: "Jan", balance: 12500 },
   { name: "Fév", balance: 14200 },
@@ -53,9 +48,21 @@ const ASSET_COLORS: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { assets, totalPatrimoine, totalRevenus, totalDepenses, fireGoals } = useWealth();
+  const { 
+    assets, 
+    totalPatrimoine, 
+    totalEpargne, 
+    totalRevenus, 
+    totalDepenses, 
+    epargneMensuelle, 
+    fireGoals 
+  } = useWealth();
+  
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
+  const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
   
   // Animated counter for patrimoine
   const animatedPatrimoine = useAnimatedCounter(totalPatrimoine);
@@ -78,13 +85,18 @@ export default function Dashboard() {
     return grouped;
   }, [assets]);
 
-  // Calcul épargne mensuelle (revenus - dépenses)
-  const epargneMensuelle = useMemo(() => {
-    return Math.max(0, totalRevenus - totalDepenses);
-  }, [totalRevenus, totalDepenses]);
-
   const formatCurrency = (value: number) => {
     return value.toLocaleString("fr-FR") + " €";
+  };
+
+  const handleEditAsset = (asset: Asset) => {
+    setEditingAsset(asset);
+    setIsAddModalOpen(true);
+  };
+
+  const handleCloseAddModal = (open: boolean) => {
+    setIsAddModalOpen(open);
+    if (!open) setEditingAsset(null);
   };
 
   return (
@@ -124,20 +136,55 @@ export default function Dashboard() {
           </div>
         </div>
         
-        <KPICard
-          title="Revenus Annuels"
-          value={formatCurrency(totalRevenus)}
-          icon={TrendingUp}
-          iconColor="text-emerald-500"
-          iconBg="bg-emerald-500/10"
-        />
-        <KPICard
-          title="Dépenses Annuelles"
-          value={formatCurrency(totalDepenses)}
-          icon={TrendingDown}
-          iconColor="text-rose-500"
-          iconBg="bg-rose-500/10"
-        />
+        {/* Revenus Card - Editable */}
+        <div className="bg-card rounded-3xl p-5 shadow-card">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-emerald-500/10">
+              <TrendingUp className="w-6 h-6 text-emerald-500" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Revenus Annuels</p>
+                <button
+                  onClick={() => setIsIncomeModalOpen(true)}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                  title="Modifier"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+              <p className="text-xl font-semibold text-foreground">
+                {formatCurrency(totalRevenus)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Dépenses Card - Editable */}
+        <div className="bg-card rounded-3xl p-5 shadow-card">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center bg-rose-500/10">
+              <TrendingDown className="w-6 h-6 text-rose-500" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-muted-foreground">Dépenses Annuelles</p>
+                <button
+                  onClick={() => setIsExpenseModalOpen(true)}
+                  className="p-1 hover:bg-muted rounded-md transition-colors"
+                  title="Modifier"
+                >
+                  <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              </div>
+              <p className="text-xl font-semibold text-foreground">
+                {formatCurrency(totalDepenses)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Épargne Mensuelle - Calculée automatiquement */}
         <KPICard
           title="Épargne Mensuelle"
           value={formatCurrency(epargneMensuelle)}
@@ -149,11 +196,11 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Bar Chart - Évolution Mensuelle */}
+        {/* Bar Chart - Évolution Mensuelle du Solde */}
         <div className="lg:col-span-2 bg-card rounded-3xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Évolution Mensuelle</h3>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Évolution Mensuelle du Solde</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={monthlyData} barGap={8} barCategoryGap="20%">
+            <BarChart data={balanceHistory} barCategoryGap="20%">
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
               <XAxis 
                 dataKey="name" 
@@ -174,22 +221,15 @@ export default function Dashboard() {
                   borderRadius: "12px",
                   boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
-                formatter={(value: number) => [`${value.toLocaleString("fr-FR")} €`, ""]}
+                formatter={(value: number) => [`${value.toLocaleString("fr-FR")} €`, "Solde"]}
                 labelStyle={{ color: "#343C6A", fontWeight: 600 }}
               />
               <Bar 
-                dataKey="revenus" 
+                dataKey="balance" 
                 fill="#2D60FF" 
                 radius={[10, 10, 0, 0]} 
-                barSize={12}
-                name="Revenus" 
-              />
-              <Bar 
-                dataKey="depenses" 
-                fill="#16DBCC" 
-                radius={[10, 10, 0, 0]} 
-                barSize={12}
-                name="Dépenses" 
+                barSize={20}
+                name="Solde" 
               />
             </BarChart>
           </ResponsiveContainer>
@@ -293,11 +333,19 @@ export default function Dashboard() {
         </ResponsiveContainer>
       </div>
 
+      {/* Assets List */}
+      <div className="mb-6">
+        <AssetsList 
+          onAddClick={() => setIsAddModalOpen(true)} 
+          onEditClick={handleEditAsset} 
+        />
+      </div>
+
       {/* Recent Activity & Objectifs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecentActivity />
         
-        {/* Objectifs FIRE - Dynamique */}
+        {/* Objectifs FIRE - Basé sur l'épargne (Cash + Épargne) */}
         <div className="bg-card rounded-3xl p-6 shadow-card">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-foreground">Objectifs FIRE</h3>
@@ -313,14 +361,15 @@ export default function Dashboard() {
           {fireGoals.length > 0 ? (
             <div className="space-y-5">
               {fireGoals.map((goal) => {
-                const progress = Math.min((totalPatrimoine / goal.target) * 100, 100);
+                // Utiliser totalEpargne au lieu de totalPatrimoine
+                const progress = Math.min((totalEpargne / goal.target) * 100, 100);
                 
                 return (
                   <div key={goal.id}>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-foreground font-medium">{goal.label}</span>
                       <span className="text-muted-foreground">
-                        {totalPatrimoine.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
+                        {totalEpargne.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
                       </span>
                     </div>
                     <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -352,11 +401,24 @@ export default function Dashboard() {
               </Button>
             </div>
           )}
+          
+          {/* Info épargne */}
+          {fireGoals.length > 0 && (
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              Basé sur votre épargne liquide (Cash + Épargne)
+            </p>
+          )}
         </div>
       </div>
 
       {/* Modals */}
-      <AddAssetModal open={isAddModalOpen} onOpenChange={setIsAddModalOpen} />
+      <AddAssetModal 
+        open={isAddModalOpen} 
+        onOpenChange={handleCloseAddModal} 
+        editAsset={editingAsset}
+      />
+      <AddIncomeModal open={isIncomeModalOpen} onOpenChange={setIsIncomeModalOpen} />
+      <AddExpenseModal open={isExpenseModalOpen} onOpenChange={setIsExpenseModalOpen} />
       <GoalsModal open={isGoalsModalOpen} onOpenChange={setIsGoalsModalOpen} />
     </MainLayout>
   );

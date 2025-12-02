@@ -134,7 +134,7 @@ export default function Onboarding() {
         description: "Bienvenue sur Éclat Patrimoine !",
       });
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (error) {
       toast({
         title: "Erreur",
