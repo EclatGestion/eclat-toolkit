@@ -5,7 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import Auth from "./pages/Auth";
+import Onboarding from "./pages/Onboarding";
 import Catalogue from "./pages/Catalogue";
 import Dashboard from "./pages/Dashboard";
 import Simulations from "./pages/Simulations";
@@ -26,13 +28,14 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
-            <Route path="/" element={<ProtectedRoute><Catalogue /></ProtectedRoute>} />
-            <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="/simulations" element={<ProtectedRoute><Simulations /></ProtectedRoute>} />
-            <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-            <Route path="/tools/interets-composes" element={<ProtectedRoute><InteretsComposes /></ProtectedRoute>} />
-            <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><SimulateurImmobilier /></ProtectedRoute>} />
-            <Route path="/tools/:toolId" element={<ProtectedRoute><ToolPage /></ProtectedRoute>} />
+            <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+            <Route path="/" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
+            <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
