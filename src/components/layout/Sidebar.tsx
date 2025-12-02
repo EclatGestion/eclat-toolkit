@@ -3,7 +3,7 @@ import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3 },
   { title: "Académie", url: "/academie", icon: GraduationCap },
   { title: "Mes Simulations", url: "/simulations", icon: Save },
@@ -27,7 +27,7 @@ export function Sidebar() {
           <NavLink
             key={item.url}
             to={item.url}
-            end={item.url === "/"}
+            end={item.url === "/dashboard"}
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-2xl text-sidebar-foreground transition-all duration-200",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"

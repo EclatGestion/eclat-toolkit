@@ -3,7 +3,7 @@ import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Outils", url: "/catalogue", icon: Grid3X3 },
   { title: "Académie", url: "/academie", icon: GraduationCap },
   { title: "Profil", url: "/settings", icon: Settings },
@@ -17,7 +17,7 @@ export function BottomNav() {
           <NavLink
             key={item.url}
             to={item.url}
-            end={item.url === "/"}
+            end={item.url === "/dashboard"}
             className={cn(
               "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-muted-foreground transition-all duration-200",
               "hover:text-primary"
