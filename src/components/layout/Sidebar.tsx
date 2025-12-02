@@ -3,8 +3,8 @@ import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Catalogue d'Outils", url: "/", icon: Grid3X3 },
+  { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3 },
   { title: "Mes Simulations", url: "/simulations", icon: Save },
   { title: "Profil & Paramètres", url: "/settings", icon: Settings },
 ];

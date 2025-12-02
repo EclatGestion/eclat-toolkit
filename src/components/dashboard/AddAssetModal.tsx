@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -61,29 +61,50 @@ export function AddAssetModal({ open, onOpenChange, editAsset }: AddAssetModalPr
   const form = useForm<AssetFormValues>({
     resolver: zodResolver(assetSchema),
     defaultValues: {
-      name: editAsset?.name || "",
-      type: editAsset?.type || "Cash",
-      value: editAsset?.value || 0,
-      bankName: editAsset?.bankName || "",
+      name: "",
+      type: "Cash",
+      value: 0,
+      bankName: "",
     },
   });
+
+  // Reset form when editAsset changes
+  useEffect(() => {
+    if (editAsset) {
+      form.reset({
+        name: editAsset.name,
+        type: editAsset.type,
+        value: editAsset.value,
+        bankName: editAsset.bankName || "",
+      });
+    } else {
+      form.reset({
+        name: "",
+        type: "Cash",
+        value: 0,
+        bankName: "",
+      });
+    }
+  }, [editAsset, form]);
 
   const onSubmit = async (values: AssetFormValues) => {
     setIsSubmitting(true);
     try {
+      const assetData = {
+        name: values.name,
+        type: values.type,
+        value: values.value,
+        bankName: values.bankName,
+      };
+      
       if (editAsset) {
-        updateAsset(editAsset.id, values);
+        updateAsset(editAsset.id, assetData);
         toast({
           title: "Actif modifié",
           description: `${values.name} a été mis à jour.`,
         });
       } else {
-        addAsset({
-          name: values.name,
-          type: values.type,
-          value: values.value,
-          bankName: values.bankName,
-        });
+        addAsset(assetData);
         toast({
           title: "Actif ajouté",
           description: `${values.name} a été ajouté à votre patrimoine.`,
@@ -171,8 +192,11 @@ export function AddAssetModal({ open, onOpenChange, editAsset }: AddAssetModalPr
                     <Input
                       type="number"
                       placeholder="0"
-                      {...field}
-                      onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                      value={field.value === 0 ? "" : field.value}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        field.onChange(val === "" ? 0 : parseFloat(val));
+                      }}
                     />
                   </FormControl>
                   <FormMessage />
