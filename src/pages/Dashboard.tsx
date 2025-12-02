@@ -17,6 +17,8 @@ import {
   PieChart,
   Pie,
   Cell,
+  AreaChart,
+  Area,
 } from "recharts";
 import { useMemo, useState } from "react";
 
@@ -29,13 +31,24 @@ const monthlyData = [
   { name: "Juin", revenus: 5000, depenses: 3100 },
 ];
 
+const balanceHistory = [
+  { name: "Jan", balance: 12500 },
+  { name: "Fév", balance: 14200 },
+  { name: "Mar", balance: 13800 },
+  { name: "Avr", balance: 16500 },
+  { name: "Mai", balance: 18200 },
+  { name: "Juin", balance: 21000 },
+  { name: "Juil", balance: 19800 },
+  { name: "Août", balance: 22500 },
+];
+
 const ASSET_COLORS: Record<string, string> = {
-  Immobilier: "hsl(227, 100%, 59%)",
-  Bourse: "hsl(172, 66%, 50%)",
-  Épargne: "hsl(38, 92%, 50%)",
-  Crypto: "hsl(291, 64%, 42%)",
-  Cash: "hsl(142, 76%, 36%)",
-  Autre: "hsl(0, 0%, 60%)",
+  Immobilier: "#2D60FF",
+  Bourse: "#16DBCC",
+  Épargne: "#FFBB38",
+  Crypto: "#9333EA",
+  Cash: "#22C55E",
+  Autre: "#718EBF",
 };
 
 export default function Dashboard() {
@@ -67,6 +80,31 @@ export default function Dashboard() {
   const epargneMensuelle = useMemo(() => {
     return Math.max(0, totalRevenus - totalDepenses);
   }, [totalRevenus, totalDepenses]);
+
+  // Objectifs FIRE dynamiques
+  const goals = useMemo(() => [
+    { 
+      label: "Épargne d'urgence", 
+      current: 0, 
+      target: 20000, 
+      color: "#2D60FF",
+      usePatrimoine: true 
+    },
+    { 
+      label: "Apport immobilier", 
+      current: 0, 
+      target: 80000, 
+      color: "#16DBCC",
+      usePatrimoine: true 
+    },
+    { 
+      label: "Indépendance FIRE", 
+      current: 0, 
+      target: 500000, 
+      color: "#FFBB38",
+      usePatrimoine: true 
+    },
+  ], []);
 
   const formatCurrency = (value: number) => {
     return value.toLocaleString("fr-FR") + " €";
@@ -134,23 +172,48 @@ export default function Dashboard() {
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Bar Chart */}
+        {/* Bar Chart - Évolution Mensuelle */}
         <div className="lg:col-span-2 bg-card rounded-3xl p-6 shadow-card">
           <h3 className="text-lg font-semibold text-foreground mb-4">Évolution Mensuelle</h3>
           <ResponsiveContainer width="100%" height={280}>
-            <BarChart data={monthlyData} barGap={8}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: "hsl(var(--muted-foreground))" }} />
+            <BarChart data={monthlyData} barGap={8} barCategoryGap="20%">
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.5)" />
+              <XAxis 
+                dataKey="name" 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "#718EBF", fontSize: 12 }} 
+              />
+              <YAxis 
+                axisLine={false} 
+                tickLine={false} 
+                tick={{ fill: "#718EBF", fontSize: 12 }}
+                tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "hsl(var(--card))",
                   border: "1px solid hsl(var(--border))",
                   borderRadius: "12px",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                 }}
+                formatter={(value: number) => [`${value.toLocaleString("fr-FR")} €`, ""]}
+                labelStyle={{ color: "#343C6A", fontWeight: 600 }}
               />
-              <Bar dataKey="revenus" fill="hsl(227, 100%, 59%)" radius={[8, 8, 0, 0]} name="Revenus" />
-              <Bar dataKey="depenses" fill="hsl(172, 66%, 50%)" radius={[8, 8, 0, 0]} name="Dépenses" />
+              <Bar 
+                dataKey="revenus" 
+                fill="#2D60FF" 
+                radius={[10, 10, 0, 0]} 
+                barSize={12}
+                name="Revenus" 
+              />
+              <Bar 
+                dataKey="depenses" 
+                fill="#16DBCC" 
+                radius={[10, 10, 0, 0]} 
+                barSize={12}
+                name="Dépenses" 
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -165,23 +228,23 @@ export default function Dashboard() {
                   data={patrimoineData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={50}
-                  outerRadius={80}
+                  innerRadius={55}
+                  outerRadius={85}
                   paddingAngle={4}
                   dataKey="value"
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                  labelLine={false}
+                  stroke="none"
                 >
                   {patrimoineData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => `${value.toLocaleString()} €`}
+                  formatter={(value: number) => `${value.toLocaleString("fr-FR")} €`}
                   contentStyle={{
                     backgroundColor: "hsl(var(--card))",
                     border: "1px solid hsl(var(--border))",
                     borderRadius: "12px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   }}
                 />
               </PieChart>
@@ -191,37 +254,103 @@ export default function Dashboard() {
               Aucun actif enregistré
             </div>
           )}
+          {/* Legend */}
+          {patrimoineData.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-3 mt-2">
+              {patrimoineData.map((entry) => (
+                <div key={entry.name} className="flex items-center gap-1.5">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: entry.color }}
+                  />
+                  <span className="text-xs text-muted-foreground">{entry.name}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Recent Activity */}
+      {/* Balance History Chart */}
+      <div className="bg-card rounded-3xl p-6 shadow-card mb-6">
+        <h3 className="text-lg font-semibold text-foreground mb-4">Historique du Solde</h3>
+        <ResponsiveContainer width="100%" height={220}>
+          <AreaChart data={balanceHistory}>
+            <defs>
+              <linearGradient id="balanceGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#2D60FF" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#2D60FF" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border) / 0.3)" />
+            <XAxis 
+              dataKey="name" 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fill: "#718EBF", fontSize: 12 }}
+            />
+            <YAxis 
+              axisLine={false} 
+              tickLine={false} 
+              tick={{ fill: "#718EBF", fontSize: 12 }}
+              tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: "hsl(var(--card))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "12px",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+              }}
+              formatter={(value: number) => [`${value.toLocaleString("fr-FR")} €`, "Solde"]}
+              labelStyle={{ color: "#343C6A", fontWeight: 600 }}
+            />
+            <Area 
+              type="monotone"
+              dataKey="balance" 
+              stroke="#2D60FF" 
+              strokeWidth={3}
+              fill="url(#balanceGradient)"
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* Recent Activity & Objectifs */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecentActivity />
         
-        {/* Objectifs */}
+        {/* Objectifs FIRE - Dynamique */}
         <div className="bg-card rounded-3xl p-6 shadow-card">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Objectifs</h3>
-          <div className="space-y-4">
-            {[
-              { label: "Épargne d'urgence", current: 15000, target: 20000, color: "bg-primary" },
-              { label: "Apport immobilier", current: 45000, target: 80000, color: "bg-emerald-500" },
-              { label: "Retraite", current: 85000, target: 500000, color: "bg-orange-500" },
-            ].map((goal) => (
-              <div key={goal.label}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-foreground font-medium">{goal.label}</span>
-                  <span className="text-muted-foreground">
-                    {goal.current.toLocaleString()} € / {goal.target.toLocaleString()} €
-                  </span>
+          <h3 className="text-lg font-semibold text-foreground mb-4">Objectifs FIRE</h3>
+          <div className="space-y-5">
+            {goals.map((goal) => {
+              const current = goal.usePatrimoine ? totalPatrimoine : goal.current;
+              const progress = Math.min((current / goal.target) * 100, 100);
+              
+              return (
+                <div key={goal.label}>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="text-foreground font-medium">{goal.label}</span>
+                    <span className="text-muted-foreground">
+                      {current.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
+                    </span>
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{ 
+                        width: `${progress}%`,
+                        backgroundColor: goal.color,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {progress.toFixed(0)}% atteint
+                  </p>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${goal.color} rounded-full transition-all`}
-                    style={{ width: `${(goal.current / goal.target) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
