@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3 },
-  { title: "Académie", url: "/academie", icon: GraduationCap },
+  { title: "Académie", url: "/academie-pro", icon: GraduationCap },
   { title: "Mes Simulations", url: "/simulations", icon: Save },
   { title: "Profil & Paramètres", url: "/settings", icon: Settings },
 ];
