@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ImportModal } from "./ImportModal";
+import { CSVImportModal } from "./CSVImportModal";
 import { 
   Upload, 
   TrendingDown, 
@@ -10,7 +10,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  FileSpreadsheet
 } from "lucide-react";
 import {
   PieChart,
@@ -159,13 +160,13 @@ export function ExpenseAnalysis() {
             Analysez vos dépenses avec l'IA
           </h4>
           <p className="text-sm text-muted-foreground text-center mb-4 max-w-sm">
-            Importez votre relevé bancaire PDF pour obtenir une analyse détaillée 
-            et des recommandations personnalisées.
+            Importez votre relevé bancaire CSV pour obtenir une analyse détaillée 
+            et des recommandations personnalisées par l'IA.
           </p>
           <div className="flex gap-3">
             <Button onClick={() => setIsImportModalOpen(true)} className="gap-2">
-              <Upload className="w-4 h-4" />
-              Importer un PDF
+              <FileSpreadsheet className="w-4 h-4" />
+              Importer un CSV
             </Button>
           </div>
         </div>
@@ -297,7 +298,7 @@ export function ExpenseAnalysis() {
         </div>
       )}
 
-      <ImportModal 
+      <CSVImportModal 
         open={isImportModalOpen} 
         onOpenChange={setIsImportModalOpen}
         onAnalysisComplete={handleAnalysisComplete}

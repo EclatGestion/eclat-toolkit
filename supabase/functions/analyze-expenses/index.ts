@@ -18,16 +18,25 @@ const EXPENSE_CATEGORIES = [
   "Divers"
 ];
 
+interface ParsedTransaction {
+  date: string;
+  label: string;
+  amount: number;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { pdfContent, userId, fileName } = await req.json();
+    const { pdfContent, transactions, userId, fileName, source } = await req.json();
     
-    if (!pdfContent) {
-      throw new Error("PDF content is required");
+    // Support both PDF (legacy) and CSV (new structured format)
+    const isCSV = source === "csv" && Array.isArray(transactions);
+    
+    if (!pdfContent && !isCSV) {
+      throw new Error("PDF content or transactions array is required");
     }
 
     const GOOGLE_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
@@ -35,11 +44,43 @@ serve(async (req) => {
       throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
 
-    console.log("Analyzing expenses from PDF:", fileName);
-    console.log("Text content length:", pdfContent.length, "characters");
+    console.log("Analyzing expenses from:", source || "pdf", "- File:", fileName);
+    
+    let systemPrompt: string;
+    
+    if (isCSV) {
+      // Optimized prompt for structured CSV data - much fewer tokens!
+      const txList = (transactions as ParsedTransaction[])
+        .map(t => `${t.date}|${t.label}|${t.amount}`)
+        .join("\n");
+      
+      console.log("Processing", transactions.length, "structured transactions");
+      
+      systemPrompt = `Tu es un expert financier. Voici une liste de dépenses extraites d'un relevé bancaire (format: date|libellé|montant).
 
-    // Prompt optimisé pour texte brut
-    const systemPrompt = `Tu es un expert financier. Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
+TÂCHES:
+1. Catégorise chaque transaction dans une des catégories: ${EXPENSE_CATEGORIES.join(", ")}
+2. Calcule les totaux par catégorie avec pourcentages
+3. Identifie les 5 plus grosses dépenses (par montant absolu)
+4. Génère 2-3 recommandations d'économies personnalisées
+
+TRANSACTIONS:
+${txList}
+
+Réponds en JSON STRICT:
+{
+  "transactions": [{"date": "YYYY-MM-DD", "label": "description", "amount": -123.45, "category": "Catégorie"}],
+  "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
+  "topExpenses": [{"label": "description", "amount": -543.21, "category": "Catégorie", "date": "YYYY-MM-DD"}],
+  "recommendations": [{"title": "Titre", "description": "Conseil actionnable", "potentialSavings": 50, "priority": "high|medium|low"}],
+  "totalExpenses": 1234.56,
+  "period": "Période analysée"
+}`;
+    } else {
+      // Legacy PDF prompt
+      console.log("Text content length:", pdfContent.length, "characters");
+      
+      systemPrompt = `Tu es un expert financier. Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
 
 RÈGLES IMPORTANTES:
 - Chaque transaction a un montant UNIQUE et DIFFÉRENT - ne jamais inventer ou dupliquer les montants
@@ -61,6 +102,7 @@ Format JSON STRICT:
 
 Relevé bancaire:
 ${pdfContent}`;
+    }
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: "POST",
