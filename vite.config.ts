@@ -19,8 +19,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     Sitemap({
       hostname: "https://eclat-toolkit.lovable.app",
-      dynamicRoutes: ["/", "/auth"],
-      exclude: ["/onboarding", "/dashboard", "/catalogue", "/simulations", "/settings", "/tools/*"],
+      dynamicRoutes: ["/", "/auth", "/simulateur-impot", "/academie"],
+      exclude: ["/onboarding", "/dashboard", "/catalogue", "/simulations", "/settings", "/tools/*", "/academie-pro"],
       changefreq: "weekly",
       priority: 0.8,
       outDir: "dist",

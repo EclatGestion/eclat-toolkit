@@ -339,7 +339,7 @@ export default function Landing() {
               transition={{ duration: 0.5, ease: "easeOut" }}
               whileHover={{ scale: 1.02, y: -4 }}
               className="lg:col-span-2 lg:row-span-2 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl p-8 text-white relative overflow-hidden cursor-pointer"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/simulateur-impot")}
             >
               <div className="relative z-10">
                 <h3 className="text-2xl lg:text-3xl font-bold mb-3">Simulateur Impôt 2025</h3>
@@ -469,7 +469,7 @@ export default function Landing() {
               <Button 
                 variant="outline"
                 size="lg"
-                onClick={() => navigate("/auth")}
+                onClick={() => navigate("/academie")}
                 className="rounded-full px-8 border-gray-300 text-gray-700"
               >
                 Découvrir l'Académie complète

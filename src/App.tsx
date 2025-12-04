@@ -21,6 +21,8 @@ import SimulateurImmobilier from "./pages/tools/SimulateurImmobilier";
 import SimulateurIR from "./pages/tools/SimulateurIR";
 import NotFound from "./pages/NotFound";
 import Academie from "./pages/Academie";
+import SimulateurIRPublic from "./pages/public/SimulateurIRPublic";
+import AcademiePublic from "./pages/public/AcademiePublic";
 
 const queryClient = new QueryClient();
 
@@ -33,18 +35,24 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public SEO Pages */}
               <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
               <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
+              <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
+              <Route path="/academie" element={<AcademiePublic />} />
+              
+              {/* Protected Pages */}
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
               <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/catalogue" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/academie" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
+              <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
               <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
