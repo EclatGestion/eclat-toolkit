@@ -19,7 +19,16 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     Sitemap({
       hostname: "https://eclat-toolkit.lovable.app",
-      dynamicRoutes: ["/", "/auth", "/simulateur-impot", "/academie"],
+      dynamicRoutes: [
+        "/", 
+        "/auth", 
+        "/simulateur-impot", 
+        "/academie",
+        "/blog",
+        "/blog/per-plan-epargne-retraite-guide-2025",
+        "/blog/droits-succession-guide-complet",
+        "/blog/girardin-industriel-defiscalisation-guide"
+      ],
       exclude: ["/onboarding", "/dashboard", "/catalogue", "/simulations", "/settings", "/tools/*", "/academie-pro"],
       changefreq: "weekly",
       priority: 0.8,

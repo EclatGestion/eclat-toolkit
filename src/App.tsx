@@ -23,6 +23,8 @@ import NotFound from "./pages/NotFound";
 import Academie from "./pages/Academie";
 import SimulateurIRPublic from "./pages/public/SimulateurIRPublic";
 import AcademiePublic from "./pages/public/AcademiePublic";
+import BlogIndex from "./pages/public/BlogIndex";
+import BlogArticle from "./pages/public/BlogArticle";
 
 const queryClient = new QueryClient();
 
@@ -35,11 +37,13 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Public SEO Pages */}
+            {/* Public SEO Pages */}
               <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
               <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
               <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
               <Route path="/academie" element={<AcademiePublic />} />
+              <Route path="/blog" element={<BlogIndex />} />
+              <Route path="/blog/:slug" element={<BlogArticle />} />
               
               {/* Protected Pages */}
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
