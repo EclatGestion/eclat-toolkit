@@ -12,11 +12,14 @@ Allow: /
 
 User-agent: *
 Allow: /
+Allow: /simulateur-impot
+Allow: /academie
 Disallow: /dashboard
 Disallow: /settings
 Disallow: /onboarding
 Disallow: /catalogue
 Disallow: /simulations
 Disallow: /tools/
+Disallow: /academie-pro
 
 Sitemap: https://eclat-toolkit.lovable.app/sitemap.xml
