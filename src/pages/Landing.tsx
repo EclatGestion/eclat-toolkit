@@ -4,7 +4,58 @@ import { Shield, TrendingUp, Calculator, Sparkles, ChevronRight, Plus, Minus } f
 import { financialProducts } from "@/data/financialProducts";
 import { ProductCard } from "@/components/academy/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+// FAQ Data for both UI and Schema
+const faqData = [
+  {
+    question: "Comment réduire mon impôt sur le revenu en 2025 ?",
+    answer: "Notre simulateur d'impôt analyse votre Tranche Marginale d'Imposition (TMI) et vous propose automatiquement les meilleures niches fiscales (PER, Girardin Industriel, Pinel) adaptées à vos revenus pour réduire votre note fiscale."
+  },
+  {
+    question: "L'application est-elle vraiment gratuite ?",
+    answer: "Oui. L'accès aux simulateurs (Impôt, Succession, Intérêts composés) et au tableau de bord manuel est 100% gratuit. Nous proposons des services premium pour l'accompagnement personnalisé."
+  },
+  {
+    question: "Mes données bancaires sont-elles en sécurité ?",
+    answer: "Absolument. Nous utilisons des protocoles de chiffrement bancaire et nous ne vendons jamais vos données. L'agrégation est gérée par des partenaires agréés par l'ACPR (Banque de France)."
+  },
+  {
+    question: "Qu'est-ce que la méthode FIRE ?",
+    answer: "FIRE (Financial Independence, Retire Early) est une méthode visant la liberté financière. Notre calculateur vous aide à définir le montant d'épargne nécessaire pour arrêter de travailler plus tôt."
+  }
+];
+
+// Hook to inject FAQPage JSON-LD schema
+const useFaqSchema = () => {
+  useEffect(() => {
+    const schema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqData.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    };
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'faq-schema';
+    script.textContent = JSON.stringify(schema);
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.getElementById('faq-schema');
+      if (existingScript) {
+        existingScript.remove();
+      }
+    };
+  }, []);
+};
 
 // Animation variants
 const fadeUpVariant = {
@@ -60,6 +111,9 @@ const FaqItem = ({ question, answer }: { question: string; answer: string }) => 
 
 export default function Landing() {
   const navigate = useNavigate();
+  
+  // Inject FAQPage schema for SEO
+  useFaqSchema();
 
   const featuredProducts = financialProducts.filter(p => 
     ["per", "assurance-vie", "girardin"].includes(p.id)
@@ -447,22 +501,13 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
             className="space-y-2"
           >
-            <FaqItem 
-              question="Comment réduire mon impôt sur le revenu en 2025 ?" 
-              answer="Notre simulateur d'impôt analyse votre Tranche Marginale d'Imposition (TMI) et vous propose automatiquement les meilleures niches fiscales (PER, Girardin Industriel, Pinel) adaptées à vos revenus pour réduire votre note fiscale." 
-            />
-            <FaqItem 
-              question="L'application est-elle vraiment gratuite ?" 
-              answer="Oui. L'accès aux simulateurs (Impôt, Succession, Intérêts composés) et au tableau de bord manuel est 100% gratuit. Nous proposons des services premium pour l'accompagnement personnalisé." 
-            />
-            <FaqItem 
-              question="Mes données bancaires sont-elles en sécurité ?" 
-              answer="Absolument. Nous utilisons des protocoles de chiffrement bancaire et nous ne vendons jamais vos données. L'agrégation est gérée par des partenaires agréés par l'ACPR (Banque de France)." 
-            />
-            <FaqItem 
-              question="Qu'est-ce que la méthode FIRE ?" 
-              answer="FIRE (Financial Independence, Retire Early) est une méthode visant la liberté financière. Notre calculateur vous aide à définir le montant d'épargne nécessaire pour arrêter de travailler plus tôt." 
-            />
+            {faqData.map((faq, index) => (
+              <FaqItem 
+                key={index}
+                question={faq.question} 
+                answer={faq.answer} 
+              />
+            ))}
           </motion.div>
         </div>
       </section>
