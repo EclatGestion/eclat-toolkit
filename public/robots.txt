@@ -12,3 +12,11 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /onboarding
+Disallow: /catalogue
+Disallow: /simulations
+Disallow: /tools/
+
+Sitemap: https://eclat-toolkit.lovable.app/sitemap.xml
