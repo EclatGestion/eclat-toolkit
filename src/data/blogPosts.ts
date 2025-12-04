@@ -397,7 +397,7 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "simulateur-interets-composes",
     metaTitle: "Guide ETF 2025 : Comment Investir en Trackers et Battre les Gérants | Éclat Toolkit",
     metaDescription: "Découvrez comment les ETF (trackers) permettent d'investir avec des frais < 0.3%/an et surperformer 90% des gérants actifs. Guide complet MSCI World, S&P 500, PEA.",
-    content: \`
+    content: `
       <h2>Qu'est-ce qu'un ETF (Exchange Traded Fund) ?</h2>
       <p>Un ETF, aussi appelé <strong>tracker</strong>, est un fonds d'investissement coté en bourse qui réplique la performance d'un indice. Au lieu de choisir des actions une par une, vous achetez un "panier" qui contient toutes les actions de l'indice en question.</p>
       
@@ -414,14 +414,12 @@ export const blogPosts: BlogPost[] = [
       </ul>
 
       <h3>L'effet dévastateur des frais sur 30 ans</h3>
-      <blockquote>
-        <p>Investissement de 10 000€ initial + 200€/mois pendant 30 ans à 7% brut :</p>
-        <ul>
-          <li>Avec 0.2% de frais (ETF) : <strong>284 000€</strong></li>
-          <li>Avec 2% de frais (fonds actif) : <strong>217 000€</strong></li>
-        </ul>
-        <p>Différence : <strong>67 000€</strong> partis en frais !</p>
-      </blockquote>
+      <p>Investissement de 10 000€ initial + 200€/mois pendant 30 ans à 7% brut :</p>
+      <ul>
+        <li>Avec 0.2% de frais (ETF) : <strong>284 000€</strong></li>
+        <li>Avec 2% de frais (fonds actif) : <strong>217 000€</strong></li>
+      </ul>
+      <p>Différence : <strong>67 000€</strong> partis en frais !</p>
 
       <h2>Les principaux indices à connaître</h2>
       
@@ -433,9 +431,6 @@ export const blogPosts: BlogPost[] = [
       <p>L'indice le plus suivi au monde. Performance historique exceptionnelle (~10%/an sur 50 ans). Mais concentration sur les États-Unis uniquement.</p>
       <p><strong>ETF recommandés</strong> : Amundi S&P 500 (500 - éligible PEA), Vanguard S&P 500 (VUSA)</p>
 
-      <h3>MSCI Emerging Markets - Les marchés émergents</h3>
-      <p>Exposition à la Chine, l'Inde, le Brésil, Taiwan... Plus volatile mais potentiel de croissance supérieur sur le très long terme.</p>
-
       <h2>Stratégie DCA : la méthode infaillible</h2>
       <p>Le <strong>Dollar Cost Averaging (DCA)</strong> consiste à investir une somme fixe à intervalles réguliers (chaque mois par exemple), quelle que soit l'évolution des marchés.</p>
       
@@ -444,58 +439,29 @@ export const blogPosts: BlogPost[] = [
         <li>Vous achetez plus de parts quand les cours sont bas</li>
         <li>Vous lissez votre prix d'achat moyen</li>
         <li>Vous éliminez le stress du "bon moment pour investir"</li>
-        <li>Vous créez une discipline d'épargne automatique</li>
       </ul>
-
-      <h3>Exemple de DCA sur 15 ans</h3>
-      <blockquote>
-        <p>200€/mois sur ETF MSCI World pendant 15 ans (performance historique ~7%/an) :</p>
-        <ul>
-          <li>Capital versé : 36 000€</li>
-          <li>Capital final estimé : 62 000€</li>
-          <li>Plus-value : 26 000€ (+72%)</li>
-        </ul>
-      </blockquote>
 
       <h2>PEA ou Compte-Titres : quelle enveloppe choisir ?</h2>
       
       <h3>Le PEA (Plan d'Épargne en Actions)</h3>
       <ul>
-        <li><strong>Avantage fiscal majeur</strong> : exonération d'impôt sur les plus-values après 5 ans (hors prélèvements sociaux de 17.2%)</li>
+        <li><strong>Avantage fiscal majeur</strong> : exonération d'impôt sur les plus-values après 5 ans</li>
         <li><strong>Plafond</strong> : 150 000€ de versements</li>
-        <li><strong>Contrainte</strong> : uniquement des actions européennes ou des ETF à réplication synthétique (qui permettent d'investir sur le monde entier)</li>
       </ul>
 
       <h3>Le Compte-Titres Ordinaire (CTO)</h3>
       <ul>
         <li><strong>Aucune contrainte géographique</strong> : accès à tous les ETF mondiaux</li>
         <li><strong>Fiscalité</strong> : Flat Tax de 30% sur les plus-values</li>
-        <li><strong>Pas de plafond</strong> : versements illimités</li>
       </ul>
 
-      <p><strong>Stratégie recommandée</strong> : Remplissez d'abord votre PEA avec des ETF éligibles, puis basculez sur le CTO pour la suite.</p>
+      <p><strong>Stratégie recommandée</strong> : Remplissez d'abord votre PEA avec des ETF éligibles, puis basculez sur le CTO.</p>
 
-      <h2>Les erreurs à éviter</h2>
-      <ul>
-        <li><strong>Vendre en panique</strong> lors des krachs : les marchés se sont toujours relevés historiquement</li>
-        <li><strong>Chercher le "bon moment"</strong> : le market timing est quasiment impossible, même pour les pros</li>
-        <li><strong>Multiplier les lignes</strong> : 2-3 ETF bien diversifiés suffisent</li>
-        <li><strong>Oublier les frais de courtage</strong> : privilégiez les courtiers low-cost (Boursorama, Bourse Direct, Trade Republic)</li>
-      </ul>
-
-      <h2>Conclusion : la stratégie simple et efficace</h2>
-      <p>La recette gagnante pour 90% des investisseurs particuliers :</p>
-      <ol>
-        <li>Ouvrez un PEA chez un courtier low-cost</li>
-        <li>Investissez chaque mois la même somme sur un ETF MSCI World</li>
-        <li>N'y touchez pas pendant au moins 10-15 ans</li>
-        <li>Ignorez les fluctuations court terme</li>
-      </ol>
+      <h2>Conclusion</h2>
+      <p>La recette gagnante pour 90% des investisseurs particuliers : ouvrez un PEA, investissez chaque mois sur un ETF MSCI World, et n'y touchez pas pendant 10-15 ans.</p>
       
-      <p>C'est ennuyeux ? Peut-être. Mais c'est la stratégie qui a fait ses preuves sur des décennies.</p>
-      
-      <p>Pour simuler la croissance de votre portefeuille ETF avec différents scénarios de marché, utilisez notre calculateur d'intérêts composés.</p>
-    \`
+      <p>Pour simuler la croissance de votre portefeuille ETF, utilisez notre calculateur d'intérêts composés.</p>
+    `
   },
   {
     id: "crowdfunding-immo-guide",
@@ -510,148 +476,67 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "simulateur-immobilier",
     metaTitle: "Crowdfunding Immobilier 2025 : 10% de Rendement en 18 Mois | Guide Complet",
     metaDescription: "Investissez en crowdfunding immobilier dès 1000€. Rendements de 8% à 12% brut sur 12-24 mois. Guide complet : fonctionnement, risques, meilleures plateformes.",
-    content: \`
+    content: `
       <h2>Qu'est-ce que le crowdfunding immobilier ?</h2>
-      <p>Le crowdfunding immobilier (ou financement participatif immobilier) permet à des particuliers de prêter de l'argent à des promoteurs ou marchands de biens pour financer leurs opérations immobilières.</p>
+      <p>Le crowdfunding immobilier permet à des particuliers de prêter de l'argent à des promoteurs ou marchands de biens pour financer leurs opérations immobilières.</p>
       
-      <p>Concrètement, vous devenez <strong>"la banque du promoteur"</strong>. En échange de votre prêt, vous recevez des intérêts fixes (8% à 12% par an) versés à l'échéance du projet, généralement en 12 à 24 mois.</p>
+      <p>Concrètement, vous devenez <strong>"la banque du promoteur"</strong>. En échange de votre prêt, vous recevez des intérêts fixes (8% à 12% par an) versés à l'échéance du projet.</p>
 
       <h2>Comment fonctionne une opération ?</h2>
       <ol>
-        <li><strong>Sélection du projet</strong> : une plateforme analyse et sélectionne un projet immobilier (construction, rénovation, marchand de biens)</li>
-        <li><strong>Collecte</strong> : les investisseurs financent le projet via la plateforme (tickets de 100€ à 1000€ minimum selon les plateformes)</li>
-        <li><strong>Réalisation</strong> : le promoteur réalise son opération avec les fonds collectés + son financement bancaire</li>
-        <li><strong>Remboursement</strong> : à la vente des lots ou refinancement, le promoteur rembourse capital + intérêts</li>
+        <li><strong>Sélection du projet</strong> : une plateforme analyse un projet immobilier</li>
+        <li><strong>Collecte</strong> : les investisseurs financent le projet (tickets de 1000€ minimum)</li>
+        <li><strong>Réalisation</strong> : le promoteur réalise son opération</li>
+        <li><strong>Remboursement</strong> : à la vente des lots, le promoteur rembourse capital + intérêts</li>
       </ol>
 
       <h3>Exemple concret</h3>
-      <blockquote>
-        <p>Projet : Rénovation d'un immeuble à Bordeaux</p>
-        <ul>
-          <li>Investissement : 5 000€</li>
-          <li>Taux : 10% annuel</li>
-          <li>Durée : 18 mois</li>
-          <li>Intérêts perçus : 750€</li>
-          <li>Capital récupéré : 5 750€</li>
-        </ul>
-      </blockquote>
-
-      <h2>Les avantages du crowdfunding immobilier</h2>
+      <p>Projet : Rénovation d'un immeuble à Bordeaux</p>
       <ul>
-        <li><strong>Rendements élevés</strong> : 8% à 12% brut, bien supérieurs aux livrets ou fonds euros</li>
-        <li><strong>Horizon court</strong> : 12 à 24 mois en moyenne, idéal pour du placement court terme</li>
-        <li><strong>Ticket accessible</strong> : dès 100€ sur certaines plateformes, 1000€ sur la plupart</li>
-        <li><strong>Pas de gestion</strong> : aucune contrainte locative, vous prêtez et attendez le remboursement</li>
-        <li><strong>Diversification</strong> : possibilité de répartir sur plusieurs projets pour limiter le risque</li>
+        <li>Investissement : 5 000€</li>
+        <li>Taux : 10% annuel</li>
+        <li>Durée : 18 mois</li>
+        <li>Intérêts perçus : 750€</li>
+        <li>Capital récupéré : 5 750€</li>
+      </ul>
+
+      <h2>Les avantages</h2>
+      <ul>
+        <li><strong>Rendements élevés</strong> : 8% à 12% brut</li>
+        <li><strong>Horizon court</strong> : 12 à 24 mois</li>
+        <li><strong>Ticket accessible</strong> : dès 1000€</li>
+        <li><strong>Pas de gestion</strong> : vous prêtez et attendez</li>
       </ul>
 
       <h2>Les risques à connaître</h2>
-      <p>Attention, le crowdfunding immobilier n'est pas sans risque. Les principaux dangers :</p>
       
       <h3>1. Risque de défaut</h3>
-      <p>Si le promoteur fait faillite ou ne parvient pas à vendre ses lots, vous pouvez perdre une partie ou la totalité de votre investissement. Le taux de défaut moyen du secteur est d'environ 2-4%, mais peut atteindre 10-15% sur certaines plateformes.</p>
+      <p>Si le promoteur fait faillite, vous pouvez perdre votre investissement. Le taux de défaut moyen est de 2-4%.</p>
 
       <h3>2. Risque de retard</h3>
-      <p>Les projets immobiliers prennent souvent du retard (permis de construire, météo, artisans...). Un projet prévu sur 18 mois peut durer 24-30 mois. Vous continuez à percevoir des intérêts, mais votre capital est immobilisé plus longtemps.</p>
+      <p>Les projets prennent souvent du retard. Un projet de 18 mois peut durer 24-30 mois.</p>
 
-      <h3>3. Risque de liquidité</h3>
-      <p>Une fois investi, votre argent est bloqué jusqu'à l'échéance. Pas de possibilité de récupérer son capital avant le terme (sauf sur de rares plateformes avec marché secondaire).</p>
-
-      <h2>Comment bien investir en crowdfunding immobilier ?</h2>
-      
-      <h3>Règle n°1 : Diversifiez massivement</h3>
-      <p>Ne mettez jamais plus de 1-2% de votre patrimoine sur un seul projet. Répartissez sur au moins 20-30 projets différents pour lisser le risque de défaut.</p>
-
-      <h3>Règle n°2 : Choisissez les bonnes plateformes</h3>
-      <p>Privilégiez les plateformes établies avec un historique de plusieurs années et un taux de défaut faible :</p>
+      <h2>Comment bien investir ?</h2>
       <ul>
-        <li><strong>Anaxago</strong> : pionnier du secteur, sélection exigeante</li>
-        <li><strong>Homunity</strong> : bon track record, interface claire</li>
-        <li><strong>ClubFunding</strong> : large choix de projets</li>
-        <li><strong>Fundimmo</strong> : spécialiste de l'immobilier</li>
+        <li><strong>Diversifiez massivement</strong> : répartissez sur 20-30 projets minimum</li>
+        <li><strong>Choisissez les bonnes plateformes</strong> : Anaxago, Homunity, ClubFunding</li>
+        <li><strong>Analysez les garanties</strong> : hypothèque, caution personnelle</li>
       </ul>
 
-      <h3>Règle n°3 : Analysez les garanties</h3>
-      <p>Vérifiez les garanties proposées sur chaque projet :</p>
-      <ul>
-        <li><strong>Garantie à Première Demande (GAPD)</strong> : une banque s'engage à rembourser</li>
-        <li><strong>Hypothèque</strong> : le bien immobilier sert de garantie</li>
-        <li><strong>Caution personnelle</strong> : le dirigeant engage son patrimoine personnel</li>
-      </ul>
-
-      <h3>Règle n°4 : Regardez le ratio LTV</h3>
-      <p>Le <strong>Loan-to-Value (LTV)</strong> mesure le ratio entre la dette totale et la valeur du bien. Plus le LTV est bas (< 70%), plus la marge de sécurité est importante en cas de revente forcée à prix réduit.</p>
-
-      <h2>Fiscalité du crowdfunding immobilier</h2>
-      <p>Les intérêts perçus sont soumis au <strong>Prélèvement Forfaitaire Unique (PFU)</strong> de 30% :</p>
-      <ul>
-        <li>12.8% d'impôt sur le revenu</li>
-        <li>17.2% de prélèvements sociaux</li>
-      </ul>
-      
-      <p>Vous pouvez opter pour le barème progressif si votre TMI est inférieur à 12.8%, mais c'est rarement avantageux.</p>
-
-      <blockquote>
-        <p>Exemple : 1 000€ d'intérêts bruts → 700€ net après PFU</p>
-      </blockquote>
-
-      <h2>Crowdfunding vs autres placements immobiliers</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Critère</th>
-            <th>Crowdfunding</th>
-            <th>SCPI</th>
-            <th>Immobilier direct</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Rendement</td>
-            <td>8-12%</td>
-            <td>4-6%</td>
-            <td>3-8%</td>
-          </tr>
-          <tr>
-            <td>Durée</td>
-            <td>12-24 mois</td>
-            <td>Long terme</td>
-            <td>Long terme</td>
-          </tr>
-          <tr>
-            <td>Ticket min.</td>
-            <td>100-1000€</td>
-            <td>200-1000€</td>
-            <td>>50 000€</td>
-          </tr>
-          <tr>
-            <td>Gestion</td>
-            <td>Aucune</td>
-            <td>Aucune</td>
-            <td>Importante</td>
-          </tr>
-          <tr>
-            <td>Risque</td>
-            <td>Moyen-Élevé</td>
-            <td>Faible-Moyen</td>
-            <td>Variable</td>
-          </tr>
-        </tbody>
-      </table>
+      <h2>Fiscalité</h2>
+      <p>Les intérêts sont soumis au <strong>PFU de 30%</strong> (12.8% IR + 17.2% PS).</p>
 
       <h2>Conclusion</h2>
-      <p>Le crowdfunding immobilier est un excellent outil pour <strong>dynamiser une partie de son épargne</strong> sur du court terme. Mais attention : ce n'est pas un placement "garanti". La diversification massive (30+ projets) et le choix de plateformes sérieuses sont essentiels pour limiter les risques.</p>
+      <p>Le crowdfunding immobilier est excellent pour dynamiser une partie de son épargne sur du court terme. Limitez-le à 10-15% de votre patrimoine financier.</p>
       
-      <p>Recommandation : <strong>limitez le crowdfunding à 10-15% maximum de votre patrimoine financier</strong>.</p>
-      
-      <p>Pour calculer votre capacité d'investissement immobilier globale, utilisez notre simulateur dédié.</p>
-    \`
+      <p>Pour calculer votre capacité d'investissement immobilier, utilisez notre simulateur dédié.</p>
+    `
   },
   {
     id: "fip-fcpi-guide",
     slug: "fip-fcpi-reduction-impots-pme-innovation",
     title: "FIP FCPI : Réduire ses Impôts de 25% en Investissant dans les PME",
-    excerpt: "Les FIP et FCPI offrent une réduction d'impôt immédiate de 25% du montant investi. Découvrez comment optimiser ce dispositif de soutien à l'économie française.",
+    excerpt: "Les FIP et FCPI offrent une réduction d'impôt immédiate de 25% du montant investi. Découvrez comment optimiser ce dispositif.",
     date: "2025-01-16",
     category: "fiscalite",
     readTime: 12,
@@ -659,140 +544,52 @@ export const blogPosts: BlogPost[] = [
     authorRole: "Expert Fiscalité",
     relatedTool: "simulateur-ir",
     metaTitle: "FIP FCPI 2025 : Réduction d'Impôt de 25% | Guide Complet PME Innovation",
-    metaDescription: "Investissez dans les PME et l'innovation avec les FIP/FCPI. Réduction d'impôt de 25% + exonération des plus-values. Plafonds, risques et stratégie expliqués.",
-    content: \`
+    metaDescription: "Investissez dans les PME et l'innovation avec les FIP/FCPI. Réduction d'impôt de 25% + exonération des plus-values. Plafonds, risques et stratégie.",
+    content: `
       <h2>Qu'est-ce qu'un FIP et un FCPI ?</h2>
       <p>Les <strong>FIP (Fonds d'Investissement de Proximité)</strong> et <strong>FCPI (Fonds Communs de Placement dans l'Innovation)</strong> sont des fonds de capital-investissement qui financent des PME françaises.</p>
       
       <ul>
-        <li><strong>FIP</strong> : investit dans des PME régionales (au moins 70% du fonds dans des entreprises d'une zone géographique définie)</li>
-        <li><strong>FCPI</strong> : investit dans des entreprises innovantes (au moins 70% dans des sociétés qualifiées "innovantes" par Bpifrance)</li>
+        <li><strong>FIP</strong> : investit dans des PME régionales</li>
+        <li><strong>FCPI</strong> : investit dans des entreprises innovantes</li>
       </ul>
 
-      <p>En contrepartie du risque pris et du blocage des fonds pendant 5 à 10 ans, l'État accorde une <strong>réduction d'impôt significative</strong>.</p>
-
       <h2>L'avantage fiscal : 25% de réduction d'impôt</h2>
-      <p>La réduction d'impôt sur le revenu est de <strong>25% du montant investi</strong> (taux porté à 25% depuis 2020, contre 18% auparavant).</p>
+      <p>La réduction d'impôt est de <strong>25% du montant investi</strong>.</p>
 
       <h3>Plafonds d'investissement</h3>
       <ul>
-        <li><strong>Célibataire</strong> : 12 000€ maximum → réduction max de 3 000€</li>
-        <li><strong>Couple</strong> : 24 000€ maximum → réduction max de 6 000€</li>
+        <li><strong>Célibataire</strong> : 12 000€ max → réduction max de 3 000€</li>
+        <li><strong>Couple</strong> : 24 000€ max → réduction max de 6 000€</li>
       </ul>
 
-      <p>Les plafonds FIP et FCPI sont <strong>cumulables</strong> : vous pouvez investir 12 000€ en FIP ET 12 000€ en FCPI, soit 24 000€ (48 000€ pour un couple) et obtenir jusqu'à 12 000€ de réduction d'impôt.</p>
+      <p>Les plafonds FIP et FCPI sont <strong>cumulables</strong>.</p>
 
       <h3>Cas particuliers : Corse et Outre-mer</h3>
-      <p>Les FIP Corse et FIP Outre-mer bénéficient d'un taux majoré de <strong>30%</strong> de réduction d'impôt, avec les mêmes plafonds.</p>
+      <p>Les FIP Corse et Outre-mer bénéficient d'un taux majoré de <strong>30%</strong>.</p>
 
-      <blockquote>
-        <p>Exemple : Investissement de 10 000€ dans un FIP Corse → réduction d'impôt de 3 000€</p>
-      </blockquote>
-
-      <h2>L'exonération des plus-values à la sortie</h2>
-      <p>Deuxième avantage majeur : les <strong>plus-values réalisées à la sortie du fonds sont exonérées d'impôt sur le revenu</strong>.</p>
-      
-      <p>Seuls les prélèvements sociaux (17.2%) restent dus sur les gains éventuels.</p>
-
-      <blockquote>
-        <p>Exemple : Vous investissez 10 000€. Le fonds fait x1.5 et vous récupérez 15 000€ après 8 ans.</p>
-        <ul>
-          <li>Plus-value : 5 000€</li>
-          <li>Impôt sur la plus-value : 0€ (exonéré)</li>
-          <li>Prélèvements sociaux : 5 000€ × 17.2% = 860€</li>
-          <li>Net récupéré : 14 140€</li>
-        </ul>
-      </blockquote>
-
-      <h2>Plafonnement des niches fiscales</h2>
-      <p>La réduction d'impôt FIP/FCPI entre dans le <strong>plafond global des niches fiscales de 10 000€</strong> (ou 18 000€ pour les investissements outre-mer).</p>
-      
-      <p>Si vous bénéficiez déjà d'autres réductions (emploi à domicile, garde d'enfants, Pinel...), vérifiez que vous n'atteignez pas le plafond avant d'investir.</p>
+      <h2>L'exonération des plus-values</h2>
+      <p>Les plus-values à la sortie sont <strong>exonérées d'impôt sur le revenu</strong>. Seuls les prélèvements sociaux (17.2%) restent dus.</p>
 
       <h2>Les risques des FIP/FCPI</h2>
-      <p>Attention, les FIP et FCPI sont des investissements <strong>risqués</strong> :</p>
-
-      <h3>1. Risque de perte en capital</h3>
-      <p>Les PME non cotées sont fragiles. Beaucoup de fonds ont rendu moins que le capital investi. L'avantage fiscal (25%) couvre une partie du risque, mais pas la totalité.</p>
-
-      <h3>2. Illiquidité totale</h3>
-      <p>Votre argent est bloqué pendant <strong>5 à 10 ans</strong> minimum. Aucune possibilité de sortie anticipée sauf cas exceptionnels (décès, invalidité, licenciement).</p>
-
-      <h3>3. Performance historique médiocre</h3>
-      <p>La performance moyenne des FIP/FCPI est souvent décevante. Beaucoup de fonds font 0% à -20% après prise en compte des frais élevés (souvent 3-4% par an).</p>
-
-      <h2>Comment choisir son FIP/FCPI ?</h2>
-      
-      <h3>Critères essentiels</h3>
       <ul>
-        <li><strong>Track record de la société de gestion</strong> : privilégiez les gérants avec un historique de 10+ ans et des performances supérieures à la moyenne</li>
-        <li><strong>Frais de gestion</strong> : comparez les frais annuels (viser < 3%) et les frais d'entrée</li>
-        <li><strong>Thématique</strong> : certains fonds sont spécialisés (tech, santé, transition écologique) et peuvent mieux performer</li>
-        <li><strong>Taux d'investissement</strong> : vérifiez que le fonds investit effectivement 70%+ dans des PME éligibles</li>
-      </ul>
-
-      <h3>Gérants réputés</h3>
-      <ul>
-        <li><strong>Nextstage</strong> : historique solide sur le non-coté</li>
-        <li><strong>Isatis Capital</strong> : spécialiste des PME de croissance</li>
-        <li><strong>Idinvest</strong> : expertise tech et innovation</li>
+        <li><strong>Risque de perte en capital</strong> : beaucoup de fonds rendent moins que le capital investi</li>
+        <li><strong>Illiquidité totale</strong> : argent bloqué 5 à 10 ans</li>
+        <li><strong>Performance historique médiocre</strong> : souvent 0% à -20% après frais</li>
       </ul>
 
       <h2>Stratégie optimale</h2>
-      <p>Pour maximiser l'intérêt des FIP/FCPI :</p>
-
       <ol>
-        <li><strong>Investissez uniquement si votre TMI ≥ 30%</strong> : l'avantage fiscal de 25% ne compense pas le risque si votre TMI est de 11%</li>
-        <li><strong>Considérez l'avantage fiscal comme le gain principal</strong> : ne comptez pas sur la performance du fonds</li>
-        <li><strong>Diversifiez sur plusieurs fonds</strong> : ne mettez pas tout sur un seul FIP ou FCPI</li>
-        <li><strong>Limitez l'exposition</strong> : 5-10% de votre patrimoine financier maximum</li>
+        <li><strong>Investissez uniquement si TMI ≥ 30%</strong></li>
+        <li><strong>Considérez l'avantage fiscal comme le gain principal</strong></li>
+        <li><strong>Limitez à 5-10% du patrimoine</strong></li>
       </ol>
 
-      <h2>FIP/FCPI vs autres réductions d'impôt</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Dispositif</th>
-            <th>Réduction</th>
-            <th>Risque</th>
-            <th>Liquidité</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>FIP/FCPI</td>
-            <td>25%</td>
-            <td>Élevé</td>
-            <td>Bloqué 5-10 ans</td>
-          </tr>
-          <tr>
-            <td>Girardin</td>
-            <td>110-120%</td>
-            <td>Moyen</td>
-            <td>One-shot</td>
-          </tr>
-          <tr>
-            <td>PER</td>
-            <td>TMI × versement</td>
-            <td>Faible</td>
-            <td>Bloqué retraite</td>
-          </tr>
-          <tr>
-            <td>Dons</td>
-            <td>66-75%</td>
-            <td>Nul</td>
-            <td>Définitif</td>
-          </tr>
-        </tbody>
-      </table>
-
       <h2>Conclusion</h2>
-      <p>Les FIP et FCPI sont des outils de <strong>défiscalisation à manier avec précaution</strong>. L'avantage fiscal de 25% est attractif, mais le risque de perte en capital et les frais élevés peuvent annuler le bénéfice.</p>
+      <p>Les FIP/FCPI sont des outils de défiscalisation à manier avec précaution. Réservez-les aux TMI élevés (41-45%).</p>
       
-      <p>Recommandation : <strong>réservez ces produits aux contribuables à TMI élevé (41-45%) et limitez l'investissement à 5% de votre patrimoine</strong>.</p>
-      
-      <p>Pour calculer l'impact d'un investissement FIP/FCPI sur votre impôt global, utilisez notre simulateur d'impôt sur le revenu.</p>
-    \`
+      <p>Pour calculer l'impact sur votre impôt, utilisez notre simulateur d'impôt sur le revenu.</p>
+    `
   },
   {
     id: "gfi-foret-guide",
@@ -806,155 +603,56 @@ export const blogPosts: BlogPost[] = [
     authorRole: "Conseillère Patrimoniale",
     relatedTool: "droits-succession",
     metaTitle: "GFI Groupement Forestier 2025 : 75% d'Abattement Succession | Guide Complet",
-    metaDescription: "Investissez dans la forêt avec les GFI. Abattement de 75% sur les droits de succession + réduction d'impôt IR de 25%. Le guide complet de l'investissement forestier.",
-    content: \`
-      <h2>Qu'est-ce qu'un GFI (Groupement Forestier d'Investissement) ?</h2>
-      <p>Un <strong>GFI</strong> est une société civile qui détient et gère des forêts. En achetant des parts de GFI, vous devenez indirectement propriétaire de parcelles forestières sans avoir à gérer vous-même l'exploitation du bois.</p>
-      
-      <p>C'est la version "pierre-papier" de l'investissement forestier : accessible dès quelques milliers d'euros, géré par des professionnels, et bénéficiant d'une fiscalité exceptionnelle.</p>
+    metaDescription: "Investissez dans la forêt avec les GFI. Abattement de 75% sur les droits de succession + réduction d'impôt IR de 25%. Guide complet.",
+    content: `
+      <h2>Qu'est-ce qu'un GFI ?</h2>
+      <p>Un <strong>GFI (Groupement Forestier d'Investissement)</strong> est une société civile qui détient et gère des forêts. En achetant des parts, vous devenez indirectement propriétaire de parcelles forestières.</p>
 
       <h2>L'avantage fiscal n°1 : la transmission successorale</h2>
-      <p>L'atout majeur des GFI réside dans leur <strong>régime successoral ultra-favorable</strong> :</p>
-
+      
       <h3>Abattement de 75% sur les droits de succession</h3>
-      <p>Les parts de GFI bénéficient d'un abattement de <strong>75% sur leur valeur</strong> pour le calcul des droits de succession et donation, sous conditions :</p>
+      <p>Les parts de GFI bénéficient d'un abattement de <strong>75% sur leur valeur</strong> pour le calcul des droits de succession.</p>
+
+      <p>Exemple : Transmission de parts de GFI de 200 000€</p>
       <ul>
-        <li>Engagement de gestion durable pendant 30 ans</li>
-        <li>Certification du groupement (PEFC ou FSC)</li>
-        <li>Conservation des parts pendant 2 ans minimum par les héritiers</li>
+        <li>Base taxable : 200 000€ × 25% = <strong>50 000€</strong></li>
+        <li>Au lieu de 200 000€ en actifs classiques</li>
       </ul>
-
-      <blockquote>
-        <p>Exemple : Transmission de parts de GFI d'une valeur de 200 000€</p>
-        <ul>
-          <li>Base taxable : 200 000€ × 25% = <strong>50 000€</strong></li>
-          <li>Au lieu de 200 000€ en actifs classiques</li>
-          <li>Économie de droits de succession : ~30 000€ à ~60 000€ selon le lien de parenté</li>
-        </ul>
-      </blockquote>
-
-      <h3>Comparaison avec d'autres actifs</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Actif</th>
-            <th>Abattement succession</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>GFI / Forêt</td>
-            <td><strong>75%</strong></td>
-          </tr>
-          <tr>
-            <td>Assurance-vie (< 70 ans)</td>
-            <td>152 500€ par bénéficiaire</td>
-          </tr>
-          <tr>
-            <td>Immobilier classique</td>
-            <td>0%</td>
-          </tr>
-          <tr>
-            <td>Comptes bancaires</td>
-            <td>0%</td>
-          </tr>
-        </tbody>
-      </table>
 
       <h2>L'avantage fiscal n°2 : la réduction d'impôt IR</h2>
-      <p>L'acquisition de parts de GFI ouvre droit à une <strong>réduction d'impôt sur le revenu</strong> de :</p>
-      <ul>
-        <li><strong>18%</strong> du montant investi (taux standard)</li>
-        <li>Jusqu'à <strong>25%</strong> pour certains GFI labellisés</li>
-      </ul>
+      <p>L'acquisition de parts ouvre droit à une réduction de <strong>18% à 25%</strong> du montant investi.</p>
 
       <h3>Plafonds</h3>
       <ul>
-        <li>Célibataire : investissement plafonné à 50 000€ → réduction max 9 000€ (ou 12 500€)</li>
-        <li>Couple : investissement plafonné à 100 000€ → réduction max 18 000€ (ou 25 000€)</li>
+        <li>Célibataire : 50 000€ max → réduction max 12 500€</li>
+        <li>Couple : 100 000€ max → réduction max 25 000€</li>
       </ul>
-
-      <p>Cette réduction entre dans le plafond des niches fiscales de 10 000€.</p>
 
       <h2>L'avantage fiscal n°3 : l'IFI</h2>
-      <p>Les parts de GFI sont <strong>exonérées d'IFI (Impôt sur la Fortune Immobilière)</strong> à hauteur de 75% de leur valeur, sous les mêmes conditions que pour les successions.</p>
+      <p>Les parts de GFI sont <strong>exonérées d'IFI à 75%</strong>.</p>
 
-      <h2>Le rendement : modeste mais stable</h2>
-      <p>Le rendement des GFI est composé de :</p>
-      <ul>
-        <li><strong>Revenus du bois</strong> : distribution annuelle issue de la vente de bois (0.5% à 2% par an)</li>
-        <li><strong>Valorisation du foncier</strong> : la valeur des forêts françaises augmente de 1% à 3% par an en moyenne</li>
-      </ul>
-
-      <p><strong>Rendement total estimé</strong> : 1.5% à 3% par an, hors avantages fiscaux.</p>
-
-      <blockquote>
-        <p>Important : Le rendement intrinsèque est faible. L'intérêt du GFI réside principalement dans les avantages fiscaux (IR et succession), pas dans le rendement courant.</p>
-      </blockquote>
+      <h2>Le rendement</h2>
+      <p>Rendement total estimé : <strong>1.5% à 3% par an</strong>. L'intérêt est principalement fiscal.</p>
 
       <h2>Profil d'investisseur idéal</h2>
-      <p>Les GFI sont particulièrement adaptés pour :</p>
       <ul>
-        <li><strong>Préparation de la succession</strong> : vous souhaitez transmettre à vos enfants/héritiers en réduisant drastiquement les droits</li>
-        <li><strong>Réduction d'IFI</strong> : vous êtes assujetti à l'IFI et cherchez à réduire votre base taxable</li>
-        <li><strong>Diversification patrimoniale</strong> : vous voulez un actif décorrélé des marchés financiers</li>
-        <li><strong>Sensibilité écologique</strong> : vous souhaitez investir dans un actif "vert" et durable</li>
+        <li>Préparation de la succession</li>
+        <li>Réduction d'IFI</li>
+        <li>Diversification écologique</li>
       </ul>
 
-      <h2>Comment investir en GFI ?</h2>
-      
-      <h3>Les principaux gérants</h3>
+      <h2>Les risques</h2>
       <ul>
-        <li><strong>France Valley</strong> : leader du marché, large gamme de GFI</li>
-        <li><strong>Fiforest</strong> : spécialiste de la forêt depuis 30 ans</li>
-        <li><strong>Groupama</strong> : GFI via le réseau bancaire</li>
-        <li><strong>Amundi</strong> : offre grand public</li>
+        <li><strong>Liquidité limitée</strong> : revente peut prendre plusieurs mois</li>
+        <li><strong>Risques climatiques</strong> : tempêtes, incendies</li>
+        <li><strong>Rendement faible</strong> hors avantages fiscaux</li>
       </ul>
-
-      <h3>Ticket d'entrée</h3>
-      <p>Généralement entre <strong>5 000€ et 10 000€</strong> minimum.</p>
-
-      <h3>Frais</h3>
-      <ul>
-        <li>Frais d'entrée : 5% à 10%</li>
-        <li>Frais de gestion : 0.5% à 1.5% par an</li>
-      </ul>
-
-      <h2>Les risques à connaître</h2>
-      <ul>
-        <li><strong>Liquidité limitée</strong> : la revente de parts peut prendre plusieurs mois (marché secondaire peu actif)</li>
-        <li><strong>Risques climatiques</strong> : tempêtes, incendies, maladies des arbres peuvent impacter la valeur</li>
-        <li><strong>Horizon long terme</strong> : investissement à conserver 10-20 ans minimum pour amortir les frais d'entrée</li>
-        <li><strong>Rendement faible</strong> : sans les avantages fiscaux, le rendement est inférieur à l'inflation</li>
-      </ul>
-
-      <h2>Stratégie d'optimisation successorale</h2>
-      <p>Pour maximiser l'avantage, combinez plusieurs outils :</p>
-
-      <ol>
-        <li><strong>GFI pour l'abattement 75%</strong> sur la partie à transmettre</li>
-        <li><strong>Assurance-vie</strong> pour les 152 500€ par bénéficiaire (versements avant 70 ans)</li>
-        <li><strong>Donation-partage</strong> tous les 15 ans pour utiliser les abattements</li>
-        <li><strong>Démembrement</strong> de propriété pour réduire la base taxable</li>
-      </ol>
-
-      <blockquote>
-        <p>Exemple complet : Un patrimoine de 1 M€ à transmettre</p>
-        <ul>
-          <li>300 000€ en GFI → base taxable : 75 000€</li>
-          <li>300 000€ en assurance-vie → exonéré (< 152 500€ par enfant pour 2 enfants)</li>
-          <li>400 000€ en donation-partage → abattement de 200 000€ (2 × 100 000€)</li>
-          <li>Base taxable totale : 275 000€ au lieu de 1 000 000€</li>
-        </ul>
-      </blockquote>
 
       <h2>Conclusion</h2>
-      <p>Les GFI sont un <strong>outil de transmission patrimoniale exceptionnel</strong> grâce à l'abattement de 75% sur les droits de succession. En revanche, le rendement courant est faible et la liquidité limitée.</p>
-      
-      <p>Recommandation : <strong>intégrez les GFI dans une stratégie successorale globale si vous avez un patrimoine important à transmettre</strong>.</p>
+      <p>Les GFI sont un outil de transmission patrimoniale exceptionnel grâce à l'abattement de 75%. Intégrez-les dans une stratégie successorale globale.</p>
       
       <p>Pour calculer l'impact sur vos droits de succession, utilisez notre simulateur dédié.</p>
-    \`
+    `
   },
   {
     id: "crypto-guide-2025",
@@ -969,153 +667,76 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "simulateur-interets-composes",
     metaTitle: "Guide Crypto 2025 : Investir en Bitcoin et Ethereum en France | Fiscalité & Stratégie",
     metaDescription: "Découvrez comment investir en cryptomonnaies en France. Bitcoin, Ethereum : fonctionnement, fiscalité (30% PFU), sécurité et stratégie. Guide complet débutant.",
-    content: \`
+    content: `
       <h2>Qu'est-ce qu'une cryptomonnaie ?</h2>
-      <p>Une <strong>cryptomonnaie</strong> est une monnaie numérique décentralisée qui fonctionne sur une <strong>blockchain</strong> (chaîne de blocs). Contrairement aux monnaies traditionnelles (euro, dollar), aucune banque centrale ne la contrôle. Les transactions sont vérifiées par un réseau d'ordinateurs répartis dans le monde entier.</p>
+      <p>Une <strong>cryptomonnaie</strong> est une monnaie numérique décentralisée qui fonctionne sur une <strong>blockchain</strong>. Contrairement aux monnaies traditionnelles, aucune banque centrale ne la contrôle.</p>
 
       <h3>Les principales cryptomonnaies</h3>
       <ul>
-        <li><strong>Bitcoin (BTC)</strong> : la première et la plus connue, souvent appelée "l'or numérique". Réserve de valeur décentralisée avec une offre limitée à 21 millions d'unités.</li>
-        <li><strong>Ethereum (ETH)</strong> : plateforme permettant d'exécuter des "smart contracts" (contrats intelligents). Base de nombreuses applications décentralisées (DeFi, NFT).</li>
-        <li><strong>Stablecoins (USDT, USDC)</strong> : cryptomonnaies indexées sur le dollar, utilisées pour le trading et les transferts.</li>
+        <li><strong>Bitcoin (BTC)</strong> : la première, souvent appelée "l'or numérique". Offre limitée à 21 millions.</li>
+        <li><strong>Ethereum (ETH)</strong> : plateforme pour smart contracts et applications décentralisées.</li>
       </ul>
 
       <h2>Pourquoi investir en crypto ?</h2>
       
       <h3>Les arguments "pour"</h3>
       <ul>
-        <li><strong>Performance historique exceptionnelle</strong> : Bitcoin a été l'actif le plus performant de la décennie 2010-2020</li>
-        <li><strong>Décentralisation</strong> : pas de dépendance aux banques ou gouvernements</li>
-        <li><strong>Adoption croissante</strong> : de plus en plus d'entreprises et d'institutions investissent (BlackRock, Fidelity...)</li>
-        <li><strong>Offre limitée (Bitcoin)</strong> : 21 millions max, potentiellement déflationniste</li>
-        <li><strong>Liquidité 24/7</strong> : marchés ouverts en permanence</li>
+        <li>Performance historique exceptionnelle</li>
+        <li>Décentralisation</li>
+        <li>Adoption croissante par les institutionnels</li>
+        <li>Liquidité 24/7</li>
       </ul>
 
       <h3>Les arguments "contre"</h3>
       <ul>
-        <li><strong>Volatilité extrême</strong> : chutes de 50-80% possibles en quelques mois</li>
-        <li><strong>Risque réglementaire</strong> : les gouvernements peuvent durcir les règles</li>
-        <li><strong>Risque de perte totale</strong> : piratage, perte de clés privées, projets frauduleux</li>
-        <li><strong>Impact environnemental</strong> : le minage consomme beaucoup d'énergie (surtout Bitcoin)</li>
-        <li><strong>Pas de valeur intrinsèque</strong> : la valeur repose uniquement sur la confiance</li>
+        <li>Volatilité extrême (chutes de 50-80% possibles)</li>
+        <li>Risque réglementaire</li>
+        <li>Risque de perte totale (piratage, perte de clés)</li>
       </ul>
 
       <h2>Comment acheter des cryptomonnaies en France ?</h2>
       
-      <h3>Étape 1 : Choisir une plateforme d'échange</h3>
-      <p>Privilégiez les plateformes <strong>enregistrées auprès de l'AMF</strong> (PSAN - Prestataire de Services sur Actifs Numériques) :</p>
+      <h3>Plateformes recommandées (PSAN)</h3>
       <ul>
-        <li><strong>Coinhouse</strong> : plateforme française, service client en français</li>
+        <li><strong>Coinhouse</strong> : française, service client FR</li>
         <li><strong>Bitpanda</strong> : européenne, interface simple</li>
-        <li><strong>Binance</strong> : la plus grande mondiale, mais régulation incertaine en France</li>
-        <li><strong>Kraken</strong> : américaine, réputée pour sa sécurité</li>
+        <li><strong>Kraken</strong> : réputée pour sa sécurité</li>
       </ul>
-
-      <h3>Étape 2 : Vérifier son identité (KYC)</h3>
-      <p>Toutes les plateformes régulées exigent une vérification d'identité (pièce d'identité, justificatif de domicile). Processus obligatoire pour lutter contre le blanchiment.</p>
-
-      <h3>Étape 3 : Déposer des euros</h3>
-      <p>Virement bancaire SEPA (gratuit, 1-2 jours) ou carte bancaire (instantané mais frais de 1-3%).</p>
-
-      <h3>Étape 4 : Acheter</h3>
-      <p>Placez un ordre d'achat pour la cryptomonnaie souhaitée. Les frais varient de 0.1% à 1.5% selon les plateformes.</p>
 
       <h2>Sécuriser ses cryptomonnaies</h2>
-      <p><strong>Règle d'or</strong> : "Not your keys, not your coins" (Pas vos clés, pas vos coins)</p>
+      <p><strong>Règle d'or</strong> : "Not your keys, not your coins"</p>
 
-      <h3>Option 1 : Laisser sur la plateforme (déconseillé pour gros montants)</h3>
-      <p>Simple mais risqué : si la plateforme est piratée ou fait faillite (ex: FTX en 2022), vous perdez tout.</p>
-
-      <h3>Option 2 : Portefeuille matériel (hardware wallet)</h3>
-      <p>Un appareil physique qui stocke vos clés privées hors ligne. Solutions recommandées :</p>
+      <p>Solutions recommandées :</p>
       <ul>
-        <li><strong>Ledger</strong> (français) : Nano S Plus (~79€), Nano X (~149€)</li>
-        <li><strong>Trezor</strong> : Model One (~69€), Model T (~219€)</li>
+        <li><strong>Ledger</strong> (français) : Nano S Plus (~79€)</li>
+        <li><strong>Trezor</strong> : Model One (~69€)</li>
       </ul>
 
-      <h3>Règles de sécurité essentielles</h3>
+      <h2>La fiscalité en France</h2>
+      <p>Les plus-values sont imposées au <strong>PFU de 30%</strong> lors de la conversion en euros.</p>
+
+      <p>Les échanges crypto-crypto ne sont <strong>pas imposables</strong>.</p>
+
+      <h2>Stratégie d'investissement</h2>
       <ul>
-        <li>Notez votre phrase de récupération (24 mots) sur papier, jamais numériquement</li>
-        <li>Stockez cette phrase dans un lieu sûr (coffre-fort)</li>
-        <li>Activez l'authentification à deux facteurs (2FA) partout</li>
-        <li>Méfiez-vous des arnaques : personne ne doublera vos bitcoins !</li>
-      </ul>
-
-      <h2>La fiscalité des cryptomonnaies en France</h2>
-      <p>En France, les plus-values sur cryptomonnaies sont imposées au <strong>Prélèvement Forfaitaire Unique (PFU) de 30%</strong> (12.8% IR + 17.2% PS).</p>
-
-      <h3>Fait générateur</h3>
-      <p>L'impôt est dû uniquement lors de la <strong>conversion en monnaie fiduciaire</strong> (euro, dollar) ou lors d'un <strong>achat de bien/service</strong>.</p>
-      
-      <p>Les échanges crypto-crypto (ex: Bitcoin vers Ethereum) ne sont <strong>pas imposables</strong>.</p>
-
-      <h3>Calcul de la plus-value</h3>
-      <p>La formule est complexe car elle prend en compte l'ensemble du portefeuille :</p>
-      <blockquote>
-        <p>Plus-value = Prix de cession - (Prix d'acquisition total × Prix de cession / Valeur totale du portefeuille)</p>
-      </blockquote>
-
-      <p>En pratique, utilisez un logiciel de suivi fiscal (Waltio, Koinly, CoinTracking) pour calculer automatiquement.</p>
-
-      <h3>Déclaration</h3>
-      <ul>
-        <li>Formulaire 2086 : déclaration des plus-values crypto</li>
-        <li>Formulaire 3916-bis : déclaration des comptes sur plateformes étrangères</li>
-      </ul>
-
-      <h3>Exemple de calcul</h3>
-      <blockquote>
-        <p>Vous avez acheté 1 BTC à 20 000€. Le cours monte à 50 000€. Vous vendez 0.5 BTC pour 25 000€.</p>
-        <ul>
-          <li>Plus-value imposable : 25 000€ - (20 000€ × 25 000€ / 50 000€) = 25 000€ - 10 000€ = 15 000€</li>
-          <li>Impôt dû : 15 000€ × 30% = 4 500€</li>
-        </ul>
-      </blockquote>
-
-      <h2>Stratégie d'investissement pour débutant</h2>
-      
-      <h3>Règle n°1 : N'investissez que ce que vous pouvez perdre</h3>
-      <p>Les cryptos peuvent perdre 80% de leur valeur en quelques mois. Limitez votre exposition à <strong>1% à 5% de votre patrimoine total</strong>.</p>
-
-      <h3>Règle n°2 : DCA (Dollar Cost Averaging)</h3>
-      <p>Investissez une somme fixe chaque semaine ou chaque mois, quelle que soit l'évolution du cours. Cela lisse votre prix d'achat moyen.</p>
-
-      <h3>Règle n°3 : HODL (Hold On for Dear Life)</h3>
-      <p>Une fois acheté, ne regardez pas les cours tous les jours. Les crypto-investisseurs qui ont le mieux performé sont ceux qui ont conservé sur le long terme (5-10 ans).</p>
-
-      <h3>Règle n°4 : Diversifiez</h3>
-      <p>Ne mettez pas tout sur un seul projet. Une allocation type pour débutant :</p>
-      <ul>
-        <li>60-70% Bitcoin</li>
-        <li>20-30% Ethereum</li>
-        <li>0-10% Altcoins (projets plus risqués)</li>
+        <li><strong>N'investissez que 1% à 5%</strong> de votre patrimoine</li>
+        <li><strong>DCA</strong> : investissez régulièrement</li>
+        <li><strong>HODL</strong> : conservez sur le long terme</li>
+        <li><strong>Diversifiez</strong> : 60-70% Bitcoin, 20-30% Ethereum</li>
       </ul>
 
       <h2>L'asymétrie du risque</h2>
-      <p>L'argument clé pour une petite allocation crypto :</p>
-      <blockquote>
-        <p>Si vous investissez 2% de votre patrimoine en Bitcoin :</p>
-        <ul>
-          <li>Scénario catastrophe (-100%) : vous perdez 2% de votre patrimoine</li>
-          <li>Scénario favorable (×5) : vous gagnez 8% de votre patrimoine</li>
-        </ul>
-        <p>Le risque est limité, le potentiel de gain est élevé.</p>
-      </blockquote>
+      <p>Si vous investissez 2% de votre patrimoine :</p>
+      <ul>
+        <li>Scénario catastrophe (-100%) : vous perdez 2%</li>
+        <li>Scénario favorable (×5) : vous gagnez 8%</li>
+      </ul>
 
       <h2>Conclusion</h2>
-      <p>Les cryptomonnaies sont une <strong>classe d'actifs à haut risque / haut potentiel</strong>. Pour un investisseur prudent, une allocation de 1% à 5% du patrimoine permet de profiter du potentiel de hausse tout en limitant l'impact d'une éventuelle chute.</p>
+      <p>Les cryptomonnaies sont une classe d'actifs à haut risque / haut potentiel. Une allocation de 1% à 5% permet de profiter du potentiel tout en limitant l'impact d'une chute.</p>
       
-      <p>Recommandations :</p>
-      <ul>
-        <li>Commencez par Bitcoin et Ethereum uniquement</li>
-        <li>Utilisez une plateforme régulée en France</li>
-        <li>Sécurisez vos cryptos sur un hardware wallet</li>
-        <li>Investissez régulièrement (DCA) plutôt qu'en une fois</li>
-        <li>Tenez un registre de vos transactions pour les impôts</li>
-      </ul>
-      
-      <p>Pour simuler la croissance potentielle de votre investissement crypto sur le long terme, utilisez notre calculateur d'intérêts composés avec différents scénarios de rendement.</p>
-    \`
+      <p>Pour simuler la croissance potentielle, utilisez notre calculateur d'intérêts composés.</p>
+    `
   }
 ];
 
