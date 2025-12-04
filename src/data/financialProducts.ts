@@ -1,3 +1,9 @@
+export interface CaseStudy {
+  title: string;
+  scenario: string;
+  figures: string;
+}
+
 export interface FinancialProduct {
   id: string;
   title: string;
@@ -6,10 +12,11 @@ export interface FinancialProduct {
   keyBenefits: string[];
   riskLevel: number; // 1 à 7
   idealFor: string;
-  category: "fiscalite" | "retraite" | "performance" | "immobilier";
+  category: "fiscalite" | "retraite" | "performance" | "immobilier" | "bourse" | "alternatif";
   iconName: string;
   iconColor: string;
   iconBg: string;
+  caseStudy?: CaseStudy;
 }
 
 export const financialProducts: FinancialProduct[] = [
@@ -30,7 +37,12 @@ export const financialProducts: FinancialProduct[] = [
     category: "performance",
     iconName: "Shield",
     iconColor: "text-violet-500",
-    iconBg: "bg-violet-500/10"
+    iconBg: "bg-violet-500/10",
+    caseStudy: {
+      title: "Transmission optimisée",
+      scenario: "Un parent verse 150 000€ sur son assurance-vie avant 70 ans, désignant son enfant unique comme bénéficiaire.",
+      figures: "Capital transmis hors succession : 150 000€ | Droits de succession économisés : ~29 000€"
+    }
   },
   {
     id: "per",
@@ -49,7 +61,12 @@ export const financialProducts: FinancialProduct[] = [
     category: "retraite",
     iconName: "PiggyBank",
     iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10"
+    iconBg: "bg-emerald-500/10",
+    caseStudy: {
+      title: "Économie d'impôt maximale",
+      scenario: "Marie, TMI 41%, verse 10 000€ sur son PER en décembre.",
+      figures: "Versement : 10 000€ | Économie d'impôt immédiate : 4 100€ | Coût réel : 5 900€"
+    }
   },
   {
     id: "girardin",
@@ -68,7 +85,12 @@ export const financialProducts: FinancialProduct[] = [
     category: "fiscalite",
     iconName: "Palmtree",
     iconColor: "text-blue-500",
-    iconBg: "bg-blue-500/10"
+    iconBg: "bg-blue-500/10",
+    caseStudy: {
+      title: "Effacement total de l'impôt",
+      scenario: "Marc doit 12 000€ d'impôts. Il investit 10 000€ en Girardin avec rendement de 15%.",
+      figures: "Investissement : 10 000€ | Réduction d'impôt : 11 500€ | Gain net : 1 500€"
+    }
   },
   {
     id: "private-equity",
@@ -87,7 +109,12 @@ export const financialProducts: FinancialProduct[] = [
     category: "performance",
     iconName: "Rocket",
     iconColor: "text-orange-500",
-    iconBg: "bg-orange-500/10"
+    iconBg: "bg-orange-500/10",
+    caseStudy: {
+      title: "Croissance sur 7 ans",
+      scenario: "Investissement de 50 000€ dans un fonds de Private Equity diversifié.",
+      figures: "Capital investi : 50 000€ | Valorisation après 7 ans (×2.5) : 125 000€ | TRI annuel : ~14%"
+    }
   },
   {
     id: "compte-titres",
@@ -106,7 +133,12 @@ export const financialProducts: FinancialProduct[] = [
     category: "performance",
     iconName: "LineChart",
     iconColor: "text-indigo-500",
-    iconBg: "bg-indigo-500/10"
+    iconBg: "bg-indigo-500/10",
+    caseStudy: {
+      title: "Diversification mondiale",
+      scenario: "Investissement régulier de 500€/mois sur ETF S&P 500 pendant 10 ans.",
+      figures: "Capital versé : 60 000€ | Valorisation (hyp. 10%/an) : 102 000€ | Plus-value : 42 000€"
+    }
   },
   {
     id: "scpi",
@@ -125,7 +157,181 @@ export const financialProducts: FinancialProduct[] = [
     category: "immobilier",
     iconName: "Building2",
     iconColor: "text-amber-500",
-    iconBg: "bg-amber-500/10"
+    iconBg: "bg-amber-500/10",
+    caseStudy: {
+      title: "Revenus passifs",
+      scenario: "Investissement de 50 000€ en SCPI diversifiées à 5% de rendement.",
+      figures: "Capital investi : 50 000€ | Revenus annuels bruts : 2 500€ | Revenus mensuels : ~208€"
+    }
+  },
+  // Nouveaux produits
+  {
+    id: "etf-world",
+    title: "ETF (Trackers)",
+    shortDescription: "Investissez dans les 1600 plus grandes entreprises mondiales en un seul clic.",
+    fullDescription: "Un ETF (Exchange Traded Fund) est un fonds qui réplique la performance d'un indice (comme le CAC 40 ou le S&P 500). C'est la solution la plus efficace et la moins chère pour diversifier votre portefeuille boursier sans avoir à choisir les actions une par une. Les frais de gestion sont ultra-faibles (souvent inférieurs à 0.3% par an) et la performance historique surpasse la majorité des gérants actifs.",
+    keyBenefits: [
+      "Frais de gestion ultra-faibles (souvent < 0.3%/an)",
+      "Diversification instantanée sur le monde entier",
+      "Performance historique supérieure à 90% des gérants actifs",
+      "Éligible au PEA pour les ETF européens",
+      "Liquidité immédiate : achat/vente en temps réel"
+    ],
+    riskLevel: 3,
+    idealFor: "Investisseurs long terme, PEA, Assurance-Vie",
+    category: "bourse",
+    iconName: "TrendingUp",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10",
+    caseStudy: {
+      title: "La puissance du marché",
+      scenario: "Investissement de 200€/mois pendant 15 ans sur un ETF MSCI World.",
+      figures: "Capital versé : 36 000€ | Capital final (hyp. 7%/an) : 62 000€ | Plus-value : 26 000€"
+    }
+  },
+  {
+    id: "crowdfunding-immo",
+    title: "Crowdfunding Immobilier",
+    shortDescription: "Financez des promoteurs immobiliers sur des durées courtes (12-24 mois) avec des rendements élevés.",
+    fullDescription: "Devenez la banque du promoteur. Vous prêtez de l'argent pour financer la construction ou la rénovation d'un immeuble. En échange, vous récupérez votre capital + intérêts à la fin du projet. C'est de l'immobilier sans les contraintes de gestion. Les rendements sont attractifs (8% à 12% brut) mais le risque existe en cas de défaillance du promoteur.",
+    keyBenefits: [
+      "Rendements élevés (8% à 12% brut annuel)",
+      "Horizon court terme (12 à 24 mois)",
+      "Ticket d'entrée faible (souvent dès 1 000€)",
+      "Pas de gestion locative",
+      "Diversification possible sur plusieurs projets"
+    ],
+    riskLevel: 4,
+    idealFor: "Dynamiser de la trésorerie sur du court terme",
+    category: "immobilier",
+    iconName: "HardHat",
+    iconColor: "text-yellow-600",
+    iconBg: "bg-yellow-500/10",
+    caseStudy: {
+      title: "Opération Marchand de Biens",
+      scenario: "Investissement de 5 000€ à 10% sur 18 mois dans un projet de rénovation.",
+      figures: "Capital investi : 5 000€ | Intérêts : 750€ | Capital récupéré : 5 750€"
+    }
+  },
+  {
+    id: "fip-fcpi",
+    title: "FIP / FCPI",
+    shortDescription: "Soutenez l'innovation et les PME françaises en échange d'une réduction d'impôt immédiate.",
+    fullDescription: "Les Fonds d'Investissement de Proximité (FIP) et Fonds Communs de Placement dans l'Innovation (FCPI) permettent d'investir dans des sociétés non cotées. En contrepartie du risque et du blocage des fonds (5 à 10 ans), l'État offre une réduction d'impôt de 25% du montant investi (voire 30% en Corse/Outre-mer). Les plus-values sont exonérées d'impôt à la sortie.",
+    keyBenefits: [
+      "Réduction d'impôt de 25% (voire 30% en Corse/Outre-mer)",
+      "Exonération des plus-values à la sortie (hors prélèvements sociaux)",
+      "Investissement dans l'économie réelle et l'innovation",
+      "Plafond annuel de 12 000€ (24 000€ pour un couple)",
+      "Soutien aux PME et startups françaises"
+    ],
+    riskLevel: 5,
+    idealFor: "Impôt sur le revenu > 3 000€, horizon long terme",
+    category: "fiscalite",
+    iconName: "Lightbulb",
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-500/10",
+    caseStudy: {
+      title: "Réduction One-Shot",
+      scenario: "Investissement de 4 000€ dans un FCPI en décembre.",
+      figures: "Investissement : 4 000€ | Réduction d'impôt immédiate : 1 000€ (25%) | Coût réel : 3 000€"
+    }
+  },
+  {
+    id: "loi-malraux",
+    title: "Loi Malraux",
+    shortDescription: "Rénovez le patrimoine historique français et déduisez jusqu'à 30% des travaux de vos impôts.",
+    fullDescription: "Dispositif dédié à la rénovation d'immeubles situés dans des secteurs sauvegardés ou des Quartiers Anciens Dégradés. La réduction d'impôt est très puissante car elle n'entre pas dans le plafonnement des niches fiscales de 10 000€. Vous pouvez déduire jusqu'à 30% du montant des travaux de restauration de votre impôt sur le revenu.",
+    keyBenefits: [
+      "Réduction d'impôt jusqu'à 30% du montant des travaux",
+      "Hors plafonnement des niches fiscales (10 000€)",
+      "Constitution d'un patrimoine immobilier de prestige",
+      "Valorisation patrimoniale sur le long terme",
+      "Contribution à la préservation du patrimoine français"
+    ],
+    riskLevel: 3,
+    idealFor: "Très forte fiscalité (> 10 000€/an d'impôt)",
+    category: "immobilier",
+    iconName: "Landmark",
+    iconColor: "text-stone-600",
+    iconBg: "bg-stone-500/10",
+    caseStudy: {
+      title: "Rénovation Centre-Ville",
+      scenario: "Opération Malraux à 300 000€ dont 100 000€ de travaux éligibles.",
+      figures: "Travaux éligibles : 100 000€ | Réduction d'impôt : 30 000€ | Étalée sur 1 à 4 ans"
+    }
+  },
+  {
+    id: "gfi-forets",
+    title: "GFI (Groupement Forestier)",
+    shortDescription: "L'investissement vert par excellence. Achetez des parts de forêts pour transmettre sans frais.",
+    fullDescription: "Le GFI permet d'investir dans le bois et les forêts. C'est un actif décorrélé des marchés financiers qui offre un rendement modeste (1% à 3%) mais une fiscalité successorale imbattable : abattement de 75% sur l'assiette taxable des droits de succession. Idéal pour la transmission patrimoniale et la diversification écologique.",
+    keyBenefits: [
+      "Outil de transmission ultime (abattement 75% droits de succession)",
+      "Réduction d'impôt IR de 18% à 25% à l'entrée",
+      "Actif tangible et écologique",
+      "Décorrélation totale des marchés financiers",
+      "Rendement stable sur le très long terme"
+    ],
+    riskLevel: 2,
+    idealFor: "Transmission de patrimoine et diversification écologique",
+    category: "alternatif",
+    iconName: "TreePine",
+    iconColor: "text-green-600",
+    iconBg: "bg-green-500/10",
+    caseStudy: {
+      title: "Transmission optimisée",
+      scenario: "Transmission d'un patrimoine forestier de 100 000€ à ses enfants.",
+      figures: "Valeur transmise : 100 000€ | Base taxable : 25 000€ (après abattement 75%) | Économie : ~15 000€"
+    }
+  },
+  {
+    id: "or-metaux",
+    title: "Or & Métaux Précieux",
+    shortDescription: "La valeur refuge ultime pour protéger votre portefeuille contre l'inflation et les crises.",
+    fullDescription: "Investir dans l'or (via ETC, ETF ou physique) permet d'avoir une assurance contre les chocs de marché. L'or a tendance à s'apprécier quand les monnaies fiduciaires perdent de la valeur ou en période de crise géopolitique. C'est l'actif de protection par excellence, recommandé à hauteur de 5% à 10% d'un portefeuille diversifié.",
+    keyBenefits: [
+      "Valeur refuge historique depuis 5000 ans",
+      "Décorrélation des marchés actions",
+      "Protection contre l'inflation monétaire",
+      "Actif tangible et universel",
+      "Liquidité mondiale instantanée"
+    ],
+    riskLevel: 3,
+    idealFor: "Sécurisation (5 à 10% du patrimoine)",
+    category: "alternatif",
+    iconName: "Gem",
+    iconColor: "text-yellow-500",
+    iconBg: "bg-yellow-500/10",
+    caseStudy: {
+      title: "Protection de crise",
+      scenario: "En 2008 et 2022, quand les actions chutaient de 30-40%...",
+      figures: "L'or a joué son rôle d'amortisseur : +5% en 2008, +0% en 2022 vs -20% pour les actions"
+    }
+  },
+  {
+    id: "cryptomonnaies",
+    title: "Cryptomonnaies (Bitcoin/ETH)",
+    shortDescription: "Une nouvelle classe d'actifs numériques pour viser une performance explosive.",
+    fullDescription: "Actifs numériques décentralisés basés sur la Blockchain. Bitcoin est souvent vu comme 'l'or numérique', tandis qu'Ethereum est la plateforme de référence pour les applications décentralisées. Classe d'actif très volatile mais avec le plus fort potentiel de performance de la décennie. À réserver à une petite partie du patrimoine (1% à 5%).",
+    keyBenefits: [
+      "Potentiel de gain très élevé",
+      "Actif décentralisé hors système bancaire",
+      "Liquidité immédiate (24h/24, 7j/7)",
+      "Transparence totale via la Blockchain",
+      "Adoption croissante par les institutionnels"
+    ],
+    riskLevel: 7,
+    idealFor: "Diversification agressive (1 à 5% max du patrimoine)",
+    category: "alternatif",
+    iconName: "Bitcoin",
+    iconColor: "text-orange-500",
+    iconBg: "bg-orange-500/10",
+    caseStudy: {
+      title: "L'asymétrie du risque",
+      scenario: "Allocation de 2% de son patrimoine (2 000€ sur 100 000€) en Bitcoin.",
+      figures: "Risque maximum : -2% du patrimoine | Potentiel si ×5 : +8% du patrimoine total"
+    }
   }
 ];
 

@@ -27,7 +27,12 @@ export default defineConfig(({ mode }) => ({
         "/blog",
         "/blog/per-plan-epargne-retraite-guide-2025",
         "/blog/droits-succession-guide-complet",
-        "/blog/girardin-industriel-defiscalisation-guide"
+        "/blog/girardin-industriel-defiscalisation-guide",
+        "/blog/guide-etf-trackers-investir-2025",
+        "/blog/crowdfunding-immobilier-rendements-guide",
+        "/blog/fip-fcpi-reduction-impots-pme-innovation",
+        "/blog/investir-foret-gfi-groupement-forestier",
+        "/blog/cryptomonnaies-bitcoin-guide-debutant-2025"
       ],
       exclude: ["/onboarding", "/dashboard", "/catalogue", "/simulations", "/settings", "/tools/*", "/academie-pro"],
       changefreq: "weekly",
