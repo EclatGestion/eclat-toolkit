@@ -5,6 +5,7 @@ import { financialProducts } from "@/data/financialProducts";
 import { ProductCard } from "@/components/academy/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
+import eclatLogo from "@/assets/eclat-logo.png";
 
 // FAQ Data for both UI and Schema
 const faqData = [
@@ -130,9 +131,7 @@ export default function Landing() {
       >
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#2D60FF] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">É</span>
-            </div>
+            <img src={eclatLogo} alt="Éclat logo" className="w-8 h-8" />
             <span className="text-xl font-bold text-gray-900">Éclat Toolkit</span>
           </div>
           <div className="flex items-center gap-3">
