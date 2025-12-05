@@ -74,8 +74,12 @@ serve(async (req) => {
     let planType = null;
 
     if (hasActiveSub) {
-      const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      const subscription = validSubscriptions[0];
+      // Use trial_end for trialing subscriptions, current_period_end for active
+      const endTimestamp = subscription.status === "trialing" && subscription.trial_end 
+        ? subscription.trial_end 
+        : subscription.current_period_end;
+      subscriptionEnd = endTimestamp ? new Date(endTimestamp * 1000).toISOString() : null;
       
       // Determine plan type based on interval
       const interval = subscription.items.data[0]?.price?.recurring?.interval;
