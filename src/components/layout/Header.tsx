@@ -2,6 +2,7 @@ import { Search, Moon, Sun, LogOut, Settings, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import eclatLogo from "@/assets/eclat-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -86,9 +87,7 @@ export function Header({ title }: HeaderProps) {
 
         {/* Mobile Title */}
         <div className="flex items-center gap-2 md:hidden">
-          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">É</span>
-          </div>
+          <img src={eclatLogo} alt="Éclat logo" className="w-8 h-8" />
           <span className="font-semibold text-foreground">{title}</span>
         </div>
 
