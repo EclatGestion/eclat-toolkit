@@ -161,6 +161,7 @@ export type Database = {
           email: string | null
           first_name: string | null
           id: string
+          is_premium: boolean | null
           last_name: string | null
           onboarding_completed: boolean | null
           phone: string | null
@@ -171,6 +172,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id: string
+          is_premium?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
@@ -181,6 +183,7 @@ export type Database = {
           email?: string | null
           first_name?: string | null
           id?: string
+          is_premium?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
           phone?: string | null
