@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt } from "lucide-react";
+import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
@@ -18,21 +18,30 @@ const MICRO_BIC_ABATTEMENT = 0.50;
 const AMORTISSEMENT_BATI_PART = 0.85; // 85% du bien est amortissable
 const AMORTISSEMENT_BATI_DUREE = 35; // 35 ans
 const AMORTISSEMENT_MEUBLES_DUREE = 7; // 7 ans
+const AMORTISSEMENT_TRAVAUX_DUREE = 10; // 10 ans pour travaux d'amélioration
 const PLAFOND_MICRO_FONCIER = 15000;
 const PLAFOND_MICRO_BIC = 77700;
+const PLAFOND_DEFICIT_FONCIER = 10700;
+const PLAFOND_DEFICIT_FONCIER_ENERGIE = 21400; // Doublé si travaux énergétiques
 
 interface ResultatLocationNue {
   loyersAnnuels: number;
+  chargesDeductibles: number;
+  travauxDeductibles: number;
   baseImposableMicro: number | null;
   baseImposableReel: number;
   baseImposable: number;
   regimeChoisi: "Micro-Foncier" | "Réel";
   impotTotal: number;
   cashflowNet: number;
+  deficitFoncier: number;
+  deficitImputeRevenuGlobal: number;
+  economieDeficitFoncier: number;
 }
 
 interface ResultatLMNP {
   loyersAnnuels: number;
+  chargesDeductibles: number;
   baseImposableMicro: number | null;
   baseImposableReel: number;
   baseImposable: number;
@@ -41,6 +50,7 @@ interface ResultatLMNP {
   cashflowNet: number;
   amortissementBati: number;
   amortissementMeubles: number;
+  amortissementTravaux: number;
   deficitReportable: number;
 }
 
@@ -61,6 +71,10 @@ export default function ComparateurLMNP() {
   // Section C: Profil Fiscal
   const [tmi, setTmi] = useState(30);
 
+  // Section D: Travaux
+  const [montantTravaux, setMontantTravaux] = useState(0);
+  const [typeTravaux, setTypeTravaux] = useState<"entretien" | "amelioration" | "energie">("entretien");
+
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 
@@ -68,27 +82,66 @@ export default function ComparateurLMNP() {
   const resultatLocationNue = useMemo((): ResultatLocationNue => {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
     const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion;
+    
+    // Travaux: entretien et énergie sont déductibles immédiatement en foncier
+    const travauxDeductibles = typeTravaux !== "amelioration" ? montantTravaux : 0;
 
     // Micro-Foncier (30% abattement si loyers < 15k€)
     const baseImposableMicro = loyersAnnuels <= PLAFOND_MICRO_FONCIER
       ? loyersAnnuels * (1 - MICRO_FONCIER_ABATTEMENT)
       : null;
 
-    // Réel Foncier
-    const baseImposableReel = Math.max(0, loyersAnnuels - chargesDeductibles);
+    // Réel Foncier (peut être négatif = déficit)
+    const resultatFoncier = loyersAnnuels - chargesDeductibles - travauxDeductibles;
+    const baseImposableReel = Math.max(0, resultatFoncier);
+    
+    // Déficit foncier
+    let deficitFoncier = 0;
+    let deficitImputeRevenuGlobal = 0;
+    let economieDeficitFoncier = 0;
+    
+    if (resultatFoncier < 0) {
+      deficitFoncier = Math.abs(resultatFoncier);
+      const plafond = typeTravaux === "energie" ? PLAFOND_DEFICIT_FONCIER_ENERGIE : PLAFOND_DEFICIT_FONCIER;
+      deficitImputeRevenuGlobal = Math.min(deficitFoncier, plafond);
+      economieDeficitFoncier = deficitImputeRevenuGlobal * (tmi / 100);
+    }
 
-    // Choisir le plus avantageux
-    const baseImposable = baseImposableMicro !== null
-      ? Math.min(baseImposableMicro, baseImposableReel)
-      : baseImposableReel;
-    const regimeChoisi: "Micro-Foncier" | "Réel" = baseImposable === baseImposableMicro ? "Micro-Foncier" : "Réel";
+    // Choisir le plus avantageux (si pas de déficit)
+    let baseImposable: number;
+    let regimeChoisi: "Micro-Foncier" | "Réel";
+    
+    if (deficitFoncier > 0) {
+      baseImposable = 0;
+      regimeChoisi = "Réel";
+    } else if (baseImposableMicro !== null && baseImposableMicro < baseImposableReel) {
+      baseImposable = baseImposableMicro;
+      regimeChoisi = "Micro-Foncier";
+    } else {
+      baseImposable = baseImposableReel;
+      regimeChoisi = "Réel";
+    }
 
-    // Impôt = TMI + PS
-    const impotTotal = baseImposable * (tmi / 100 + PRELEVEMENTS_SOCIAUX);
-    const cashflowNet = loyersAnnuels - chargesDeductibles - impotTotal;
+    // Impôt final (moins économie déficit foncier si applicable)
+    const impotBrut = baseImposable * (tmi / 100 + PRELEVEMENTS_SOCIAUX);
+    const impotTotal = Math.max(0, impotBrut - economieDeficitFoncier);
+    const cashflowNet = loyersAnnuels - chargesDeductibles - travauxDeductibles - impotTotal;
 
-    return { loyersAnnuels, baseImposableMicro, baseImposableReel, baseImposable, regimeChoisi, impotTotal, cashflowNet };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, tmi]);
+    return { 
+      loyersAnnuels,
+      chargesDeductibles,
+      travauxDeductibles,
+      baseImposableMicro, 
+      baseImposableReel, 
+      baseImposable, 
+      regimeChoisi, 
+      impotTotal,
+      cashflowNet,
+      deficitFoncier,
+      deficitImputeRevenuGlobal,
+      economieDeficitFoncier
+    };
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, tmi, montantTravaux, typeTravaux]);
 
   // Calcul LMNP
   const resultatLMNP = useMemo((): ResultatLMNP => {
@@ -100,14 +153,25 @@ export default function ComparateurLMNP() {
       ? loyersAnnuels * (1 - MICRO_BIC_ABATTEMENT)
       : null;
 
-    // Amortissements
+    // Amortissements standards
     const amortissementBati = (prixBien * AMORTISSEMENT_BATI_PART) / AMORTISSEMENT_BATI_DUREE;
     const amortissementMeubles = montantMeubles / AMORTISSEMENT_MEUBLES_DUREE;
+    
+    // Travaux en LMNP
+    let amortissementTravaux = 0;
+    let travauxDeductiblesImmediat = 0;
+    
+    if (typeTravaux === "amelioration") {
+      amortissementTravaux = montantTravaux / AMORTISSEMENT_TRAVAUX_DUREE;
+    } else {
+      travauxDeductiblesImmediat = montantTravaux;
+    }
 
     // Réel Simplifié
-    const resultatAvantImpot = loyersAnnuels - chargesDeductibles - amortissementBati - amortissementMeubles;
-    const deficitReportable = Math.min(0, resultatAvantImpot);
-    const baseImposableReel = Math.max(0, resultatAvantImpot);
+    const totalAmortissements = amortissementBati + amortissementMeubles + amortissementTravaux;
+    const resultatBIC = loyersAnnuels - chargesDeductibles - travauxDeductiblesImmediat - totalAmortissements;
+    const deficitReportable = Math.min(0, resultatBIC);
+    const baseImposableReel = Math.max(0, resultatBIC);
 
     // Choisir le plus avantageux
     const baseImposable = baseImposableMicro !== null
@@ -117,10 +181,11 @@ export default function ComparateurLMNP() {
 
     // Impôt
     const impotTotal = baseImposable * (tmi / 100 + PRELEVEMENTS_SOCIAUX);
-    const cashflowNet = loyersAnnuels - chargesDeductibles - impotTotal;
+    const cashflowNet = loyersAnnuels - chargesDeductibles - travauxDeductiblesImmediat - impotTotal;
 
     return {
       loyersAnnuels,
+      chargesDeductibles,
       baseImposableMicro,
       baseImposableReel,
       baseImposable,
@@ -129,9 +194,10 @@ export default function ComparateurLMNP() {
       cashflowNet,
       amortissementBati,
       amortissementMeubles,
+      amortissementTravaux,
       deficitReportable,
     };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi]);
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux]);
 
   const economieAnnuelle = resultatLocationNue.impotTotal - resultatLMNP.impotTotal;
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
@@ -302,6 +368,58 @@ export default function ComparateurLMNP() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Section D: Travaux */}
+            <Card className="rounded-2xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Hammer className="w-5 h-5 text-orange-500" />
+                  Travaux
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>Montant des travaux</Label>
+                    <span className="text-sm font-semibold text-primary">{formatCurrency(montantTravaux)}</span>
+                  </div>
+                  <Slider
+                    value={[montantTravaux]}
+                    onValueChange={([v]) => setMontantTravaux(v)}
+                    min={0}
+                    max={100000}
+                    step={1000}
+                  />
+                </div>
+                
+                {montantTravaux > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm">Type de travaux</Label>
+                    <Select value={typeTravaux} onValueChange={(v) => setTypeTravaux(v as "entretien" | "amelioration" | "energie")}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="entretien">Entretien / Réparation (déduction immédiate)</SelectItem>
+                        <SelectItem value="amelioration">Amélioration (amorti sur 10 ans en LMNP)</SelectItem>
+                        <SelectItem value="energie">Rénovation énergétique (déficit doublé)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    
+                    {typeTravaux === "energie" && (
+                      <p className="text-xs text-emerald-600 mt-1">
+                        🌱 Déficit foncier doublé : jusqu'à 21 400€ imputables sur le revenu global
+                      </p>
+                    )}
+                    {typeTravaux === "amelioration" && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        En LMNP, les travaux d'amélioration sont amortis sur 10 ans
+                      </p>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Colonne Droite: Résultats */}
@@ -408,7 +526,29 @@ export default function ComparateurLMNP() {
               </Card>
             )}
 
-            {/* Déficit reportable */}
+            {/* Déficit Foncier Location Nue */}
+            {resultatLocationNue.deficitImputeRevenuGlobal > 0 && (
+              <Card className="rounded-2xl border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
+                <CardContent className="py-4">
+                  <div className="flex items-start gap-3">
+                    <TrendingDown className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-foreground text-sm">
+                        Déficit foncier (Location Nue) : {formatCurrency(resultatLocationNue.deficitImputeRevenuGlobal)}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Économie d'impôt immédiate : <span className="font-bold text-blue-600">{formatCurrency(resultatLocationNue.economieDeficitFoncier)}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Imputable sur votre revenu global (max {typeTravaux === "energie" ? "21 400€" : "10 700€"}/an)
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Déficit reportable LMNP */}
             {resultatLMNP.deficitReportable < 0 && (
               <Card className="rounded-2xl border-amber-200 bg-amber-50/50 dark:bg-amber-950/20">
                 <CardContent className="py-4">
@@ -447,10 +587,18 @@ export default function ComparateurLMNP() {
                         - {formatCurrency(resultatLMNP.amortissementMeubles)}/an
                       </TableCell>
                     </TableRow>
+                    {resultatLMNP.amortissementTravaux > 0 && (
+                      <TableRow>
+                        <TableCell className="text-sm">Amortissement travaux (sur 10 ans)</TableCell>
+                        <TableCell className="text-right font-semibold text-emerald-600">
+                          - {formatCurrency(resultatLMNP.amortissementTravaux)}/an
+                        </TableCell>
+                      </TableRow>
+                    )}
                     <TableRow className="border-t-2">
                       <TableCell className="font-medium">Total déductible</TableCell>
                       <TableCell className="text-right font-bold text-emerald-600">
-                        - {formatCurrency(resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles)}/an
+                        - {formatCurrency(resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux)}/an
                       </TableCell>
                     </TableRow>
                   </TableBody>
