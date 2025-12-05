@@ -779,10 +779,11 @@ export default function ComparateurLMNP() {
                   </div>
                   <div className="flex justify-between text-sm border-t pt-2">
                     <span className="text-muted-foreground">Cashflow net</span>
-                    <span className="font-semibold">{formatCurrency(resultatLMNP.cashflowNet)}</span>
+                  <span className="font-semibold">{formatCurrency(resultatLMNP.cashflowNet)}</span>
                   </div>
                 </CardContent>
-            </Card>
+              </Card>
+            </div>
 
             {/* Résultats Plus-Value */}
             {resultatPlusValue && (
@@ -837,7 +838,6 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
             )}
-          </div>
 
             {/* Bandeau Conseil */}
             {economieAnnuelle > 500 && (
