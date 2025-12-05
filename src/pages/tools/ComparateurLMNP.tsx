@@ -100,9 +100,13 @@ export default function ComparateurLMNP() {
   // Section B: Les Charges
   const [chargesCopro, setChargesCopro] = useState(1200);
   const [taxeFonciere, setTaxeFonciere] = useState(800);
-  const [interetsEmprunt, setInteretsEmprunt] = useState(3500);
   const [assurancePNO, setAssurancePNO] = useState(250);
   const [fraisGestion, setFraisGestion] = useState(0);
+
+  // Section B2: Crédit Immobilier
+  const [montantEmprunt, setMontantEmprunt] = useState(160000);
+  const [dureeCredit, setDureeCredit] = useState(20);
+  const [tauxCredit, setTauxCredit] = useState(3.5);
 
   // Section C: Profil Fiscal
   const [tmi, setTmi] = useState(30);
@@ -133,6 +137,23 @@ export default function ComparateurLMNP() {
       maximumFractionDigits: 0,
     }).format(value);
   };
+
+  // --- CALCUL INTÉRÊTS EMPRUNT ---
+  const interetsEmprunt = useMemo(() => {
+    if (montantEmprunt <= 0 || dureeCredit <= 0 || tauxCredit <= 0) return 0;
+    const tauxMensuel = tauxCredit / 100 / 12;
+    const nbMensualites = dureeCredit * 12;
+    const mensualite = montantEmprunt * (tauxMensuel * Math.pow(1 + tauxMensuel, nbMensualites)) / (Math.pow(1 + tauxMensuel, nbMensualites) - 1);
+    // Intérêts première année (plus conservateur)
+    let capitalRestant = montantEmprunt;
+    let interetsAnnee1 = 0;
+    for (let i = 0; i < 12; i++) {
+      const interetsMois = capitalRestant * tauxMensuel;
+      interetsAnnee1 += interetsMois;
+      capitalRestant -= (mensualite - interetsMois);
+    }
+    return Math.round(interetsAnnee1);
+  }, [montantEmprunt, dureeCredit, tauxCredit]);
 
   // ============================================================
   // CALCUL LOCATION NUE
@@ -461,15 +482,9 @@ export default function ComparateurLMNP() {
                     <Input type="number" value={taxeFonciere} onChange={(e) => setTaxeFonciere(Number(e.target.value))} className="h-9" />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs">Intérêts d'emprunt (annuel)</Label>
-                    <Input type="number" value={interetsEmprunt} onChange={(e) => setInteretsEmprunt(Number(e.target.value))} className="h-9" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-xs">Assurance PNO</Label>
-                    <Input type="number" value={assurancePNO} onChange={(e) => setAssurancePNO(Number(e.target.value))} className="h-9" />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Assurance PNO</Label>
+                  <Input type="number" value={assurancePNO} onChange={(e) => setAssurancePNO(Number(e.target.value))} className="h-9" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">Frais de gestion (si agence)</Label>
@@ -479,6 +494,45 @@ export default function ComparateurLMNP() {
                   <Label className="text-xs">CFE (LMNP uniquement)</Label>
                   <Input type="number" value={cfe} onChange={(e) => setCfe(Number(e.target.value))} className="h-9" placeholder="500" />
                   <p className="text-xs text-muted-foreground">Cotisation Foncière des Entreprises, applicable en LMNP</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Crédit Immobilier */}
+            <Card className="rounded-2xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Building2 className="w-5 h-5 text-blue-500" />
+                  Crédit Immobilier
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>Montant emprunté</Label>
+                    <span className="text-sm font-semibold text-primary">{formatCurrency(montantEmprunt)}</span>
+                  </div>
+                  <Slider value={[montantEmprunt]} onValueChange={([v]) => setMontantEmprunt(v)} min={0} max={prixBien} step={5000} />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>Durée du crédit</Label>
+                    <span className="text-sm font-semibold">{dureeCredit} ans</span>
+                  </div>
+                  <Slider value={[dureeCredit]} onValueChange={([v]) => setDureeCredit(v)} min={5} max={25} step={1} />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>Taux nominal</Label>
+                    <span className="text-sm font-semibold text-amber-600">{tauxCredit}%</span>
+                  </div>
+                  <Slider value={[tauxCredit]} onValueChange={([v]) => setTauxCredit(v)} min={1} max={6} step={0.1} />
+                </div>
+                <div className="p-3 bg-muted/50 rounded-lg">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">Intérêts déductibles (1ère année)</span>
+                    <span className="font-semibold text-primary">{formatCurrency(interetsEmprunt)}</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -621,14 +675,17 @@ export default function ComparateurLMNP() {
             {/* Cartes de Résultats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Carte Location Nue */}
-              <Card className="rounded-2xl border-l-4 border-l-primary">
+              <Card className={`rounded-2xl border-l-4 ${!lmnpGagnant ? "border-l-primary bg-primary/5 dark:bg-primary/10" : "border-l-primary"}`}>
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-sm">
                     <Home className="w-4 h-4 text-primary" />
                     Location Nue
-                    <span className="ml-auto text-xs font-normal px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                    <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                       {resultatLocationNue.regimeChoisi}
                     </span>
+                    {!lmnpGagnant && (
+                      <span className="ml-auto px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">GAGNANT</span>
+                    )}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -657,11 +714,11 @@ export default function ComparateurLMNP() {
                   <CardTitle className="flex items-center gap-2 text-sm">
                     <Sofa className="w-4 h-4 text-emerald-500" />
                     LMNP
-                    <span className="ml-auto text-xs font-normal px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
+                    <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
                       {resultatLMNP.regimeChoisi}
                     </span>
                     {lmnpGagnant && (
-                      <span className="px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">GAGNANT</span>
+                      <span className="ml-auto px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">GAGNANT</span>
                     )}
                   </CardTitle>
                 </CardHeader>
