@@ -22,7 +22,7 @@ export function TypeLocationSelect({ value, onChange }: TypeLocationSelectProps)
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        <Select value={value} onValueChange={onChange}>
+        <Select value={value} onValueChange={(v) => onChange(v as TypeLocation)}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
