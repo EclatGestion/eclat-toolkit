@@ -398,30 +398,82 @@ export default function ComparateurLMNP() {
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
 
   // ============================================================
-  // BILAN GLOBAL PARAMÉTRABLE
+  // CALCULS CRÉDIT COMPLETS (Mensualité, Capital Restant)
+  // ============================================================
+  const creditCalculs = useMemo(() => {
+    const capital = montantCreditEffectif;
+    if (capital <= 0 || dureeCredit <= 0 || tauxCredit <= 0) {
+      return {
+        mensualiteMensuelle: 0,
+        mensualiteAnnuelle: 0,
+        calculCapitalRestant: () => 0,
+      };
+    }
+    
+    const tauxMensuel = tauxCredit / 100 / 12;
+    const nbMensualites = dureeCredit * 12;
+    const mensualiteMensuelle = capital * (tauxMensuel * Math.pow(1 + tauxMensuel, nbMensualites)) / (Math.pow(1 + tauxMensuel, nbMensualites) - 1);
+    const mensualiteAnnuelle = mensualiteMensuelle * 12;
+    
+    // Calcule le capital restant dû après N années
+    const calculCapitalRestant = (annees: number): number => {
+      if (annees >= dureeCredit) return 0;
+      let capitalRestant = capital;
+      for (let i = 0; i < annees * 12; i++) {
+        const interetsMois = capitalRestant * tauxMensuel;
+        capitalRestant -= (mensualiteMensuelle - interetsMois);
+      }
+      return Math.max(0, capitalRestant);
+    };
+    
+    return {
+      mensualiteMensuelle,
+      mensualiteAnnuelle,
+      calculCapitalRestant,
+    };
+  }, [montantCreditEffectif, dureeCredit, tauxCredit]);
+
+  // ============================================================
+  // BILAN GLOBAL PARAMÉTRABLE (CORRIGÉ)
   // ============================================================
   const bilanGlobal = useMemo(() => {
     const duree = horizonBilan;
-    const investissementTotal = prixBien + montantMeubles + fraisNotaire + montantTravaux;
-    const apportPersonnel = investissementTotal - montantCreditEffectif;
     
-    // Loyers cumulés (avec vacance)
-    const loyersCumules = resultatLocationNue.loyersAnnuels * duree;
+    // === INVESTISSEMENTS SÉPARÉS ===
+    // Location Nue : pas de meubles
+    const investissementNue = prixBien + fraisNotaire + montantTravaux;
+    // LMNP : avec meubles
+    const investissementLMNP = prixBien + montantMeubles + fraisNotaire + montantTravaux;
     
-    // Impôts cumulés
-    const impotsCumulesNue = resultatLocationNue.impotTotal * duree;
-    const impotsCumulesLMNP = resultatLMNP.impotTotal * duree;
+    // === APPORTS PERSONNELS ===
+    const apportNue = Math.max(0, investissementNue - montantCreditEffectif);
+    const apportLMNP = Math.max(0, investissementLMNP - montantCreditEffectif);
     
-    // Cashflows cumulés
-    const cashflowCumuleNue = resultatLocationNue.cashflowNet * duree;
-    const cashflowCumuleLMNP = resultatLMNP.cashflowNet * duree;
+    // === CHARGES HORS CRÉDIT ===
+    const chargesHorsCreditNue = chargesCopro + taxeFonciere + assurancePNO + fraisGestion;
+    const chargesHorsCreditLMNP = chargesCopro + taxeFonciere + assurancePNO + fraisGestion + cfe;
     
-    // Appréciation du bien
+    // === LOYERS ANNUELS ===
+    const loyersAnnuels = resultatLocationNue.loyersAnnuels;
+    
+    // === CASHFLOWS RÉELS ANNUELS (Trésorerie) ===
+    // Cashflow = Loyers - Charges hors crédit - Mensualité complète (capital + intérêts) - Impôts
+    const cashflowReelAnnuelNue = loyersAnnuels - chargesHorsCreditNue - creditCalculs.mensualiteAnnuelle - resultatLocationNue.impotTotal;
+    const cashflowReelAnnuelLMNP = loyersAnnuels - chargesHorsCreditLMNP - creditCalculs.mensualiteAnnuelle - resultatLMNP.impotTotal;
+    
+    // === CASHFLOWS CUMULÉS SUR LA DURÉE ===
+    const cashflowCumuleReelNue = cashflowReelAnnuelNue * duree;
+    const cashflowCumuleReelLMNP = cashflowReelAnnuelLMNP * duree;
+    
+    // === CAPITAL RESTANT DÛ À LA REVENTE ===
+    const capitalRestant = creditCalculs.calculCapitalRestant(duree);
+    
+    // === PRIX DE REVENTE ===
     const appreciationTotale = Math.pow(1 + tauxAppreciation / 100, duree) - 1;
     const prixReventeFinal = prixBien * (1 + appreciationTotale);
     const prixAcquisition = prixBien + fraisNotaire;
     
-    // Abattements PV selon durée de détention
+    // === ABATTEMENTS PV SELON DURÉE ===
     const calculAbattementIR = (annees: number) => {
       if (annees < 6) return 0;
       if (annees >= 22) return 1;
@@ -437,37 +489,56 @@ export default function ComparateurLMNP() {
     const abattementIR = calculAbattementIR(duree);
     const abattementPS = calculAbattementPS(duree);
     
-    // PV Location Nue
+    // === PLUS-VALUE LOCATION NUE ===
     const pvBruteNue = Math.max(0, prixReventeFinal - prixAcquisition);
     const impotPVNue = pvBruteNue * (1 - abattementIR) * IMPOT_PLUS_VALUE + pvBruteNue * (1 - abattementPS) * PRELEVEMENTS_SOCIAUX;
     
-    // PV LMNP (avec réintégration amortissements)
+    // === PLUS-VALUE LMNP (avec réintégration amortissements) ===
     const amortissementsReintegres = (resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux) * duree;
     const pvBruteLMNP = Math.max(0, prixReventeFinal - prixAcquisition + amortissementsReintegres);
     const impotPVLMNP = pvBruteLMNP * (1 - abattementIR) * IMPOT_PLUS_VALUE + pvBruteLMNP * (1 - abattementPS) * PRELEVEMENTS_SOCIAUX;
     
-    // Valorisation nette du bien (plus-value réelle après impôt)
-    const valorisationNetteNue = (prixReventeFinal - prixBien) - impotPVNue;
-    const valorisationNetteLMNP = (prixReventeFinal - prixBien) - impotPVLMNP;
+    // === PRODUIT NET DE VENTE (après remboursement crédit et impôt PV) ===
+    const produitNetVenteNue = prixReventeFinal - capitalRestant - impotPVNue;
+    const produitNetVenteLMNP = prixReventeFinal - capitalRestant - impotPVLMNP;
     
-    // Gain net total = cashflows + valorisation nette
-    const gainNetNue = cashflowCumuleNue + valorisationNetteNue;
-    const gainNetLMNP = cashflowCumuleLMNP + valorisationNetteLMNP;
+    // === ENRICHISSEMENT TOTAL ===
+    // Enrichissement = Produit net de vente + Cashflows cumulés - Apport initial
+    const enrichissementNue = produitNetVenteNue + cashflowCumuleReelNue - apportNue;
+    const enrichissementLMNP = produitNetVenteLMNP + cashflowCumuleReelLMNP - apportLMNP;
     
-    // ROI annualisé (CAGR) basé sur l'apport personnel (ce que l'investisseur sort de sa poche)
-    const baseInvestissement = Math.max(apportPersonnel, 1); // éviter division par 0
-    const roiAnnualiseNue = (Math.pow(1 + gainNetNue / baseInvestissement, 1 / duree) - 1) * 100;
-    const roiAnnualiseLMNP = (Math.pow(1 + gainNetLMNP / baseInvestissement, 1 / duree) - 1) * 100;
+    // === ROI ANNUALISÉ (CAGR) ===
+    // Basé sur l'apport initial et l'enrichissement total
+    const calculROI = (apport: number, enrichissement: number) => {
+      if (apport <= 0) return 0;
+      const valeurFinale = apport + enrichissement;
+      if (valeurFinale <= 0) return -100;
+      return (Math.pow(valeurFinale / apport, 1 / duree) - 1) * 100;
+    };
+    
+    const roiAnnualiseNue = calculROI(apportNue, enrichissementNue);
+    const roiAnnualiseLMNP = calculROI(apportLMNP, enrichissementLMNP);
     
     return {
       duree,
-      investissementTotal,
-      apportPersonnel,
-      loyersCumules,
-      impotsCumulesNue,
-      impotsCumulesLMNP,
-      cashflowCumuleNue,
-      cashflowCumuleLMNP,
+      // Investissements
+      investissementNue,
+      investissementLMNP,
+      apportNue,
+      apportLMNP,
+      // Loyers et impôts
+      loyersAnnuels,
+      impotAnnuelNue: resultatLocationNue.impotTotal,
+      impotAnnuelLMNP: resultatLMNP.impotTotal,
+      // Crédit
+      mensualiteAnnuelle: creditCalculs.mensualiteAnnuelle,
+      capitalRestant,
+      // Cashflows réels
+      cashflowReelAnnuelNue,
+      cashflowReelAnnuelLMNP,
+      cashflowCumuleReelNue,
+      cashflowCumuleReelLMNP,
+      // Revente
       appreciationTotale: appreciationTotale * 100,
       prixReventeFinal,
       pvBruteNue,
@@ -475,51 +546,55 @@ export default function ComparateurLMNP() {
       impotPVNue,
       impotPVLMNP,
       amortissementsReintegres,
-      valorisationNetteNue,
-      valorisationNetteLMNP,
-      gainNetNue,
-      gainNetLMNP,
+      produitNetVenteNue,
+      produitNetVenteLMNP,
+      // Résultats finaux
+      enrichissementNue,
+      enrichissementLMNP,
       roiAnnualiseNue,
       roiAnnualiseLMNP,
       abattementIR: abattementIR * 100,
       abattementPS: abattementPS * 100,
-      gagnant: gainNetLMNP > gainNetNue ? "LMNP" : "Location Nue",
+      gagnant: enrichissementLMNP > enrichissementNue ? "LMNP" : "Location Nue",
     };
-  }, [horizonBilan, tauxAppreciation, prixBien, montantMeubles, fraisNotaire, montantTravaux, montantCreditEffectif, resultatLocationNue, resultatLMNP]);
+  }, [horizonBilan, tauxAppreciation, prixBien, montantMeubles, fraisNotaire, montantTravaux, montantCreditEffectif, chargesCopro, taxeFonciere, assurancePNO, fraisGestion, cfe, creditCalculs, resultatLocationNue, resultatLMNP]);
 
   // ============================================================
-  // DONNÉES GRAPHIQUE ÉVOLUTION ANNUELLE
+  // DONNÉES GRAPHIQUE ÉVOLUTION ANNUELLE (CORRIGÉ)
   // ============================================================
   const evolutionAnnuelle = useMemo(() => {
     const data = [];
-    const apportPersonnel = bilanGlobal.apportPersonnel;
     
     for (let annee = 0; annee <= horizonBilan; annee++) {
-      // Cashflows cumulés
-      const cashflowCumuleNue = resultatLocationNue.cashflowNet * annee;
-      const cashflowCumuleLMNP = resultatLMNP.cashflowNet * annee;
+      // Cashflows réels cumulés
+      const cashflowCumuleNue = bilanGlobal.cashflowReelAnnuelNue * annee;
+      const cashflowCumuleLMNP = bilanGlobal.cashflowReelAnnuelLMNP * annee;
       
       // Valorisation du bien à cette année
       const appreciationAnnee = Math.pow(1 + tauxAppreciation / 100, annee) - 1;
-      const valorisationBien = prixBien * appreciationAnnee;
+      const valeurBien = prixBien * (1 + appreciationAnnee);
       
-      // Patrimoine net = apport initial + cashflows cumulés + valorisation
-      const patrimoineNue = apportPersonnel + cashflowCumuleNue + valorisationBien;
-      const patrimoineLMNP = apportPersonnel + cashflowCumuleLMNP + valorisationBien;
+      // Capital restant dû
+      const capitalRestantAnnee = creditCalculs.calculCapitalRestant(annee);
+      
+      // Patrimoine net = Valeur du bien - Capital restant dû + Cashflows cumulés
+      const patrimoineNetNue = valeurBien - capitalRestantAnnee + cashflowCumuleNue;
+      const patrimoineNetLMNP = valeurBien - capitalRestantAnnee + cashflowCumuleLMNP;
       
       data.push({
         annee: `Année ${annee}`,
         anneeNum: annee,
-        patrimoineNue: Math.round(patrimoineNue),
-        patrimoineLMNP: Math.round(patrimoineLMNP),
+        patrimoineNue: Math.round(patrimoineNetNue),
+        patrimoineLMNP: Math.round(patrimoineNetLMNP),
         cashflowNue: Math.round(cashflowCumuleNue),
         cashflowLMNP: Math.round(cashflowCumuleLMNP),
-        valorisation: Math.round(valorisationBien),
+        valeurBien: Math.round(valeurBien),
+        capitalRestant: Math.round(capitalRestantAnnee),
       });
     }
     
     return data;
-  }, [horizonBilan, tauxAppreciation, prixBien, bilanGlobal.apportPersonnel, resultatLocationNue.cashflowNet, resultatLMNP.cashflowNet]);
+  }, [horizonBilan, tauxAppreciation, prixBien, creditCalculs, bilanGlobal.cashflowReelAnnuelNue, bilanGlobal.cashflowReelAnnuelLMNP]);
 
   // ============================================================
   // RENDU JSX
@@ -1021,14 +1096,22 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-center text-xs py-2 font-semibold text-emerald-600">LMNP</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">Impôts cumulés ({horizonBilan} ans)</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotsCumulesNue)}</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotsCumulesLMNP)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground py-2">Apport initial</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.apportNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.apportLMNP)}</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">Cashflow cumulé</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.cashflowCumuleNue)}</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.cashflowCumuleLMNP)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground py-2">Cashflow réel cumulé ({horizonBilan} ans)</TableCell>
+                        <TableCell className={`text-center text-xs py-2 font-medium ${bilanGlobal.cashflowCumuleReelNue < 0 ? "text-red-600" : "text-emerald-600"}`}>
+                          {formatCurrency(bilanGlobal.cashflowCumuleReelNue)}
+                        </TableCell>
+                        <TableCell className={`text-center text-xs py-2 font-medium ${bilanGlobal.cashflowCumuleReelLMNP < 0 ? "text-red-600" : "text-emerald-600"}`}>
+                          {formatCurrency(bilanGlobal.cashflowCumuleReelLMNP)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">Capital restant dû</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium" colSpan={2}>{formatCurrency(bilanGlobal.capitalRestant)}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="text-xs text-muted-foreground py-2">
@@ -1038,20 +1121,22 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotPVNue)}</TableCell>
                         <TableCell className="text-center text-xs py-2 font-medium text-red-600">{formatCurrency(bilanGlobal.impotPVLMNP)}</TableCell>
                       </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">Produit net de vente</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.produitNetVenteNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.produitNetVenteLMNP)}</TableCell>
+                      </TableRow>
                       <TableRow className="bg-primary/5 border-t-2">
-                        <TableCell className="font-semibold text-sm py-3">Gain Net Total</TableCell>
+                        <TableCell className="font-semibold text-sm py-3">Enrichissement Total</TableCell>
                         <TableCell className={`text-center font-bold text-sm py-3 ${bilanGlobal.gagnant === "Location Nue" ? "text-primary" : ""}`}>
-                          {formatCurrency(bilanGlobal.gainNetNue)}
+                          {formatCurrency(bilanGlobal.enrichissementNue)}
                         </TableCell>
                         <TableCell className={`text-center font-bold text-sm py-3 ${bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
-                          {formatCurrency(bilanGlobal.gainNetLMNP)}
+                          {formatCurrency(bilanGlobal.enrichissementLMNP)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">
-                          ROI annualisé
-                          <span className="text-[10px] ml-1">(sur apport {formatCurrency(bilanGlobal.apportPersonnel)})</span>
-                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground py-2">ROI annualisé</TableCell>
                         <TableCell className={`text-center text-xs py-2 font-semibold ${bilanGlobal.gagnant === "Location Nue" ? "text-primary" : ""}`}>
                           {bilanGlobal.roiAnnualiseNue.toFixed(1)}% / an
                         </TableCell>
@@ -1066,7 +1151,7 @@ export default function ComparateurLMNP() {
                 {/* Badge Gagnant */}
                 <div className={`p-3 rounded-lg text-center ${bilanGlobal.gagnant === "LMNP" ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-primary/10"}`}>
                   <span className="text-sm font-semibold">
-                    🏆 Sur {bilanGlobal.duree} ans, <span className={bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilanGlobal.gagnant}</span> génère {formatCurrency(Math.abs(bilanGlobal.gainNetLMNP - bilanGlobal.gainNetNue))} de plus
+                    🏆 Sur {bilanGlobal.duree} ans, <span className={bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilanGlobal.gagnant}</span> génère {formatCurrency(Math.abs(bilanGlobal.enrichissementLMNP - bilanGlobal.enrichissementNue))} de plus
                   </span>
                 </div>
               </CardContent>
@@ -1143,7 +1228,7 @@ export default function ComparateurLMNP() {
                   </ResponsiveContainer>
                 </div>
                 <p className="text-xs text-muted-foreground mt-3 text-center">
-                  Patrimoine net = Apport ({formatCurrency(bilanGlobal.apportPersonnel)}) + Cashflows cumulés + Valorisation du bien
+                  Patrimoine net = Valeur du bien - Capital restant dû + Cashflows cumulés
                 </p>
               </CardContent>
             </Card>
