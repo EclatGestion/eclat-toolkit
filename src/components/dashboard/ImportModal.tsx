@@ -107,12 +107,12 @@ export function ImportModal({
         .upload(filePath, selectedFile);
 
       // Call the analysis edge function with cleaned text
+      // Note: userId is extracted from JWT token server-side for security
       const { data: functionData, error: functionError } = await supabase.functions.invoke(
         "analyze-expenses",
         {
           body: {
             pdfContent, // Now contains cleaned text, not base64
-            userId: user.id,
             fileName: selectedFile.name,
           },
         }
