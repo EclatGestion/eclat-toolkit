@@ -62,11 +62,14 @@ serve(async (req) => {
 
     const subscriptions = await stripe.subscriptions.list({
       customer: customerId,
-      status: "active",
-      limit: 1,
+      limit: 10,
     });
 
-    const hasActiveSub = subscriptions.data.length > 0;
+    // Accept both "active" and "trialing" subscriptions as valid premium
+    const validSubscriptions = subscriptions.data.filter(
+      (sub: { status: string }) => sub.status === "active" || sub.status === "trialing"
+    );
+    const hasActiveSub = validSubscriptions.length > 0;
     let subscriptionEnd = null;
     let planType = null;
 
