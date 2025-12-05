@@ -9,6 +9,7 @@ export interface ParsedTransaction {
 export interface CSVParseConfig {
   dateColumn: number;
   labelColumn: number;
+  labelColumns?: number[];  // Multiple columns to combine for label
   amountColumn: number;
   hasHeader: boolean;
   invertSign: boolean;
@@ -73,13 +74,23 @@ export function parseFullCSV(file: File, config: CSVParseConfig): Promise<Parsed
           if (!row || row.length === 0 || !row.some(cell => cell?.trim())) continue;
           
           const dateValue = row[config.dateColumn];
-          const labelValue = row[config.labelColumn];
           const amountValue = row[config.amountColumn];
+          
+          // Build label from multiple columns if configured, otherwise use single column
+          let labelValue: string;
+          if (config.labelColumns && config.labelColumns.length > 0) {
+            labelValue = config.labelColumns
+              .map(col => row[col]?.trim() || "")
+              .filter(v => v.length > 0)
+              .join(" - ");
+          } else {
+            labelValue = row[config.labelColumn] || "";
+          }
           
           if (!dateValue || !amountValue) continue;
           
           const date = parseDate(dateValue, config.dateFormat);
-          const label = cleanLabel(labelValue || "");
+          const label = cleanLabel(labelValue);
           let amount = parseAmount(amountValue);
           
           if (config.invertSign) {
@@ -275,25 +286,31 @@ export function cleanLabel(value: string): string {
 /**
  * Auto-detect column mappings based on headers
  */
-export function autoDetectColumns(headers: string[]): Partial<CSVParseConfig> {
+export function autoDetectColumns(headers: string[], rows?: string[][]): Partial<CSVParseConfig> {
   const config: Partial<CSVParseConfig> = {};
   
   const lowerHeaders = headers.map(h => h?.toLowerCase().trim() || "");
   
-  // Detect date column
+  console.log("=== AUTO-DETECT COLUMNS ===");
+  console.log("Headers:", headers);
+  console.log("Lower headers:", lowerHeaders);
+  
+  // Detect date column by header
   const datePatterns = ["date", "date opération", "date operation", "date valeur", "date comptable"];
   for (let i = 0; i < lowerHeaders.length; i++) {
     if (datePatterns.some(p => lowerHeaders[i].includes(p))) {
       config.dateColumn = i;
+      console.log(`Date column detected by header at index ${i}: "${headers[i]}"`);
       break;
     }
   }
   
-  // Detect label column
-  const labelPatterns = ["libellé", "libelle", "label", "description", "intitulé", "intitule", "opération", "operation", "motif"];
+  // Detect label column by header
+  const labelPatterns = ["libellé", "libelle", "label", "description", "intitulé", "intitule", "opération", "operation", "motif", "libellé 1", "libellé 2"];
   for (let i = 0; i < lowerHeaders.length; i++) {
     if (labelPatterns.some(p => lowerHeaders[i].includes(p))) {
       config.labelColumn = i;
+      console.log(`Label column detected by header at index ${i}: "${headers[i]}"`);
       break;
     }
   }
@@ -303,6 +320,7 @@ export function autoDetectColumns(headers: string[]): Partial<CSVParseConfig> {
   for (let i = 0; i < lowerHeaders.length; i++) {
     if (amountPatterns.some(p => lowerHeaders[i].includes(p))) {
       config.amountColumn = i;
+      console.log(`Amount column detected by header at index ${i}: "${headers[i]}"`);
       break;
     }
   }
@@ -313,10 +331,86 @@ export function autoDetectColumns(headers: string[]): Partial<CSVParseConfig> {
     for (let i = 0; i < lowerHeaders.length; i++) {
       if (genericPatterns.some(p => lowerHeaders[i].includes(p))) {
         config.amountColumn = i;
+        console.log(`Amount column detected by generic pattern at index ${i}: "${headers[i]}"`);
         break;
       }
     }
   }
   
+  // Content-based detection as fallback if headers didn't work
+  if (rows && rows.length > 0) {
+    console.log("=== CONTENT-BASED DETECTION ===");
+    console.log("First data row:", rows[0]);
+    
+    // Detect date by content (look for date-like values)
+    if (config.dateColumn === undefined) {
+      for (let i = 0; i < (rows[0]?.length || 0); i++) {
+        const cell = rows[0][i]?.trim() || "";
+        if (isDateLike(cell)) {
+          config.dateColumn = i;
+          console.log(`Date column detected by content at index ${i}: "${cell}"`);
+          break;
+        }
+      }
+    }
+    
+    // Detect amount by content (look for number-like values with € or decimal)
+    if (config.amountColumn === undefined) {
+      for (let i = 0; i < (rows[0]?.length || 0); i++) {
+        const cell = rows[0][i]?.trim() || "";
+        if (isAmountLike(cell) && i !== config.dateColumn) {
+          config.amountColumn = i;
+          console.log(`Amount column detected by content at index ${i}: "${cell}"`);
+          break;
+        }
+      }
+    }
+    
+    // Detect label by content (longest text that's not date or amount)
+    if (config.labelColumn === undefined) {
+      let longestTextIndex = -1;
+      let longestTextLength = 0;
+      
+      for (let i = 0; i < (rows[0]?.length || 0); i++) {
+        if (i === config.dateColumn || i === config.amountColumn) continue;
+        
+        const cell = rows[0][i]?.trim() || "";
+        if (cell.length > longestTextLength && !isDateLike(cell) && !isAmountLike(cell)) {
+          longestTextLength = cell.length;
+          longestTextIndex = i;
+        }
+      }
+      
+      if (longestTextIndex >= 0) {
+        config.labelColumn = longestTextIndex;
+        console.log(`Label column detected by content at index ${longestTextIndex}: "${rows[0][longestTextIndex]}"`);
+      }
+    }
+  }
+  
+  console.log("=== DETECTION RESULT ===", config);
   return config;
+}
+
+/**
+ * Check if a string looks like a date
+ */
+function isDateLike(value: string): boolean {
+  if (!value) return false;
+  // Check for date patterns: DD/MM/YYYY, YYYY-MM-DD, DD-MM-YY, etc.
+  return /^\d{1,2}[\/\-\.]\d{1,2}[\/\-\.]\d{2,4}$/.test(value) ||
+         /^\d{4}[\/\-\.]\d{1,2}[\/\-\.]\d{1,2}$/.test(value) ||
+         /^\d{1,2}[\-\s][a-zéûô]+[\-\s]\d{2,4}$/i.test(value);
+}
+
+/**
+ * Check if a string looks like an amount
+ */
+function isAmountLike(value: string): boolean {
+  if (!value) return false;
+  // Check for amount patterns: 123,45 or -123.45 or 1 234,56 €
+  const cleaned = value.replace(/[\s€$£EUR]/gi, "").trim();
+  return /^[\-\+]?\d+[,\.]\d{2}$/.test(cleaned) ||
+         /^[\-\+]?\d{1,3}([.\s]\d{3})*[,]\d{2}$/.test(cleaned) ||
+         /^\(\d+[,\.]\d{2}\)$/.test(cleaned);
 }

@@ -82,11 +82,13 @@ export function CSVImportModal({
   const [config, setConfig] = useState<CSVParseConfig>({
     dateColumn: -1,
     labelColumn: -1,
+    labelColumns: [],
     amountColumn: -1,
     hasHeader: true,
     invertSign: false,
     dateFormat: "auto",
   });
+  const [useMultiLabel, setUseMultiLabel] = useState(false);
 
   // Saved mappings
   const [savedMappings, setSavedMappings] = useState<BankMapping[]>([]);
@@ -114,6 +116,7 @@ export function CSVImportModal({
         setConfig({
           dateColumn: -1,
           labelColumn: -1,
+          labelColumns: [],
           amountColumn: -1,
           hasHeader: true,
           invertSign: false,
@@ -123,6 +126,7 @@ export function CSVImportModal({
         setSaveMappingName("");
         setShowSaveInput(false);
         setParsedTransactions([]);
+        setUseMultiLabel(false);
       }, 300);
     }
   }, [open]);
@@ -145,8 +149,26 @@ export function CSVImportModal({
       const preview = await parseCSVPreview(file);
       setPreviewData(preview);
 
-      // Auto-detect columns
-      const detected = autoDetectColumns(preview.headers);
+      // Debug logs
+      console.log("=== CSV PREVIEW DEBUG ===");
+      console.log("File name:", file.name);
+      console.log("Separator detected:", preview.separator);
+      console.log("Number of columns:", preview.headers.length);
+      console.log("Headers:", preview.headers);
+      console.log("First 3 data rows:");
+      preview.rows.slice(0, 3).forEach((row, i) => {
+        console.log(`  Row ${i}:`, row);
+        row.forEach((cell, j) => console.log(`    Col ${j}: "${cell}"`));
+      });
+
+      // Auto-detect columns (pass rows for content-based detection)
+      const detected = autoDetectColumns(preview.headers, preview.rows);
+      
+      console.log("=== AUTO-DETECTION RESULT ===");
+      console.log("Date column:", detected.dateColumn, detected.dateColumn !== undefined ? `("${preview.headers[detected.dateColumn]}")` : "(not found)");
+      console.log("Label column:", detected.labelColumn, detected.labelColumn !== undefined ? `("${preview.headers[detected.labelColumn]}")` : "(not found)");
+      console.log("Amount column:", detected.amountColumn, detected.amountColumn !== undefined ? `("${preview.headers[detected.amountColumn]}")` : "(not found)");
+
       setConfig((prev) => ({
         ...prev,
         dateColumn: detected.dateColumn ?? -1,
@@ -264,11 +286,14 @@ export function CSVImportModal({
     }
   };
 
-  const isMappingValid = config.dateColumn >= 0 && config.labelColumn >= 0 && config.amountColumn >= 0;
+  const isMappingValid = config.dateColumn >= 0 && 
+    (config.labelColumn >= 0 || (config.labelColumns && config.labelColumns.length > 0)) && 
+    config.amountColumn >= 0;
 
   const getColumnHighlight = (colIndex: number) => {
     if (colIndex === config.dateColumn) return COLUMN_COLORS.date;
     if (colIndex === config.labelColumn) return COLUMN_COLORS.label;
+    if (config.labelColumns?.includes(colIndex)) return COLUMN_COLORS.label;
     if (colIndex === config.amountColumn) return COLUMN_COLORS.amount;
     return "";
   };
@@ -414,21 +439,60 @@ export function CSVImportModal({
                   <div className="w-3 h-3 rounded bg-emerald-500" />
                   Libellé
                 </Label>
-                <Select
-                  value={config.labelColumn.toString()}
-                  onValueChange={(v) => setConfig({ ...config, labelColumn: parseInt(v) })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Colonne" />
-                  </SelectTrigger>
-                  <SelectContent>
+                {!useMultiLabel ? (
+                  <Select
+                    value={config.labelColumn.toString()}
+                    onValueChange={(v) => setConfig({ ...config, labelColumn: parseInt(v) })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Colonne" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {previewData.headers.map((h, i) => (
+                        <SelectItem key={i} value={i.toString()}>
+                          {h || `Col ${i + 1}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="flex flex-wrap gap-1 p-2 border rounded-md min-h-[40px] bg-background">
                     {previewData.headers.map((h, i) => (
-                      <SelectItem key={i} value={i.toString()}>
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          const cols = config.labelColumns || [];
+                          if (cols.includes(i)) {
+                            setConfig({ ...config, labelColumns: cols.filter(c => c !== i) });
+                          } else {
+                            setConfig({ ...config, labelColumns: [...cols, i].sort((a, b) => a - b) });
+                          }
+                        }}
+                        className={`px-2 py-0.5 text-xs rounded transition-colors ${
+                          (config.labelColumns || []).includes(i)
+                            ? "bg-emerald-500 text-white"
+                            : "bg-muted hover:bg-muted/80"
+                        }`}
+                      >
                         {h || `Col ${i + 1}`}
-                      </SelectItem>
+                      </button>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUseMultiLabel(!useMultiLabel);
+                    if (!useMultiLabel) {
+                      // Switching to multi-label: initialize with current single column
+                      setConfig({ ...config, labelColumns: config.labelColumn >= 0 ? [config.labelColumn] : [] });
+                    }
+                  }}
+                  className="text-xs text-primary hover:underline"
+                >
+                  {useMultiLabel ? "← Colonne unique" : "Combiner plusieurs colonnes →"}
+                </button>
               </div>
 
               <div className="space-y-1.5">
