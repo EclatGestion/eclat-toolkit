@@ -1,4 +1,4 @@
-import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, Check, LucideIcon, MessageCircle, Calculator, TrendingUp, HardHat, Lightbulb, Landmark, TreePine, Gem, Bitcoin } from "lucide-react";
+import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, Check, LucideIcon, MessageCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,13 +17,6 @@ const iconMap: Record<string, LucideIcon> = {
   Rocket,
   LineChart,
   Building2,
-  TrendingUp,
-  HardHat,
-  Lightbulb,
-  Landmark,
-  TreePine,
-  Gem,
-  Bitcoin,
 };
 
 interface ProductModalProps {
@@ -81,24 +74,6 @@ export function ProductModal({ product, open, onOpenChange }: ProductModalProps)
               ))}
             </ul>
           </div>
-
-          {/* Case Study */}
-          {product.caseStudy && (
-            <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-2xl border border-blue-100 dark:border-blue-900">
-              <div className="flex items-center gap-2 mb-3">
-                <Calculator className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                <h4 className="font-semibold text-blue-900 dark:text-blue-100 text-sm">
-                  {product.caseStudy.title}
-                </h4>
-              </div>
-              <p className="text-sm text-blue-800 dark:text-blue-200 italic mb-2">
-                {product.caseStudy.scenario}
-              </p>
-              <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                {product.caseStudy.figures}
-              </p>
-            </div>
-          )}
 
           {/* Ideal For */}
           <div className="p-4 bg-muted/50 rounded-2xl">

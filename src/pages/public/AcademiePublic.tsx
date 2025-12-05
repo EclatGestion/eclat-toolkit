@@ -16,8 +16,6 @@ const filters: { id: CategoryFilter; label: string }[] = [
   { id: "retraite", label: "Retraite" },
   { id: "performance", label: "Performance" },
   { id: "immobilier", label: "Immobilier" },
-  { id: "bourse", label: "Bourse" },
-  { id: "alternatif", label: "Alternatif" },
 ];
 
 // JSON-LD Schema for SEO
@@ -25,7 +23,7 @@ const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "name": "Guides d'investissement et de défiscalisation",
-  "description": "Découvrez nos solutions d'investissement : Assurance-Vie, PER, Girardin, ETF, SCPI, Cryptomonnaies, GFI et plus encore.",
+  "description": "Découvrez nos solutions d'investissement : Assurance-Vie, PER, Girardin, Private Equity, SCPI et Compte-Titres",
   "numberOfItems": financialProducts.length,
   "itemListElement": financialProducts.map((product, index) => ({
     "@type": "ListItem",
@@ -47,13 +45,13 @@ export default function AcademiePublic() {
   return (
     <PublicPageLayout 
       title="Académie Financière | Guides Investissement & Défiscalisation"
-      description="Découvrez nos 13 solutions d'investissement et de défiscalisation : Assurance-Vie, PER, Girardin, ETF, SCPI, Cryptomonnaies, GFI et plus encore."
+      description="Découvrez nos solutions d'investissement et de défiscalisation : Assurance-Vie, PER, Girardin, Private Equity, SCPI et plus encore."
       jsonLd={jsonLdSchema}
     >
       {/* Intro Section */}
       <div className="mb-8">
         <p className="text-lg text-gray-600 max-w-3xl">
-          Découvrez nos {financialProducts.length} solutions d'investissement et de défiscalisation. 
+          Découvrez nos solutions d'investissement et de défiscalisation. 
           Cliquez sur une carte pour en savoir plus sur chaque produit financier.
         </p>
       </div>
@@ -130,7 +128,7 @@ export default function AcademiePublic() {
           Investir son argent intelligemment nécessite de comprendre les différentes enveloppes fiscales 
           et produits financiers disponibles. Notre académie vous guide à travers les principales solutions 
           d'investissement en France, de l'<strong>assurance-vie</strong> au <strong>PER</strong> en passant 
-          par les <strong>ETF</strong>, le <strong>Private Equity</strong>, les <strong>SCPI</strong> et les <strong>cryptomonnaies</strong>.
+          par le <strong>Private Equity</strong> et les <strong>SCPI</strong>.
         </p>
 
         <h3 className="text-xl font-semibold text-gray-900 mt-8">Les enveloppes fiscales avantageuses</h3>
@@ -142,28 +140,12 @@ export default function AcademiePublic() {
           supérieure au montant investi.
         </p>
 
-        <h3 className="text-xl font-semibold text-gray-900 mt-8">La gestion passive avec les ETF</h3>
-        <p className="text-gray-600 leading-relaxed">
-          Les <strong>ETF (Exchange Traded Funds)</strong> révolutionnent l'investissement boursier en permettant 
-          de répliquer la performance des indices mondiaux avec des frais ultra-faibles. Un ETF MSCI World 
-          vous expose aux 1600 plus grandes entreprises mondiales en un seul achat. C'est la stratégie plébiscitée 
-          par les investisseurs long terme.
-        </p>
-
         <h3 className="text-xl font-semibold text-gray-900 mt-8">Diversifier avec l'immobilier et le non-coté</h3>
         <p className="text-gray-600 leading-relaxed">
           Les <strong>SCPI (Sociétés Civiles de Placement Immobilier)</strong> permettent d'investir 
           dans l'immobilier professionnel sans les contraintes de gestion, avec des rendements de 4% à 7%. 
-          Le <strong>crowdfunding immobilier</strong> offre des rendements élevés sur des durées courtes (12-24 mois).
-          Le <strong>Private Equity</strong> donne accès à des entreprises non cotées à fort potentiel.
-        </p>
-
-        <h3 className="text-xl font-semibold text-gray-900 mt-8">Les actifs alternatifs</h3>
-        <p className="text-gray-600 leading-relaxed">
-          Pour une diversification complète, les <strong>Groupements Forestiers (GFI)</strong> offrent une 
-          fiscalité successorale imbattable avec 75% d'abattement. L'<strong>or</strong> reste la valeur refuge 
-          par excellence en période de crise. Les <strong>cryptomonnaies</strong> comme Bitcoin représentent 
-          une classe d'actifs à fort potentiel pour une petite partie du patrimoine.
+          Le <strong>Private Equity</strong> donne accès à des entreprises non cotées à fort potentiel 
+          de croissance.
         </p>
       </section>
     </PublicPageLayout>

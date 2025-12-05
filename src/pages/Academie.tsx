@@ -12,8 +12,6 @@ const filters: { id: CategoryFilter; label: string }[] = [
   { id: "retraite", label: "Retraite" },
   { id: "performance", label: "Performance" },
   { id: "immobilier", label: "Immobilier" },
-  { id: "bourse", label: "Bourse" },
-  { id: "alternatif", label: "Alternatif" },
 ];
 
 export default function Academie() {
