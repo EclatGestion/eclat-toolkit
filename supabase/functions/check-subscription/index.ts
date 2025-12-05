@@ -66,12 +66,13 @@ serve(async (req) => {
     });
 
     // Accept both "active" and "trialing" subscriptions as valid premium
+    // deno-lint-ignore no-explicit-any
     const validSubscriptions = subscriptions.data.filter(
-      (sub: { status: string }) => sub.status === "active" || sub.status === "trialing"
+      (sub: any) => sub.status === "active" || sub.status === "trialing"
     );
     const hasActiveSub = validSubscriptions.length > 0;
-    let subscriptionEnd = null;
-    let planType = null;
+    let subscriptionEnd: string | null = null;
+    let planType: string | null = null;
 
     if (hasActiveSub) {
       const subscription = validSubscriptions[0];
@@ -79,7 +80,9 @@ serve(async (req) => {
       const endTimestamp = subscription.status === "trialing" && subscription.trial_end 
         ? subscription.trial_end 
         : subscription.current_period_end;
-      subscriptionEnd = endTimestamp ? new Date(endTimestamp * 1000).toISOString() : null;
+      if (endTimestamp) {
+        subscriptionEnd = new Date(endTimestamp * 1000).toISOString();
+      }
       
       // Determine plan type based on interval
       const interval = subscription.items.data[0]?.price?.recurring?.interval;
