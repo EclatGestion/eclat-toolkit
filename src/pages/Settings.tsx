@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PremiumStatusCard } from "@/components/premium/PremiumStatusCard";
-import { AdminPremiumManager } from "@/components/admin/AdminPremiumManager";
 import { User, Bell, Shield, CreditCard, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 
@@ -50,7 +48,6 @@ const itemVariants = {
 
 export default function Settings() {
   const { signOut } = useAuth();
-  const { isAdmin } = useAdmin();
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const handleSignOut = async () => {
@@ -100,17 +97,6 @@ export default function Settings() {
             ))}
           </div>
         </motion.div>
-
-        {/* Admin Section */}
-        {isAdmin && (
-          <motion.div variants={itemVariants}>
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-amber-500" />
-              Administration
-            </h2>
-            <AdminPremiumManager />
-          </motion.div>
-        )}
 
         {/* Sign Out */}
         <motion.div variants={itemVariants}>
