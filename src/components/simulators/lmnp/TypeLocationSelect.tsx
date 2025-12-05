@@ -42,7 +42,7 @@ export function TypeLocationSelect({ value, onChange }: TypeLocationSelectProps)
             <SelectItem value="tourisme_non_classe">
               <div className="flex flex-col items-start py-1">
                 <span className="font-medium">Meublé tourisme non classé (Airbnb)</span>
-                <span className="text-xs text-amber-600">⚠️ Micro-BIC: 30% d'abattement (plafond 15 000€)</span>
+                <span className="text-xs text-amber-600">Micro-BIC: 30% d'abattement (plafond 15 000€)</span>
               </div>
             </SelectItem>
           </SelectContent>
