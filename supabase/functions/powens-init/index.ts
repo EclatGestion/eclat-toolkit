@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const POWENS_DOMAIN = Deno.env.get("POWENS_DOMAIN");
+    let POWENS_DOMAIN = Deno.env.get("POWENS_DOMAIN");
     const POWENS_CLIENT_ID = Deno.env.get("POWENS_CLIENT_ID");
     const POWENS_CLIENT_SECRET = Deno.env.get("POWENS_CLIENT_SECRET");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -21,6 +21,13 @@ serve(async (req) => {
     if (!POWENS_DOMAIN || !POWENS_CLIENT_ID || !POWENS_CLIENT_SECRET) {
       throw new Error("Missing Powens configuration");
     }
+
+    // Clean domain: remove protocol and trailing slashes
+    POWENS_DOMAIN = POWENS_DOMAIN
+      .replace(/^https?:\/\//, "")
+      .replace(/\/+$/, "");
+    
+    console.log("[POWENS-INIT] Using domain:", POWENS_DOMAIN);
 
     // Get user from JWT
     const authHeader = req.headers.get("Authorization");

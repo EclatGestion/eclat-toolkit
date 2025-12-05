@@ -24,10 +24,17 @@ serve(async (req) => {
   }
 
   try {
-    const POWENS_DOMAIN = Deno.env.get("POWENS_DOMAIN");
+    let POWENS_DOMAIN = Deno.env.get("POWENS_DOMAIN");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+
+    // Clean domain: remove protocol and trailing slashes
+    if (POWENS_DOMAIN) {
+      POWENS_DOMAIN = POWENS_DOMAIN
+        .replace(/^https?:\/\//, "")
+        .replace(/\/+$/, "");
+    }
 
     // Get user from JWT
     const authHeader = req.headers.get("Authorization");
