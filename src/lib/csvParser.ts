@@ -39,9 +39,32 @@ export function parseCSVPreview(file: File): Promise<CSVPreviewData> {
         // Detect separator
         const separator = (results.meta.delimiter as string) || ";";
         
-        // First row as headers, rest as data rows
-        const headers = rows[0] || [];
-        const dataRows = rows.slice(1).filter(row => row.some(cell => cell?.trim()));
+        // Calculate max columns across ALL rows to handle files with varying column counts
+        const maxColumns = Math.max(...rows.map(row => row?.length || 0));
+        
+        console.log("=== CSV PREVIEW PARSING ===");
+        console.log("Max columns detected:", maxColumns);
+        console.log("Row lengths:", rows.map(r => r?.length));
+        
+        // Generate headers with max columns (fill missing with "Col N")
+        const rawHeaders = rows[0] || [];
+        const headers = Array.from({ length: maxColumns }, (_, i) => 
+          rawHeaders[i]?.trim() || `Col ${i + 1}`
+        );
+        
+        // Ensure all data rows have consistent length (pad with empty strings)
+        const dataRows = rows.slice(1)
+          .filter(row => row.some(cell => cell?.trim()))
+          .map(row => {
+            const paddedRow = [...row];
+            while (paddedRow.length < maxColumns) {
+              paddedRow.push("");
+            }
+            return paddedRow;
+          });
+        
+        console.log("Final headers:", headers);
+        console.log("Data rows count:", dataRows.length);
         
         resolve({
           headers,
@@ -293,59 +316,68 @@ export function autoDetectColumns(headers: string[], rows?: string[][]): Partial
   
   console.log("=== AUTO-DETECT COLUMNS ===");
   console.log("Headers:", headers);
-  console.log("Lower headers:", lowerHeaders);
+  console.log("Number of columns:", headers.length);
   
-  // Detect date column by header
-  const datePatterns = ["date", "date opération", "date operation", "date valeur", "date comptable"];
-  for (let i = 0; i < lowerHeaders.length; i++) {
-    if (datePatterns.some(p => lowerHeaders[i].includes(p))) {
-      config.dateColumn = i;
-      console.log(`Date column detected by header at index ${i}: "${headers[i]}"`);
-      break;
-    }
-  }
+  // Check if first row (headers) looks like data instead of actual headers
+  const firstRowLooksLikeData = headers.some(h => isDateLike(h) || isAmountLike(h));
+  console.log("First row looks like data (not headers):", firstRowLooksLikeData);
   
-  // Detect label column by header
-  const labelPatterns = ["libellé", "libelle", "label", "description", "intitulé", "intitule", "opération", "operation", "motif", "libellé 1", "libellé 2"];
-  for (let i = 0; i < lowerHeaders.length; i++) {
-    if (labelPatterns.some(p => lowerHeaders[i].includes(p))) {
-      config.labelColumn = i;
-      console.log(`Label column detected by header at index ${i}: "${headers[i]}"`);
-      break;
-    }
-  }
-  
-  // Detect amount column (prefer débit/dépense over crédit)
-  const amountPatterns = ["débit", "debit", "montant", "amount", "dépense", "depense", "sortie"];
-  for (let i = 0; i < lowerHeaders.length; i++) {
-    if (amountPatterns.some(p => lowerHeaders[i].includes(p))) {
-      config.amountColumn = i;
-      console.log(`Amount column detected by header at index ${i}: "${headers[i]}"`);
-      break;
-    }
-  }
-  
-  // If no amount column found, try generic patterns
-  if (config.amountColumn === undefined) {
-    const genericPatterns = ["€", "eur", "somme", "valeur"];
+  // If headers look like data, skip header-based detection and go straight to content-based
+  if (!firstRowLooksLikeData) {
+    // Detect date column by header
+    const datePatterns = ["date", "date opération", "date operation", "date valeur", "date comptable"];
     for (let i = 0; i < lowerHeaders.length; i++) {
-      if (genericPatterns.some(p => lowerHeaders[i].includes(p))) {
-        config.amountColumn = i;
-        console.log(`Amount column detected by generic pattern at index ${i}: "${headers[i]}"`);
+      if (datePatterns.some(p => lowerHeaders[i].includes(p))) {
+        config.dateColumn = i;
+        console.log(`Date column detected by header at index ${i}: "${headers[i]}"`);
         break;
+      }
+    }
+    
+    // Detect label column by header
+    const labelPatterns = ["libellé", "libelle", "label", "description", "intitulé", "intitule", "opération", "operation", "motif", "libellé 1", "libellé 2"];
+    for (let i = 0; i < lowerHeaders.length; i++) {
+      if (labelPatterns.some(p => lowerHeaders[i].includes(p))) {
+        config.labelColumn = i;
+        console.log(`Label column detected by header at index ${i}: "${headers[i]}"`);
+        break;
+      }
+    }
+    
+    // Detect amount column (prefer débit/dépense over crédit)
+    const amountPatterns = ["débit", "debit", "montant", "amount", "dépense", "depense", "sortie"];
+    for (let i = 0; i < lowerHeaders.length; i++) {
+      if (amountPatterns.some(p => lowerHeaders[i].includes(p))) {
+        config.amountColumn = i;
+        console.log(`Amount column detected by header at index ${i}: "${headers[i]}"`);
+        break;
+      }
+    }
+    
+    // If no amount column found, try generic patterns
+    if (config.amountColumn === undefined) {
+      const genericPatterns = ["€", "eur", "somme", "valeur"];
+      for (let i = 0; i < lowerHeaders.length; i++) {
+        if (genericPatterns.some(p => lowerHeaders[i].includes(p))) {
+          config.amountColumn = i;
+          console.log(`Amount column detected by generic pattern at index ${i}: "${headers[i]}"`);
+          break;
+        }
       }
     }
   }
   
-  // Content-based detection as fallback if headers didn't work
-  if (rows && rows.length > 0) {
+  // Content-based detection: use headers row if it looks like data, otherwise use first data row
+  const contentRow = firstRowLooksLikeData ? headers : (rows && rows.length > 0 ? rows[0] : null);
+  
+  if (contentRow && contentRow.length > 0) {
     console.log("=== CONTENT-BASED DETECTION ===");
-    console.log("First data row:", rows[0]);
+    console.log("Using row for content detection:", contentRow);
     
     // Detect date by content (look for date-like values)
     if (config.dateColumn === undefined) {
-      for (let i = 0; i < (rows[0]?.length || 0); i++) {
-        const cell = rows[0][i]?.trim() || "";
+      for (let i = 0; i < contentRow.length; i++) {
+        const cell = contentRow[i]?.trim() || "";
         if (isDateLike(cell)) {
           config.dateColumn = i;
           console.log(`Date column detected by content at index ${i}: "${cell}"`);
@@ -356,8 +388,8 @@ export function autoDetectColumns(headers: string[], rows?: string[][]): Partial
     
     // Detect amount by content (look for number-like values with € or decimal)
     if (config.amountColumn === undefined) {
-      for (let i = 0; i < (rows[0]?.length || 0); i++) {
-        const cell = rows[0][i]?.trim() || "";
+      for (let i = 0; i < contentRow.length; i++) {
+        const cell = contentRow[i]?.trim() || "";
         if (isAmountLike(cell) && i !== config.dateColumn) {
           config.amountColumn = i;
           console.log(`Amount column detected by content at index ${i}: "${cell}"`);
@@ -371,10 +403,10 @@ export function autoDetectColumns(headers: string[], rows?: string[][]): Partial
       let longestTextIndex = -1;
       let longestTextLength = 0;
       
-      for (let i = 0; i < (rows[0]?.length || 0); i++) {
+      for (let i = 0; i < contentRow.length; i++) {
         if (i === config.dateColumn || i === config.amountColumn) continue;
         
-        const cell = rows[0][i]?.trim() || "";
+        const cell = contentRow[i]?.trim() || "";
         if (cell.length > longestTextLength && !isDateLike(cell) && !isAmountLike(cell)) {
           longestTextLength = cell.length;
           longestTextIndex = i;
@@ -383,7 +415,7 @@ export function autoDetectColumns(headers: string[], rows?: string[][]): Partial
       
       if (longestTextIndex >= 0) {
         config.labelColumn = longestTextIndex;
-        console.log(`Label column detected by content at index ${longestTextIndex}: "${rows[0][longestTextIndex]}"`);
+        console.log(`Label column detected by content at index ${longestTextIndex}: "${contentRow[longestTextIndex]}"`);
       }
     }
   }
