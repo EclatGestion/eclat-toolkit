@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { usePowens } from "@/hooks/usePowens";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ImportModal } from "./ImportModal";
 import { 
   Upload, 
@@ -10,7 +12,9 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Building2,
+  FileText
 } from "lucide-react";
 import {
   PieChart,
@@ -18,7 +22,6 @@ import {
   Cell,
   ResponsiveContainer,
   Tooltip,
-  Legend,
 } from "recharts";
 
 interface CategorizedExpense {
@@ -48,6 +51,7 @@ interface AnalysisData {
   recommendations: Recommendation[];
   totalExpenses: number;
   period?: string;
+  source?: string;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -74,6 +78,9 @@ export function ExpenseAnalysis() {
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastAnalysisDate, setLastAnalysisDate] = useState<string | null>(null);
+  const [analysisSource, setAnalysisSource] = useState<string | null>(null);
+
+  const { isConnected, bankConnection, syncTransactions, isLoading: isPowensLoading } = usePowens();
 
   // Load last analysis from database
   useEffect(() => {
@@ -99,14 +106,26 @@ export function ExpenseAnalysis() {
         topExpenses: (data.top_expenses as unknown) as TopExpense[],
         recommendations: (data.recommendations as unknown) as Recommendation[],
         totalExpenses: Number(data.total_amount) || 0,
+        source: data.source || "pdf",
       });
       setLastAnalysisDate(new Date(data.created_at!).toLocaleDateString("fr-FR"));
+      setAnalysisSource(data.source || "pdf");
     }
   };
 
   const handleAnalysisComplete = (data: AnalysisData) => {
     setAnalysisData(data);
     setLastAnalysisDate(new Date().toLocaleDateString("fr-FR"));
+    setAnalysisSource(data.source || "pdf");
+  };
+
+  const handleQuickSync = async () => {
+    setIsLoading(true);
+    const data = await syncTransactions();
+    if (data) {
+      handleAnalysisComplete({ ...data, source: "bank" });
+    }
+    setIsLoading(false);
   };
 
   const formatCurrency = (value: number) => {
@@ -123,23 +142,54 @@ export function ExpenseAnalysis() {
   return (
     <div className="bg-card rounded-3xl p-6 shadow-card">
       <div className="flex items-center justify-between mb-4">
-        <div>
-          <h3 className="text-lg font-semibold text-foreground">Analyse des Dépenses</h3>
-          {lastAnalysisDate && (
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Dernière analyse : {lastAnalysisDate}
-            </p>
-          )}
+        <div className="flex items-center gap-3">
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">Analyse des Dépenses</h3>
+            {lastAnalysisDate && (
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs text-muted-foreground">
+                  Dernière analyse : {lastAnalysisDate}
+                </p>
+                {analysisSource && (
+                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
+                    {analysisSource === "bank" ? (
+                      <><Building2 className="w-2.5 h-2.5 mr-1" />Banque</>
+                    ) : (
+                      <><FileText className="w-2.5 h-2.5 mr-1" />PDF</>
+                    )}
+                  </Badge>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-        <Button 
-          onClick={() => setIsImportModalOpen(true)} 
-          variant="outline" 
-          size="sm"
-          className="gap-2"
-        >
-          {analysisData ? <RefreshCw className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
-          {analysisData ? "Nouvelle analyse" : "Importer"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {isConnected && bankConnection && (
+            <Button 
+              onClick={handleQuickSync}
+              variant="outline" 
+              size="sm"
+              disabled={isPowensLoading || isLoading}
+              className="gap-2"
+            >
+              {isPowensLoading || isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <RefreshCw className="w-4 h-4" />
+              )}
+              Sync
+            </Button>
+          )}
+          <Button 
+            onClick={() => setIsImportModalOpen(true)} 
+            variant="outline" 
+            size="sm"
+            className="gap-2"
+          >
+            {analysisData ? <RefreshCw className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+            {analysisData ? "Nouvelle" : "Importer"}
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -147,7 +197,7 @@ export function ExpenseAnalysis() {
           <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
           <p className="text-muted-foreground">Analyse en cours...</p>
           <p className="text-xs text-muted-foreground mt-1">
-            L'IA examine votre relevé bancaire
+            L'IA examine vos transactions
           </p>
         </div>
       ) : !analysisData ? (
@@ -159,14 +209,32 @@ export function ExpenseAnalysis() {
             Analysez vos dépenses avec l'IA
           </h4>
           <p className="text-sm text-muted-foreground text-center mb-4 max-w-sm">
-            Importez votre relevé bancaire PDF pour obtenir une analyse détaillée 
-            et des recommandations personnalisées.
+            {isConnected 
+              ? "Synchronisez votre banque ou importez un PDF pour une analyse détaillée."
+              : "Importez votre relevé bancaire PDF ou connectez votre banque."}
           </p>
           <div className="flex gap-3">
-            <Button onClick={() => setIsImportModalOpen(true)} className="gap-2">
-              <Upload className="w-4 h-4" />
-              Importer un PDF
-            </Button>
+            {isConnected && bankConnection ? (
+              <>
+                <Button onClick={handleQuickSync} disabled={isPowensLoading} className="gap-2">
+                  {isPowensLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="w-4 h-4" />
+                  )}
+                  Synchroniser {bankConnection.bank_name}
+                </Button>
+                <Button variant="outline" onClick={() => setIsImportModalOpen(true)} className="gap-2">
+                  <Upload className="w-4 h-4" />
+                  PDF
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => setIsImportModalOpen(true)} className="gap-2">
+                <Upload className="w-4 h-4" />
+                Importer
+              </Button>
+            )}
           </div>
         </div>
       ) : (
