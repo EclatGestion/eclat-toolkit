@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
-import { RadialBarChart, RadialBar, ResponsiveContainer } from "recharts";
 import { Shield, AlertTriangle, CheckCircle } from "lucide-react";
 import { useWealth } from "@/contexts/WealthContext";
 
@@ -39,17 +38,9 @@ export function SafetyRunway() {
     }
   }, [totalEpargne, totalDepenses]);
 
-  const chartData = [
-    {
-      name: "Runway",
-      value: (months / 12) * 100,
-      fill: color,
-    },
-  ];
-
   return (
-    <div className="bg-card rounded-3xl p-6 shadow-card">
-      <div className="flex items-center justify-between mb-2">
+    <div className="bg-card rounded-3xl p-6 shadow-card h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-foreground">Sérénité Financière</h3>
         <div 
           className="px-3 py-1 rounded-full text-xs font-medium"
@@ -58,51 +49,40 @@ export function SafetyRunway() {
           {status}
         </div>
       </div>
-      <p className="text-sm text-muted-foreground mb-4">
-        Combien de mois pouvez-vous tenir sans revenu ?
-      </p>
 
-      <div className="relative h-[180px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            cx="50%"
-            cy="100%"
-            innerRadius="80%"
-            outerRadius="100%"
-            startAngle={180}
-            endAngle={0}
-            data={chartData}
-            barSize={16}
-          >
-            <RadialBar
-              dataKey="value"
-              cornerRadius={10}
-              background={{ fill: "hsl(var(--muted))" }}
-            />
-          </RadialBarChart>
-        </ResponsiveContainer>
-
-        {/* Center content */}
+      {/* Main content - centered number */}
+      <div className="flex-1 flex flex-col items-center justify-center">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-          className="absolute inset-0 flex flex-col items-center justify-end pb-4"
+          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+          className="flex flex-col items-center"
         >
-          <Icon className="w-8 h-8 mb-2" style={{ color }} />
-          <span className="text-4xl font-bold text-foreground">
+          <Icon className="w-10 h-10 mb-3" style={{ color }} />
+          <span className="text-5xl font-bold text-foreground">
             {months.toFixed(1)}
           </span>
-          <span className="text-sm text-muted-foreground">mois</span>
+          <span className="text-base text-muted-foreground mt-1">mois</span>
         </motion.div>
-      </div>
-
-      {/* Scale indicators */}
-      <div className="flex justify-between px-4 mt-2 text-xs text-muted-foreground">
-        <span>0</span>
-        <span>3</span>
-        <span>6</span>
-        <span>12+</span>
+        
+        {/* Progress bar */}
+        <div className="w-full mt-6">
+          <div className="h-3 bg-muted rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${(months / 12) * 100}%` }}
+              transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
+              className="h-full rounded-full"
+              style={{ backgroundColor: color }}
+            />
+          </div>
+          <div className="flex justify-between mt-2 text-xs text-muted-foreground">
+            <span>0</span>
+            <span>3</span>
+            <span>6</span>
+            <span>12+</span>
+          </div>
+        </div>
       </div>
 
       {/* Message */}
