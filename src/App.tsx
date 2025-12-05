@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,23 +9,28 @@ import { WealthProvider } from "@/contexts/WealthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import { PublicRoute } from "@/components/auth/PublicRoute";
-import Auth from "./pages/Auth";
-import Onboarding from "./pages/Onboarding";
+import { PageLoader } from "@/components/ui/PageLoader";
+
+// Eagerly load critical landing page
 import Landing from "./pages/Landing";
-import Catalogue from "./pages/Catalogue";
-import Dashboard from "./pages/Dashboard";
-import Simulations from "./pages/Simulations";
-import Settings from "./pages/Settings";
-import ToolPage from "./pages/ToolPage";
-import InteretsComposes from "./pages/tools/InteretsComposes";
-import SimulateurImmobilier from "./pages/tools/SimulateurImmobilier";
-import SimulateurIR from "./pages/tools/SimulateurIR";
-import NotFound from "./pages/NotFound";
-import Academie from "./pages/Academie";
-import SimulateurIRPublic from "./pages/public/SimulateurIRPublic";
-import AcademiePublic from "./pages/public/AcademiePublic";
-import BlogIndex from "./pages/public/BlogIndex";
-import BlogArticle from "./pages/public/BlogArticle";
+
+// Lazy load all other pages for code splitting
+const Auth = lazy(() => import("./pages/Auth"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+const Catalogue = lazy(() => import("./pages/Catalogue"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Simulations = lazy(() => import("./pages/Simulations"));
+const Settings = lazy(() => import("./pages/Settings"));
+const ToolPage = lazy(() => import("./pages/ToolPage"));
+const InteretsComposes = lazy(() => import("./pages/tools/InteretsComposes"));
+const SimulateurImmobilier = lazy(() => import("./pages/tools/SimulateurImmobilier"));
+const SimulateurIR = lazy(() => import("./pages/tools/SimulateurIR"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Academie = lazy(() => import("./pages/Academie"));
+const SimulateurIRPublic = lazy(() => import("./pages/public/SimulateurIRPublic"));
+const AcademiePublic = lazy(() => import("./pages/public/AcademiePublic"));
+const BlogIndex = lazy(() => import("./pages/public/BlogIndex"));
+const BlogArticle = lazy(() => import("./pages/public/BlogArticle"));
 
 const queryClient = new QueryClient();
 
@@ -36,29 +42,31 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-            {/* Public SEO Pages */}
-              <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-              <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-              <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
-              <Route path="/academie" element={<AcademiePublic />} />
-              <Route path="/blog" element={<BlogIndex />} />
-              <Route path="/blog/:slug" element={<BlogArticle />} />
-              
-              {/* Protected Pages */}
-              <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/catalogue" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
-              <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+              {/* Public SEO Pages */}
+                <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+                <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
+                <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
+                <Route path="/academie" element={<AcademiePublic />} />
+                <Route path="/blog" element={<BlogIndex />} />
+                <Route path="/blog/:slug" element={<BlogArticle />} />
+                
+                {/* Protected Pages */}
+                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/catalogue" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
+                
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </WealthProvider>
