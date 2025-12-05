@@ -16,8 +16,11 @@ export function BudgetRuleAnalysis() {
   const { analysis, alerts, hasData } = useMemo(() => {
     const monthlyIncome = totalRevenus / 12;
     
-    // Check if we have categorized expense data
-    const hasCsvData = lastAnalysis && expensesByCategory && Object.keys(expensesByCategory).length > 0;
+    // Check if we have valid categorized expense data
+    const hasCsvData = lastAnalysis && 
+      expensesByCategory && 
+      Object.keys(expensesByCategory).length > 0 &&
+      Object.values(expensesByCategory).some(v => typeof v === 'number' && v > 0);
     
     let besoinsAmount = 0;
     let enviesAmount = 0;
