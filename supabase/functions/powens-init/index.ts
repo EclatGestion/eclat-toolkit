@@ -43,12 +43,12 @@ serve(async (req) => {
 
     console.log("🔧 Powens domain:", powensDomain);
 
-    // Check if user already has a Powens account
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Check if user already has a Powens account
     const { data: existingPowensUser } = await supabaseAdmin
       .from("powens_users")
       .select("*")
@@ -57,13 +57,50 @@ serve(async (req) => {
 
     let accessToken: string;
     let powensUserId: string;
+    let needsNewUser = false;
 
     if (existingPowensUser?.access_token && existingPowensUser?.powens_user_id) {
-      // User already has Powens account
-      console.log("✅ Existing Powens user found:", existingPowensUser.powens_user_id);
-      accessToken = existingPowensUser.access_token;
-      powensUserId = existingPowensUser.powens_user_id;
+      // Try to use existing Powens account - test if token is still valid
+      console.log("🔍 Testing existing Powens user:", existingPowensUser.powens_user_id);
+      
+      const testResponse = await fetch(`https://${powensDomain}/auth/token/code`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${existingPowensUser.access_token}`,
+        },
+      });
+
+      if (testResponse.ok) {
+        // Token is valid
+        accessToken = existingPowensUser.access_token;
+        powensUserId = existingPowensUser.powens_user_id;
+        const codeData = await testResponse.json();
+        const tempCode = codeData.code;
+        console.log("✅ Existing token valid, temp code generated");
+
+        // Build webview URL
+        const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
+        const redirectUri = encodeURIComponent(callbackUrl);
+        const webviewUrl = `https://${powensDomain}/auth/webview/connect?client_id=${clientId}&code=${tempCode}&redirect_uri=${redirectUri}`;
+
+        return new Response(
+          JSON.stringify({ 
+            success: true, 
+            webviewUrl,
+            powensUserId 
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      } else {
+        // Token is invalid/expired, need to create new user
+        console.log("⚠️ Existing token invalid (status:", testResponse.status, "), creating new user...");
+        needsNewUser = true;
+      }
     } else {
+      needsNewUser = true;
+    }
+
+    if (needsNewUser) {
       // Create new Powens user via auth/init
       console.log("🆕 Creating new Powens user...");
       
@@ -85,17 +122,19 @@ serve(async (req) => {
       }
 
       const initData = await initResponse.json();
-      console.log("✅ Powens user created:", initData);
+      console.log("✅ Powens user created, id:", initData.id_user);
 
       accessToken = initData.auth_token;
       powensUserId = String(initData.id_user);
 
-      // Save to database
+      // Save/update in database
       await supabaseAdmin.from("powens_users").upsert({
         user_id: user.id,
         powens_user_id: powensUserId,
         access_token: accessToken,
         updated_at: new Date().toISOString(),
+      }, {
+        onConflict: "user_id",
       });
     }
 
@@ -104,7 +143,7 @@ serve(async (req) => {
     const codeResponse = await fetch(`https://${powensDomain}/auth/token/code`, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${accessToken}`,
+        "Authorization": `Bearer ${accessToken!}`,
       },
     });
 
@@ -130,7 +169,7 @@ serve(async (req) => {
       JSON.stringify({ 
         success: true, 
         webviewUrl,
-        powensUserId 
+        powensUserId: powensUserId! 
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
