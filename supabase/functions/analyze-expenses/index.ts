@@ -156,17 +156,22 @@ ${pdfContent}`;
     try {
       // Clean response if it contains markdown code blocks
       let cleanedResponse = responseText.trim();
-      if (cleanedResponse.startsWith("```json")) {
-        cleanedResponse = cleanedResponse.slice(7);
-      } else if (cleanedResponse.startsWith("```")) {
-        cleanedResponse = cleanedResponse.slice(3);
+      
+      // Remove markdown code block markers with regex for better handling
+      cleanedResponse = cleanedResponse
+        .replace(/^```json\s*/i, '')
+        .replace(/^```\s*/i, '')
+        .replace(/\s*```$/i, '');
+      
+      // Try to extract JSON object if there's extra content
+      const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanedResponse = jsonMatch[0];
       }
-      if (cleanedResponse.endsWith("```")) {
-        cleanedResponse = cleanedResponse.slice(0, -3);
-      }
-      analysisResult = JSON.parse(cleanedResponse.trim());
+      
+      analysisResult = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error("Failed to parse AI response:", responseText);
+      console.error("Failed to parse AI response:", responseText.substring(0, 500));
       throw new Error("Failed to parse AI response as JSON");
     }
 
