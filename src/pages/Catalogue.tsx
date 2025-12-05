@@ -43,9 +43,9 @@ const premiumTools = [
     isPremium: true,
   },
   {
-    id: "rentabilite-locative",
-    title: "Rentabilité Pinel/LMNP",
-    description: "Analysez la rentabilité complète de vos investissements locatifs",
+    id: "comparateur-lmnp",
+    title: "Comparateur LMNP vs Location Nue",
+    description: "Comparez la fiscalité meublé vs vide et optimisez vos revenus locatifs",
     icon: Key,
     iconColor: "text-amber-500",
     iconBg: "bg-amber-500/10",
