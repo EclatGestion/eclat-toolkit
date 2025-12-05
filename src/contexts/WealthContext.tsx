@@ -180,7 +180,22 @@ export function WealthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (analysisData) {
-        const categorized = analysisData.categorized_expenses as Record<string, number> || {};
+        // Transform array format to Record<string, number>
+        const rawCategorized = analysisData.categorized_expenses as Array<{category: string, total: number}> | Record<string, number> | null;
+        let categorized: Record<string, number> = {};
+        
+        if (Array.isArray(rawCategorized)) {
+          // Handle array format from edge function
+          rawCategorized.forEach(item => {
+            if (item && item.category && typeof item.total === 'number') {
+              categorized[item.category] = item.total;
+            }
+          });
+        } else if (rawCategorized && typeof rawCategorized === 'object') {
+          // Handle already-transformed object format
+          categorized = rawCategorized as Record<string, number>;
+        }
+        
         setExpensesByCategory(categorized);
         setLastAnalysis({
           id: analysisData.id,
