@@ -4,27 +4,26 @@ import { Sparkles, Crown, CreditCard, Calendar, ExternalLink } from "lucide-reac
 import { Button } from "@/components/ui/button";
 import { usePremium } from "@/hooks/usePremium";
 import { UpgradePremiumModal } from "./UpgradePremiumModal";
-
 export function PremiumStatusCard() {
-  const { isPremium, isLoading } = usePremium();
+  const {
+    isPremium,
+    isLoading
+  } = usePremium();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   if (isLoading) {
-    return (
-      <div className="bg-card rounded-3xl p-6 shadow-card animate-pulse">
+    return <div className="bg-card rounded-3xl p-6 shadow-card animate-pulse">
         <div className="h-6 w-32 bg-muted rounded mb-4" />
         <div className="h-4 w-48 bg-muted rounded" />
-      </div>
-    );
+      </div>;
   }
-
   if (isPremium) {
-    return (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-gradient-to-br from-primary/5 via-card to-amber-500/5 rounded-3xl p-6 shadow-card border border-primary/20"
-      >
+    return <motion.div initial={{
+      opacity: 0,
+      y: 10
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="bg-gradient-to-br from-primary/5 via-card to-amber-500/5 rounded-3xl p-6 shadow-card border border-primary/20">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
@@ -43,7 +42,7 @@ export function PremiumStatusCard() {
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-3 text-sm">
             <CreditCard className="w-4 h-4 text-muted-foreground" />
-            <span className="text-muted-foreground">9,99€/mois</span>
+            <span className="text-muted-foreground">4,99€/mois</span>
           </div>
           <div className="flex items-center gap-3 text-sm">
             <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -57,17 +56,16 @@ export function PremiumStatusCard() {
             Gérer l'abonnement
           </Button>
         </div>
-      </motion.div>
-    );
+      </motion.div>;
   }
-
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-card rounded-3xl p-6 shadow-card"
-      >
+  return <>
+      <motion.div initial={{
+      opacity: 0,
+      y: 10
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="bg-card rounded-3xl p-6 shadow-card">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center">
@@ -95,6 +93,5 @@ export function PremiumStatusCard() {
       </motion.div>
 
       <UpgradePremiumModal open={isModalOpen} onOpenChange={setIsModalOpen} />
-    </>
-  );
+    </>;
 }
