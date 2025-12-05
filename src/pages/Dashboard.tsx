@@ -1,6 +1,5 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { KPICard } from "@/components/dashboard/KPICard";
-import { RecentActivity } from "@/components/dashboard/RecentActivity";
 import { AddAssetModal } from "@/components/dashboard/AddAssetModal";
 import { AddIncomeModal } from "@/components/dashboard/AddIncomeModal";
 import { AddExpenseModal } from "@/components/dashboard/AddExpenseModal";
@@ -11,6 +10,7 @@ import { SafetyRunway } from "@/components/dashboard/SafetyRunway";
 import { SavingsRateBooster } from "@/components/dashboard/SavingsRateBooster";
 import { BudgetRuleAnalysis } from "@/components/dashboard/BudgetRuleAnalysis";
 import { PremiumLock } from "@/components/premium/PremiumLock";
+import { PremiumBanner } from "@/components/premium/PremiumBanner";
 import { useWealth, Asset } from "@/contexts/WealthContext";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
@@ -104,6 +104,9 @@ export default function Dashboard() {
         initial="hidden"
         animate="visible"
       >
+        {/* Premium Banner for Standard Users */}
+        <PremiumBanner />
+
         {/* Header */}
         <motion.div variants={itemVariants} className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-foreground">Vue d'ensemble</h2>
@@ -212,72 +215,76 @@ export default function Dashboard() {
           </PremiumLock>
         </motion.div>
 
-        {/* Charts Row */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Expense Analysis */}
-          <div className="lg:col-span-2">
+        {/* Expense Analysis - Full Width */}
+        <motion.div variants={itemVariants} className="mb-6">
+          <PremiumLock featureName="l'analyse IA des dépenses">
             <ExpenseAnalysis />
-          </div>
-
-          {/* Pie Chart */}
-          <div className="bg-card rounded-3xl p-6 shadow-card">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Répartition Patrimoine</h3>
-            {patrimoineData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
-                <PieChart>
-                  <Pie
-                    data={patrimoineData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={50}
-                    outerRadius={80}
-                    paddingAngle={4}
-                    dataKey="value"
-                    stroke="none"
-                  >
-                    {patrimoineData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number) => `${value.toLocaleString("fr-FR")} €`}
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--card))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "12px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="h-[220px] flex items-center justify-center text-muted-foreground">
-                Aucun actif enregistré
-              </div>
-            )}
-            {patrimoineData.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-3 mt-2">
-                {patrimoineData.map((entry) => (
-                  <div key={entry.name} className="flex items-center gap-1.5">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: entry.color }}
-                    />
-                    <span className="text-xs text-muted-foreground">{entry.name}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          </PremiumLock>
         </motion.div>
 
-        {/* Assets & Activity Row */}
+        {/* Assets & Patrimoine Distribution Row */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <AssetsList 
             onAddClick={() => setIsAddModalOpen(true)} 
             onEditClick={handleEditAsset} 
           />
-          <RecentActivity />
+          
+          {/* Patrimoine Distribution Pie Chart */}
+          <div className="bg-card rounded-3xl p-6 shadow-card">
+            <h3 className="text-lg font-semibold text-foreground mb-4">Répartition Patrimoine</h3>
+            {patrimoineData.length > 0 ? (
+              <>
+                <ResponsiveContainer width="100%" height={220}>
+                  <PieChart>
+                    <Pie
+                      data={patrimoineData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={4}
+                      dataKey="value"
+                      stroke="none"
+                    >
+                      {patrimoineData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(value: number) => `${value.toLocaleString("fr-FR")} €`}
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: "12px",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                {/* Legend with values */}
+                <div className="space-y-2 mt-4">
+                  {patrimoineData.map((entry) => (
+                    <div key={entry.name} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="w-3 h-3 rounded-full" 
+                          style={{ backgroundColor: entry.color }}
+                        />
+                        <span className="text-sm text-muted-foreground">{entry.name}</span>
+                      </div>
+                      <span className="text-sm font-medium text-foreground">
+                        {formatCurrency(entry.value)}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="h-[280px] flex items-center justify-center text-muted-foreground">
+                Aucun actif enregistré
+              </div>
+            )}
+          </div>
         </motion.div>
 
         {/* FIRE Goals */}
