@@ -189,7 +189,7 @@ export function ImportModal({
   const handlePowensConnect = async () => {
     try {
       const currentUrl = window.location.origin;
-      const callbackUrl = `${currentUrl}/powens-callback`;
+      const callbackUrl = `${currentUrl}/powens/callback`;
       
       const webviewUrl = await initConnection(callbackUrl);
       

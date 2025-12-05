@@ -29,6 +29,15 @@ serve(async (req) => {
     
     console.log("[POWENS-INIT] Using domain:", POWENS_DOMAIN);
 
+    // Parse request body first to get redirectUrl
+    const { redirectUrl } = await req.json();
+    
+    if (!redirectUrl) {
+      throw new Error("Missing redirect URL in request body");
+    }
+    
+    console.log("[POWENS-INIT] Redirect URL:", redirectUrl);
+
     // Get user from JWT
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -118,12 +127,11 @@ serve(async (req) => {
 
     console.log("[POWENS-INIT] Webview code generated successfully");
 
-    // Build webview URL
-    const { redirectUrl } = await req.json();
+    // Build webview URL with the redirectUrl from the beginning
     const webviewUrl = `https://${POWENS_DOMAIN}/auth/webview/connect?` +
       `client_id=${POWENS_CLIENT_ID}` +
       `&code=${tempCode}` +
-      `&redirect_uri=${encodeURIComponent(redirectUrl || window.location.origin)}`;
+      `&redirect_uri=${encodeURIComponent(redirectUrl)}`;
 
     return new Response(
       JSON.stringify({
