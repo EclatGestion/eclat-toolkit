@@ -120,13 +120,18 @@ export default function Onboarding() {
         goals: [],
       });
 
-      // Créer l'actif "Patrimoine Initial" si > 0
+      // Créer l'actif "Patrimoine Initial" si > 0 (non bloquant)
       if (values.patrimoine > 0) {
-        await addAsset({
-          name: "Patrimoine Initial",
-          type: "Autre",
-          value: values.patrimoine,
-        });
+        try {
+          await addAsset({
+            name: "Patrimoine Initial",
+            type: "Autre",
+            value: values.patrimoine,
+          });
+        } catch (assetError) {
+          console.error("Erreur création actif initial:", assetError);
+          // On continue quand même, l'utilisateur pourra l'ajouter plus tard
+        }
       }
 
       toast({
@@ -136,9 +141,10 @@ export default function Onboarding() {
 
       navigate("/dashboard");
     } catch (error) {
+      console.error("Onboarding error:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la sauvegarde.",
+        description: "Une erreur est survenue lors de la sauvegarde. Veuillez réessayer.",
         variant: "destructive",
       });
     } finally {
