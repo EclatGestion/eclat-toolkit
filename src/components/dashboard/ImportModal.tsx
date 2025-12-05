@@ -1,7 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { usePowens } from "@/hooks/usePowens";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
 import {
   Dialog,
@@ -11,17 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { 
-  FileText, 
-  Link2, 
-  Upload, 
-  Loader2, 
-  AlertCircle, 
-  Building2,
-  RefreshCw,
-  CheckCircle,
-  Unlink
-} from "lucide-react";
+import { FileText, Link2, Upload, Loader2, AlertCircle } from "lucide-react";
 
 // Configuration du worker PDF.js (version legacy compatible)
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
@@ -45,40 +34,6 @@ export function ImportModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  const { 
-    bankConnection, 
-    isConnecting, 
-    isSyncing,
-    initConnection, 
-    handleCallback,
-    syncTransactions,
-    disconnect 
-  } = usePowens();
-
-  // Listen for Powens callback messages from popup
-  useEffect(() => {
-    const handleMessage = async (event: MessageEvent) => {
-      if (event.data?.type === "powens-callback" && event.data?.connectionId) {
-        try {
-          await handleCallback(event.data.connectionId);
-          toast({
-            title: "Banque connectée",
-            description: "Votre compte bancaire a été connecté avec succès.",
-          });
-        } catch (err) {
-          toast({
-            title: "Erreur de connexion",
-            description: err instanceof Error ? err.message : "Erreur inconnue",
-            variant: "destructive",
-          });
-        }
-      }
-    };
-
-    window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
-  }, [handleCallback, toast]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -107,6 +62,7 @@ export function ImportModal({
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
       
+      // Extraire UNIQUEMENT les chaînes de texte
       const pageText = textContent.items
         .filter((item) => 'str' in item && typeof (item as any).str === 'string')
         .map((item) => (item as any).str as string)
@@ -115,14 +71,19 @@ export function ImportModal({
       fullText += pageText + '\n';
     }
     
+    // Nettoyage du texte
     const cleanedText = fullText
-      .replace(/\n{3,}/g, '\n\n')
-      .replace(/Page \d+\/\d+/gi, '')
-      .replace(/Capital social.*$/gim, '')
-      .replace(/RCS.*$/gim, '')
-      .replace(/SIRET.*$/gim, '')
-      .replace(/^\s+|\s+$/g, '')
-      .replace(/\s{2,}/g, ' ');
+      .replace(/\n{3,}/g, '\n\n')           // Supprimer sauts de ligne excessifs
+      .replace(/Page \d+\/\d+/gi, '')        // Supprimer "Page 1/4"
+      .replace(/Capital social.*$/gim, '')   // Supprimer mentions légales
+      .replace(/RCS.*$/gim, '')              // Supprimer numéros RCS
+      .replace(/SIRET.*$/gim, '')            // Supprimer SIRET
+      .replace(/^\s+|\s+$/g, '')             // Trim
+      .replace(/\s{2,}/g, ' ');              // Espaces multiples → un seul
+    
+    // DEBUG: Afficher dans la console
+    console.log("📄 Texte envoyé à l'IA :", cleanedText);
+    console.log("📊 Nombre de caractères :", cleanedText.length);
     
     return cleanedText;
   };
@@ -136,18 +97,22 @@ export function ImportModal({
     onOpenChange(false);
 
     try {
+      // Extract text from PDF (optimized - text only, no binary)
       const pdfContent = await extractTextFromPDF(selectedFile);
 
+      // Upload original PDF to storage (for record keeping)
       const filePath = `${user.id}/${Date.now()}_${selectedFile.name}`;
       await supabase.storage
         .from("bank-statements")
         .upload(filePath, selectedFile);
 
+      // Call the analysis edge function with cleaned text
+      // Note: userId is extracted from JWT token server-side for security
       const { data: functionData, error: functionError } = await supabase.functions.invoke(
         "analyze-expenses",
         {
           body: {
-            pdfContent,
+            pdfContent, // Now contains cleaned text, not base64
             fileName: selectedFile.name,
           },
         }
@@ -186,78 +151,6 @@ export function ImportModal({
     }
   };
 
-  const handlePowensConnect = async () => {
-    try {
-      const currentUrl = window.location.origin;
-      const callbackUrl = `${currentUrl}/powens/callback`;
-      
-      const webviewUrl = await initConnection(callbackUrl);
-      
-      if (webviewUrl) {
-        // Open Powens webview in a popup
-        const popup = window.open(
-          webviewUrl,
-          "powens-connect",
-          "width=600,height=700,scrollbars=yes"
-        );
-
-        // Poll for popup close and URL params
-        const checkPopup = setInterval(() => {
-          if (popup?.closed) {
-            clearInterval(checkPopup);
-          }
-        }, 1000);
-      }
-    } catch (err) {
-      toast({
-        title: "Erreur de connexion",
-        description: err instanceof Error ? err.message : "Impossible de se connecter à Powens",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handlePowensSync = async () => {
-    setIsLoading(true);
-    onOpenChange(false);
-    
-    try {
-      const analysisData = await syncTransactions();
-      
-      if (analysisData) {
-        onAnalysisComplete(analysisData);
-        toast({
-          title: "Synchronisation terminée",
-          description: "Vos transactions ont été analysées avec succès.",
-        });
-      }
-    } catch (err) {
-      toast({
-        title: "Erreur de synchronisation",
-        description: err instanceof Error ? err.message : "Erreur inconnue",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDisconnect = async () => {
-    try {
-      await disconnect();
-      toast({
-        title: "Banque déconnectée",
-        description: "Votre compte bancaire a été déconnecté.",
-      });
-    } catch (err) {
-      toast({
-        title: "Erreur",
-        description: "Impossible de déconnecter la banque",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
@@ -266,90 +159,6 @@ export function ImportModal({
         </DialogHeader>
 
         <div className="space-y-4 py-4">
-          {/* Powens Option - Active */}
-          {bankConnection ? (
-            // Connected state
-            <div className="relative border-2 border-primary rounded-2xl p-6 bg-primary/5">
-              <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-500/20 rounded-full flex items-center gap-1">
-                <CheckCircle className="w-3 h-3 text-emerald-600" />
-                <span className="text-xs text-emerald-600 font-medium">Connecté</span>
-              </div>
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                  <Building2 className="w-6 h-6 text-primary" />
-                </div>
-                <h4 className="font-medium text-foreground mb-1">
-                  {bankConnection.bank_name || "Banque connectée"}
-                </h4>
-                {bankConnection.last_sync_at && (
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Dernière sync : {new Date(bankConnection.last_sync_at).toLocaleDateString("fr-FR")}
-                  </p>
-                )}
-                <div className="flex gap-2">
-                  <Button
-                    onClick={handlePowensSync}
-                    disabled={isSyncing}
-                    size="sm"
-                    className="gap-2"
-                  >
-                    {isSyncing ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <RefreshCw className="w-4 h-4" />
-                    )}
-                    Synchroniser
-                  </Button>
-                  <Button
-                    onClick={handleDisconnect}
-                    variant="outline"
-                    size="sm"
-                    className="gap-2"
-                  >
-                    <Unlink className="w-4 h-4" />
-                    Déconnecter
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            // Not connected state
-            <div
-              onClick={handlePowensConnect}
-              className="relative border-2 border-dashed border-primary/50 rounded-2xl p-6 hover:border-primary hover:bg-primary/5 transition-colors cursor-pointer"
-            >
-              {isConnecting && (
-                <div className="absolute inset-0 bg-background/80 rounded-2xl flex items-center justify-center">
-                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
-                </div>
-              )}
-              <div className="flex flex-col items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                  <Link2 className="w-6 h-6 text-primary" />
-                </div>
-                <h4 className="font-medium text-foreground mb-1">
-                  Synchronisation bancaire
-                </h4>
-                <p className="text-sm text-muted-foreground">
-                  Connectez votre banque pour un import automatique
-                </p>
-                <span className="mt-2 text-xs text-primary font-medium">
-                  Recommandé ✨
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">ou</span>
-            </div>
-          </div>
-
           {/* PDF Import Option */}
           <div
             onClick={() => fileInputRef.current?.click()}
@@ -363,14 +172,14 @@ export function ImportModal({
               className="hidden"
             />
             <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                <FileText className="w-6 h-6 text-muted-foreground" />
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                <FileText className="w-6 h-6 text-primary" />
               </div>
               <h4 className="font-medium text-foreground mb-1">
                 Relevé bancaire PDF
               </h4>
               <p className="text-sm text-muted-foreground">
-                Importez manuellement votre relevé
+                Importez votre relevé pour une analyse automatique
               </p>
               {selectedFile && (
                 <div className="mt-3 px-3 py-1.5 bg-primary/10 rounded-lg">
@@ -379,6 +188,24 @@ export function ImportModal({
                   </p>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Powens Option - Disabled */}
+          <div className="relative border-2 border-border rounded-2xl p-6 opacity-60 cursor-not-allowed">
+            <div className="absolute top-3 right-3 px-2 py-0.5 bg-muted rounded-full">
+              <span className="text-xs text-muted-foreground">Bientôt</span>
+            </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                <Link2 className="w-6 h-6 text-muted-foreground" />
+              </div>
+              <h4 className="font-medium text-foreground mb-1">
+                Synchronisation Powens
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Connectez votre banque pour un import automatique
+              </p>
             </div>
           </div>
 
@@ -396,25 +223,23 @@ export function ImportModal({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Annuler
           </Button>
-          {selectedFile && (
-            <Button 
-              onClick={handleAnalyze} 
-              disabled={isUploading}
-              className="gap-2"
-            >
-              {isUploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Analyse...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4" />
-                  Analyser PDF
-                </>
-              )}
-            </Button>
-          )}
+          <Button 
+            onClick={handleAnalyze} 
+            disabled={!selectedFile || isUploading}
+            className="gap-2"
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Analyse...
+              </>
+            ) : (
+              <>
+                <Upload className="w-4 h-4" />
+                Analyser
+              </>
+            )}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

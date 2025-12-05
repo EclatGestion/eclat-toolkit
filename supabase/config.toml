@@ -11,12 +11,3 @@ verify_jwt = true
 
 [functions.customer-portal]
 verify_jwt = true
-
-[functions.powens-init]
-verify_jwt = true
-
-[functions.powens-callback]
-verify_jwt = true
-
-[functions.powens-sync]
-verify_jwt = true

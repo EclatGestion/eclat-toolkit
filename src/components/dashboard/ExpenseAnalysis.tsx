@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { usePowens } from "@/hooks/usePowens";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { ImportModal } from "./ImportModal";
 import { 
   Upload, 
@@ -12,9 +10,7 @@ import {
   AlertTriangle,
   CheckCircle,
   Loader2,
-  RefreshCw,
-  Building2,
-  FileText
+  RefreshCw
 } from "lucide-react";
 import {
   PieChart,
@@ -22,6 +18,7 @@ import {
   Cell,
   ResponsiveContainer,
   Tooltip,
+  Legend,
 } from "recharts";
 
 interface CategorizedExpense {
@@ -77,9 +74,6 @@ export function ExpenseAnalysis() {
   const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastAnalysisDate, setLastAnalysisDate] = useState<string | null>(null);
-  const [analysisSource, setAnalysisSource] = useState<"pdf" | "powens" | null>(null);
-
-  const { bankConnection, isSyncing, syncTransactions } = usePowens();
 
   // Load last analysis from database
   useEffect(() => {
@@ -107,30 +101,12 @@ export function ExpenseAnalysis() {
         totalExpenses: Number(data.total_amount) || 0,
       });
       setLastAnalysisDate(new Date(data.created_at!).toLocaleDateString("fr-FR"));
-      setAnalysisSource((data.source as "pdf" | "powens") || "pdf");
     }
   };
 
   const handleAnalysisComplete = (data: AnalysisData) => {
     setAnalysisData(data);
     setLastAnalysisDate(new Date().toLocaleDateString("fr-FR"));
-    loadLastAnalysis(); // Reload to get source info
-  };
-
-  const handleQuickSync = async () => {
-    if (!bankConnection) return;
-    
-    setIsLoading(true);
-    try {
-      const data = await syncTransactions();
-      if (data) {
-        handleAnalysisComplete(data);
-      }
-    } catch (err) {
-      console.error("Quick sync error:", err);
-    } finally {
-      setIsLoading(false);
-    }
   };
 
   const formatCurrency = (value: number) => {
@@ -147,60 +123,23 @@ export function ExpenseAnalysis() {
   return (
     <div className="bg-card rounded-3xl p-6 shadow-card">
       <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div>
-            <h3 className="text-lg font-semibold text-foreground">Analyse des Dépenses</h3>
-            <div className="flex items-center gap-2 mt-0.5">
-              {lastAnalysisDate && (
-                <p className="text-xs text-muted-foreground">
-                  Dernière analyse : {lastAnalysisDate}
-                </p>
-              )}
-              {analysisSource && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-4">
-                  {analysisSource === "powens" ? (
-                    <span className="flex items-center gap-1">
-                      <Building2 className="w-2.5 h-2.5" />
-                      Banque
-                    </span>
-                  ) : (
-                    <span className="flex items-center gap-1">
-                      <FileText className="w-2.5 h-2.5" />
-                      PDF
-                    </span>
-                  )}
-                </Badge>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="flex gap-2">
-          {bankConnection && analysisData && (
-            <Button 
-              onClick={handleQuickSync} 
-              variant="outline" 
-              size="sm"
-              disabled={isSyncing || isLoading}
-              className="gap-2"
-            >
-              {(isSyncing || isLoading) ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <RefreshCw className="w-4 h-4" />
-              )}
-              Sync
-            </Button>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">Analyse des Dépenses</h3>
+          {lastAnalysisDate && (
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Dernière analyse : {lastAnalysisDate}
+            </p>
           )}
-          <Button 
-            onClick={() => setIsImportModalOpen(true)} 
-            variant="outline" 
-            size="sm"
-            className="gap-2"
-          >
-            {analysisData ? <RefreshCw className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
-            {analysisData ? "Nouvelle analyse" : "Importer"}
-          </Button>
         </div>
+        <Button 
+          onClick={() => setIsImportModalOpen(true)} 
+          variant="outline" 
+          size="sm"
+          className="gap-2"
+        >
+          {analysisData ? <RefreshCw className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+          {analysisData ? "Nouvelle analyse" : "Importer"}
+        </Button>
       </div>
 
       {isLoading ? (
@@ -208,7 +147,7 @@ export function ExpenseAnalysis() {
           <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
           <p className="text-muted-foreground">Analyse en cours...</p>
           <p className="text-xs text-muted-foreground mt-1">
-            L'IA examine vos transactions
+            L'IA examine votre relevé bancaire
           </p>
         </div>
       ) : !analysisData ? (
@@ -220,24 +159,13 @@ export function ExpenseAnalysis() {
             Analysez vos dépenses avec l'IA
           </h4>
           <p className="text-sm text-muted-foreground text-center mb-4 max-w-sm">
-            {bankConnection 
-              ? "Synchronisez vos transactions bancaires pour une analyse détaillée."
-              : "Connectez votre banque ou importez un relevé PDF pour obtenir des recommandations personnalisées."
-            }
+            Importez votre relevé bancaire PDF pour obtenir une analyse détaillée 
+            et des recommandations personnalisées.
           </p>
           <div className="flex gap-3">
             <Button onClick={() => setIsImportModalOpen(true)} className="gap-2">
-              {bankConnection ? (
-                <>
-                  <Building2 className="w-4 h-4" />
-                  Synchroniser
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4" />
-                  Connecter ma banque
-                </>
-              )}
+              <Upload className="w-4 h-4" />
+              Importer un PDF
             </Button>
           </div>
         </div>
