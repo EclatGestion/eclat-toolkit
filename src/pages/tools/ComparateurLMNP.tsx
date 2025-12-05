@@ -12,47 +12,32 @@ import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { PlusValueComparisonChart } from "@/components/simulators/lmnp/PlusValueComparisonChart";
 import { BilanGlobalCard } from "@/components/simulators/lmnp/BilanGlobalCard";
-import { TypeLocationSelect, TypeLocation } from "@/components/simulators/lmnp/TypeLocationSelect";
-import { TravauxSection, TypeTravaux } from "@/components/simulators/lmnp/TravauxSection";
-import { PlusValueSection, ModeTransmission } from "@/components/simulators/lmnp/PlusValueSection";
+import { TypeLocationSelect } from "@/components/simulators/lmnp/TypeLocationSelect";
+import { TravauxSection } from "@/components/simulators/lmnp/TravauxSection";
+import { PlusValueSection } from "@/components/simulators/lmnp/PlusValueSection";
+import type { TypeLocation } from "@/components/simulators/lmnp/TypeLocationSelect";
+import type { TypeTravaux } from "@/components/simulators/lmnp/TravauxSection";
+import type { ModeTransmission } from "@/components/simulators/lmnp/PlusValueSection";
 
-// ============================================
-// CONSTANTES FISCALES 2025 - LOI DE FINANCES + LOI LE MEUR
-// ============================================
 const PRELEVEMENTS_SOCIAUX = 0.172;
 const IMPOT_PLUS_VALUE = 0.19;
-
-// Location Nue
 const MICRO_FONCIER_ABATTEMENT = 0.30;
 const PLAFOND_MICRO_FONCIER = 15000;
 const PLAFOND_DEFICIT_FONCIER_GLOBAL = 10700;
 const PLAFOND_DEFICIT_FONCIER_TRAVAUX_ENERGIE = 21400;
-
-// LMNP Longue Durée
 const MICRO_BIC_ABATTEMENT_LONGUE_DUREE = 0.50;
 const PLAFOND_MICRO_BIC_LONGUE_DUREE = 77700;
-
-// LMNP Tourisme NON CLASSÉ (Loi Le Meur 2025)
 const MICRO_BIC_ABATTEMENT_TOURISME_NON_CLASSE = 0.30;
 const PLAFOND_MICRO_BIC_TOURISME_NON_CLASSE = 15000;
-
-// LMNP Tourisme CLASSÉ (Loi Le Meur 2025)
 const MICRO_BIC_ABATTEMENT_TOURISME_CLASSE = 0.50;
 const PLAFOND_MICRO_BIC_TOURISME_CLASSE = 77700;
-
-// Amortissements
 const AMORTISSEMENT_BATI_PART = 0.85;
 const AMORTISSEMENT_BATI_DUREE = 35;
 const AMORTISSEMENT_MEUBLES_DUREE = 7;
 const AMORTISSEMENT_TRAVAUX_AMELIORATION_DUREE = 10;
-
-// Seuil LMP
 const SEUIL_LMP_RECETTES = 23000;
 const COTISATIONS_URSSAF_LMP = 0.40;
 
-// ============================================
-// INTERFACES
-// ============================================
 interface ResultatLocationNue {
   loyersAnnuels: number;
   chargesDeductibles: number;
@@ -60,7 +45,7 @@ interface ResultatLocationNue {
   baseImposableMicro: number | null;
   baseImposableReel: number;
   baseImposable: number;
-  regimeChoisi: "Micro-Foncier" | "Réel";
+  regimeChoisi: "Micro-Foncier" | "Reel";
   impotTotal: number;
   cashflowNet: number;
   deficitFoncier: number;
@@ -75,7 +60,7 @@ interface ResultatLMNP {
   baseImposableMicro: number | null;
   baseImposableReel: number;
   baseImposable: number;
-  regimeChoisi: "Micro-BIC" | "Réel Simplifié";
+  regimeChoisi: "Micro-BIC" | "Reel Simplifie";
   impotTotal: number;
   cashflowNet: number;
   amortissementBati: number;
@@ -109,35 +94,23 @@ interface ResultatPlusValue {
   raisonExoneration: string;
 }
 
-// ============================================
-// COMPOSANT PRINCIPAL
-// ============================================
 export default function ComparateurLMNP() {
-  // Section A: Le Projet Immobilier
   const [prixBien, setPrixBien] = useState(200000);
   const [fraisNotaire, setFraisNotaire] = useState(16000);
   const [montantMeubles, setMontantMeubles] = useState(12000);
   const [loyerMensuel, setLoyerMensuel] = useState(900);
   const [tauxVacance, setTauxVacance] = useState(5);
   const [typeLocation, setTypeLocation] = useState<TypeLocation>("longue_duree");
-
-  // Section B: Les Charges Annuelles
   const [chargesCopro, setChargesCopro] = useState(1200);
   const [taxeFonciere, setTaxeFonciere] = useState(800);
   const [interetsEmprunt, setInteretsEmprunt] = useState(3500);
   const [assurancePNO, setAssurancePNO] = useState(250);
   const [fraisGestion, setFraisGestion] = useState(0);
   const [cfe, setCfe] = useState(500);
-
-  // Section C: Les Travaux
   const [montantTravaux, setMontantTravaux] = useState(0);
   const [typeTravaux, setTypeTravaux] = useState<TypeTravaux>("entretien");
-
-  // Section D: Profil Fiscal
   const [tmi, setTmi] = useState(30);
   const [revenusFoyer, setRevenusFoyer] = useState(60000);
-
-  // Section E: Simulation Plus-Value
   const [simulerPlusValue, setSimulerPlusValue] = useState(false);
   const [dureeDetention, setDureeDetention] = useState(10);
   const [prixReventeEstime, setPrixReventeEstime] = useState(250000);
@@ -147,18 +120,11 @@ export default function ComparateurLMNP() {
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 
-  // ============================================
-  // CALCUL LOCATION NUE
-  // ============================================
   const resultatLocationNue = useMemo((): ResultatLocationNue => {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
     const chargesDeductiblesTotal = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion;
     const travauxDeductibles = typeTravaux === "amelioration" ? 0 : montantTravaux;
-
-    const plafondDeficitGlobal = typeTravaux === "energie"
-      ? PLAFOND_DEFICIT_FONCIER_TRAVAUX_ENERGIE
-      : PLAFOND_DEFICIT_FONCIER_GLOBAL;
-
+    const plafondDeficitGlobal = typeTravaux === "energie" ? PLAFOND_DEFICIT_FONCIER_TRAVAUX_ENERGIE : PLAFOND_DEFICIT_FONCIER_GLOBAL;
     const resultatFoncier = loyersAnnuels - chargesDeductiblesTotal - travauxDeductibles;
 
     let deficitFoncier = 0;
@@ -174,19 +140,17 @@ export default function ComparateurLMNP() {
       deficitReportable = Math.max(0, deficitFoncier - deficitImputeSurRevenuGlobal);
     }
 
-    const baseImposableMicro = loyersAnnuels <= PLAFOND_MICRO_FONCIER
-      ? loyersAnnuels * (1 - MICRO_FONCIER_ABATTEMENT)
-      : null;
+    const baseImposableMicro = loyersAnnuels <= PLAFOND_MICRO_FONCIER ? loyersAnnuels * (1 - MICRO_FONCIER_ABATTEMENT) : null;
     const baseImposableReel = Math.max(0, resultatFoncier);
 
-    let regimeChoisi: "Micro-Foncier" | "Réel";
+    let regimeChoisi: "Micro-Foncier" | "Reel";
     let baseImposable: number;
 
     if (baseImposableMicro !== null && baseImposableMicro < baseImposableReel && deficitFoncier === 0) {
       regimeChoisi = "Micro-Foncier";
       baseImposable = baseImposableMicro;
     } else {
-      regimeChoisi = "Réel";
+      regimeChoisi = "Reel";
       baseImposable = baseImposableReel;
     }
 
@@ -211,9 +175,6 @@ export default function ComparateurLMNP() {
     };
   }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, montantTravaux, typeTravaux, tmi]);
 
-  // ============================================
-  // CALCUL LMNP
-  // ============================================
   const resultatLMNP = useMemo((): ResultatLMNP => {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
     const alerteLMP = loyersAnnuels > SEUIL_LMP_RECETTES && loyersAnnuels > revenusFoyer;
@@ -235,32 +196,25 @@ export default function ComparateurLMNP() {
         plafondMicroBIC = PLAFOND_MICRO_BIC_LONGUE_DUREE;
     }
 
-    const baseImposableMicro = loyersAnnuels <= plafondMicroBIC
-      ? loyersAnnuels * (1 - abattementMicroBIC)
-      : null;
-
+    const baseImposableMicro = loyersAnnuels <= plafondMicroBIC ? loyersAnnuels * (1 - abattementMicroBIC) : null;
     const amortissementBati = (prixBien * AMORTISSEMENT_BATI_PART) / AMORTISSEMENT_BATI_DUREE;
     const amortissementMeubles = montantMeubles / AMORTISSEMENT_MEUBLES_DUREE;
-    const amortissementTravaux = typeTravaux === "amelioration"
-      ? montantTravaux / AMORTISSEMENT_TRAVAUX_AMELIORATION_DUREE
-      : 0;
+    const amortissementTravaux = typeTravaux === "amelioration" ? montantTravaux / AMORTISSEMENT_TRAVAUX_AMELIORATION_DUREE : 0;
     const travauxDeductiblesImmediat = typeTravaux !== "amelioration" ? montantTravaux : 0;
-
     const totalAmortissements = amortissementBati + amortissementMeubles + amortissementTravaux;
     const chargesDeductiblesTotal = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion + cfe + travauxDeductiblesImmediat;
-
     const resultatBIC = loyersAnnuels - chargesDeductiblesTotal - totalAmortissements;
     const deficitReportable = resultatBIC < 0 ? Math.abs(resultatBIC) : 0;
     const baseImposableReel = Math.max(0, resultatBIC);
 
-    let regimeChoisi: "Micro-BIC" | "Réel Simplifié";
+    let regimeChoisi: "Micro-BIC" | "Reel Simplifie";
     let baseImposable: number;
 
     if (baseImposableMicro !== null && baseImposableMicro < baseImposableReel) {
       regimeChoisi = "Micro-BIC";
       baseImposable = baseImposableMicro;
     } else {
-      regimeChoisi = "Réel Simplifié";
+      regimeChoisi = "Reel Simplifie";
       baseImposable = baseImposableReel;
     }
 
@@ -289,9 +243,6 @@ export default function ComparateurLMNP() {
     };
   }, [loyerMensuel, tauxVacance, prixBien, montantMeubles, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, cfe, montantTravaux, typeTravaux, tmi, typeLocation, revenusFoyer]);
 
-  // ============================================
-  // CALCUL PLUS-VALUE
-  // ============================================
   const resultatPlusValue = useMemo((): ResultatPlusValue | null => {
     if (!simulerPlusValue) return null;
 
@@ -303,16 +254,16 @@ export default function ComparateurLMNP() {
 
     if (estResidencePrincipale && modeTransmission === "vente") {
       exonerationApplicable = true;
-      raisonExoneration = "Exonération totale : résidence principale";
+      raisonExoneration = "Exoneration totale : residence principale";
     } else if (modeTransmission === "donation") {
       exonerationApplicable = true;
-      raisonExoneration = "Exonération totale : transmission par donation";
+      raisonExoneration = "Exoneration totale : transmission par donation";
     } else if (modeTransmission === "succession") {
       exonerationApplicable = true;
-      raisonExoneration = "Exonération totale : transmission par succession";
+      raisonExoneration = "Exoneration totale : transmission par succession";
     } else if (dureeDetention >= 30) {
       exonerationApplicable = true;
-      raisonExoneration = "Exonération totale : détention > 30 ans";
+      raisonExoneration = "Exoneration totale : detention > 30 ans";
     }
 
     if (exonerationApplicable) {
@@ -352,7 +303,6 @@ export default function ComparateurLMNP() {
       return Math.min(1, (21 - 5) * 0.0165 + 0.016 + (annees - 22) * 0.09);
     };
 
-    // Location Nue
     const plusValueBruteNue = Math.max(0, prixCession - prixAcquisition);
     const abattementDureeIRNue = calculAbattementIR(dureeDetention);
     const abattementDureePSNue = calculAbattementPS(dureeDetention);
@@ -360,7 +310,6 @@ export default function ComparateurLMNP() {
     const plusValueImposablePSNue = plusValueBruteNue * (1 - abattementDureePSNue);
     const impotPlusValueNue = plusValueImposableIRNue * IMPOT_PLUS_VALUE + plusValueImposablePSNue * PRELEVEMENTS_SOCIAUX;
 
-    // LMNP avec réintégration des amortissements (Loi 2025)
     const totalAmortissementsDeduits = resultatLMNP.totalAmortissements * dureeDetention;
     const plusValueBruteLMNP = Math.max(0, prixCession - (prixAcquisition - totalAmortissementsDeduits));
     const abattementDureeIRLMNP = calculAbattementIR(dureeDetention);
@@ -390,17 +339,12 @@ export default function ComparateurLMNP() {
     };
   }, [simulerPlusValue, prixBien, fraisNotaire, prixReventeEstime, estResidencePrincipale, modeTransmission, dureeDetention, resultatLMNP.totalAmortissements]);
 
-  // ============================================
-  // BILAN GLOBAL
-  // ============================================
   const bilanGlobal = useMemo(() => {
     const annees = simulerPlusValue ? dureeDetention : 10;
-
     const totalImpotNue = resultatLocationNue.impotTotal * annees;
     const totalCashflowNue = resultatLocationNue.cashflowNet * annees;
     const plusValueNue = resultatPlusValue?.impotPlusValueNue || 0;
     const bilanNetNue = totalCashflowNue - plusValueNue;
-
     const totalImpotLMNP = resultatLMNP.impotTotal * annees;
     const totalCashflowLMNP = resultatLMNP.cashflowNet * annees;
     const plusValueLMNP = resultatPlusValue?.impotPlusValueLMNP || 0;
@@ -427,23 +371,20 @@ export default function ComparateurLMNP() {
     <MainLayout title="Comparateur LMNP vs Location Nue">
       <PremiumToolLock featureName="Comparateur LMNP vs Location Nue" variant="section">
         <div className="max-w-6xl mx-auto space-y-6">
-          {/* Badges réforme 2025 */}
           <div className="flex flex-wrap gap-2">
             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800">
               <Info className="w-3 h-3 mr-1" /> Loi Le Meur 2025
             </Badge>
             <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 dark:bg-red-950/30 dark:text-red-400 dark:border-red-800">
-              <AlertTriangle className="w-3 h-3 mr-1" /> Réintégration amortissements PV
+              <AlertTriangle className="w-3 h-3 mr-1" /> Reintegration amortissements PV
             </Badge>
             <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-800">
-              <TrendingDown className="w-3 h-3 mr-1" /> Déficit foncier 21 400€
+              <TrendingDown className="w-3 h-3 mr-1" /> Deficit foncier 21 400 EUR
             </Badge>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Colonne Gauche - Inputs */}
             <div className="space-y-4">
-              {/* Section A: Projet Immobilier */}
               <Card className="rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -490,10 +431,8 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
 
-              {/* Section Type Location */}
               <TypeLocationSelect value={typeLocation} onChange={setTypeLocation} />
 
-              {/* Section B: Charges Annuelles */}
               <Card className="rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -504,21 +443,21 @@ export default function ComparateurLMNP() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <Label>Charges copropriété</Label>
+                      <Label>Charges copropriete</Label>
                       <span className="text-sm font-semibold">{formatCurrency(chargesCopro)}</span>
                     </div>
                     <Slider value={[chargesCopro]} onValueChange={([v]) => setChargesCopro(v)} min={0} max={5000} step={100} />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <Label>Taxe foncière</Label>
+                      <Label>Taxe fonciere</Label>
                       <span className="text-sm font-semibold">{formatCurrency(taxeFonciere)}</span>
                     </div>
                     <Slider value={[taxeFonciere]} onValueChange={([v]) => setTaxeFonciere(v)} min={0} max={3000} step={50} />
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <Label>Intérêts d'emprunt annuels</Label>
+                      <Label>Interets emprunt annuels</Label>
                       <span className="text-sm font-semibold">{formatCurrency(interetsEmprunt)}</span>
                     </div>
                     <Slider value={[interetsEmprunt]} onValueChange={([v]) => setInteretsEmprunt(v)} min={0} max={15000} step={100} />
@@ -550,7 +489,6 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
 
-              {/* Section C: Travaux */}
               <TravauxSection
                 montantTravaux={montantTravaux}
                 setMontantTravaux={setMontantTravaux}
@@ -559,7 +497,6 @@ export default function ComparateurLMNP() {
                 formatCurrency={formatCurrency}
               />
 
-              {/* Section D: Profil Fiscal */}
               <Card className="rounded-2xl">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -569,7 +506,7 @@ export default function ComparateurLMNP() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Tranche Marginale d'Imposition (TMI)</Label>
+                    <Label>Tranche Marginale Imposition (TMI)</Label>
                     <div className="flex gap-2 flex-wrap">
                       {[0, 11, 30, 41, 45].map((t) => (
                         <Badge
@@ -589,12 +526,11 @@ export default function ComparateurLMNP() {
                       <span className="text-sm font-semibold">{formatCurrency(revenusFoyer)}</span>
                     </div>
                     <Slider value={[revenusFoyer]} onValueChange={([v]) => setRevenusFoyer(v)} min={0} max={200000} step={1000} />
-                    <p className="text-xs text-muted-foreground">Pour déterminer le passage éventuel en LMP</p>
+                    <p className="text-xs text-muted-foreground">Pour determiner le passage eventuel en LMP</p>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Section E: Plus-Value */}
               <PlusValueSection
                 simulerPlusValue={simulerPlusValue}
                 setSimulerPlusValue={setSimulerPlusValue}
@@ -611,21 +547,17 @@ export default function ComparateurLMNP() {
               />
             </div>
 
-            {/* Colonne Droite - Résultats */}
             <div className="space-y-4">
-              {/* Alerte LMP */}
               {resultatLMNP.alerteLMP && (
                 <Card className="rounded-2xl border-red-300 bg-red-100/50 dark:bg-red-950/30">
                   <CardContent className="py-4">
                     <div className="flex items-start gap-3">
                       <AlertTriangle className="w-6 h-6 text-red-600 flex-shrink-0" />
                       <div>
-                        <p className="font-semibold text-destructive">
-                          ⚠️ Passage en Loueur Meublé Professionnel (LMP)
-                        </p>
+                        <p className="font-semibold text-destructive">Passage en Loueur Meuble Professionnel (LMP)</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Vos recettes ({formatCurrency(resultatLMNP.loyersAnnuels)}) dépassent {formatCurrency(SEUIL_LMP_RECETTES)} ET sont supérieures à vos autres revenus. 
-                          Vous basculez en LMP avec des cotisations URSSAF (~40%) au lieu des prélèvements sociaux (17,2%).
+                          Vos recettes ({formatCurrency(resultatLMNP.loyersAnnuels)}) depassent {formatCurrency(SEUIL_LMP_RECETTES)} ET sont superieures a vos autres revenus. 
+                          Vous basculez en LMP avec des cotisations URSSAF (~40%) au lieu des prelevements sociaux (17,2%).
                         </p>
                       </div>
                     </div>
@@ -633,41 +565,32 @@ export default function ComparateurLMNP() {
                 </Card>
               )}
 
-              {/* Graphique Comparatif */}
               <Card className="rounded-2xl">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base">Comparaison Fiscale Annuelle</CardTitle>
-                  <CardDescription>Impôt total (IR + Prélèvements Sociaux)</CardDescription>
+                  <CardDescription>Impot total (IR + Prelevements Sociaux)</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ComparisonBarChart
-                    locationNue={resultatLocationNue.impotTotal}
-                    lmnp={resultatLMNP.impotTotal}
-                  />
+                  <ComparisonBarChart locationNue={resultatLocationNue.impotTotal} lmnp={resultatLMNP.impotTotal} />
                 </CardContent>
               </Card>
 
-              {/* Déficit Foncier */}
               {resultatLocationNue.deficitImputeSurRevenuGlobal > 0 && (
                 <Card className="rounded-2xl border-blue-200 bg-blue-50/50 dark:bg-blue-950/20">
                   <CardContent className="py-4">
                     <div className="flex items-start gap-3">
                       <TrendingDown className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
                       <div>
-                        <p className="font-semibold text-foreground">
-                          Déficit foncier imputable : {formatCurrency(resultatLocationNue.deficitImputeSurRevenuGlobal)}
-                        </p>
+                        <p className="font-semibold text-foreground">Deficit foncier imputable : {formatCurrency(resultatLocationNue.deficitImputeSurRevenuGlobal)}</p>
                         <p className="text-sm text-muted-foreground mt-1">
-                          Économie d'impôt immédiate : <span className="font-bold text-blue-600">{formatCurrency(resultatLocationNue.economieDeficitFoncier)}</span>
+                          Economie impot immediate : <span className="font-bold text-blue-600">{formatCurrency(resultatLocationNue.economieDeficitFoncier)}</span>
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          Maximum {typeTravaux === "energie" ? "21 400€" : "10 700€"}/an sur le revenu global
-                          {typeTravaux === "energie" && <span className="text-emerald-600 ml-1">(doublé pour travaux énergétiques)</span>}
+                          Maximum {typeTravaux === "energie" ? "21 400 EUR" : "10 700 EUR"}/an sur le revenu global
+                          {typeTravaux === "energie" && <span className="text-emerald-600 ml-1">(double pour travaux energetiques)</span>}
                         </p>
                         {resultatLocationNue.deficitReportable > 0 && (
-                          <p className="text-xs text-amber-600 mt-1">
-                            + {formatCurrency(resultatLocationNue.deficitReportable)} reportable sur 10 ans
-                          </p>
+                          <p className="text-xs text-amber-600 mt-1">+ {formatCurrency(resultatLocationNue.deficitReportable)} reportable sur 10 ans</p>
                         )}
                       </div>
                     </div>
@@ -675,7 +598,6 @@ export default function ComparateurLMNP() {
                 </Card>
               )}
 
-              {/* Carte Location Nue */}
               <Card className="rounded-2xl">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -692,12 +614,12 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-right font-medium">{formatCurrency(resultatLocationNue.loyersAnnuels)}</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-sm">Charges déductibles</TableCell>
+                        <TableCell className="text-sm">Charges deductibles</TableCell>
                         <TableCell className="text-right text-destructive">-{formatCurrency(resultatLocationNue.chargesDeductibles)}</TableCell>
                       </TableRow>
                       {resultatLocationNue.travauxDeductibles > 0 && (
                         <TableRow>
-                          <TableCell className="text-sm">Travaux déductibles</TableCell>
+                          <TableCell className="text-sm">Travaux deductibles</TableCell>
                           <TableCell className="text-right text-destructive">-{formatCurrency(resultatLocationNue.travauxDeductibles)}</TableCell>
                         </TableRow>
                       )}
@@ -706,7 +628,7 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-right">{formatCurrency(resultatLocationNue.baseImposable)}</TableCell>
                       </TableRow>
                       <TableRow className="border-t">
-                        <TableCell className="font-medium">Impôt total</TableCell>
+                        <TableCell className="font-medium">Impot total</TableCell>
                         <TableCell className="text-right font-bold text-destructive">{formatCurrency(resultatLocationNue.impotTotal)}</TableCell>
                       </TableRow>
                       <TableRow>
@@ -720,7 +642,6 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
 
-              {/* Carte LMNP */}
               <Card className="rounded-2xl border-emerald-200">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
@@ -742,10 +663,10 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-right font-medium">{formatCurrency(resultatLMNP.loyersAnnuels)}</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-sm">Charges déductibles (+ CFE)</TableCell>
+                        <TableCell className="text-sm">Charges deductibles (+ CFE)</TableCell>
                         <TableCell className="text-right text-destructive">-{formatCurrency(resultatLMNP.chargesDeductibles)}</TableCell>
                       </TableRow>
-                      {resultatLMNP.regimeChoisi === "Réel Simplifié" && (
+                      {resultatLMNP.regimeChoisi === "Reel Simplifie" && (
                         <TableRow>
                           <TableCell className="text-sm">Amortissements</TableCell>
                           <TableCell className="text-right text-emerald-600">-{formatCurrency(resultatLMNP.totalAmortissements)}</TableCell>
@@ -756,7 +677,7 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-right">{formatCurrency(resultatLMNP.baseImposable)}</TableCell>
                       </TableRow>
                       <TableRow className="border-t">
-                        <TableCell className="font-medium">Impôt total</TableCell>
+                        <TableCell className="font-medium">Impot total</TableCell>
                         <TableCell className="text-right font-bold text-emerald-600">{formatCurrency(resultatLMNP.impotTotal)}</TableCell>
                       </TableRow>
                       <TableRow>
@@ -770,17 +691,16 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
 
-              {/* Détail Amortissements */}
-              {resultatLMNP.regimeChoisi === "Réel Simplifié" && (
+              {resultatLMNP.regimeChoisi === "Reel Simplifie" && (
                 <Card className="rounded-2xl bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-200">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">Détail des Amortissements LMNP</CardTitle>
+                    <CardTitle className="text-sm">Detail des Amortissements LMNP</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableBody>
                         <TableRow>
-                          <TableCell className="text-sm">Bâti (85% sur 35 ans)</TableCell>
+                          <TableCell className="text-sm">Bati (85% sur 35 ans)</TableCell>
                           <TableCell className="text-right font-semibold text-emerald-600">-{formatCurrency(resultatLMNP.amortissementBati)}/an</TableCell>
                         </TableRow>
                         <TableRow>
@@ -789,12 +709,12 @@ export default function ComparateurLMNP() {
                         </TableRow>
                         {resultatLMNP.amortissementTravaux > 0 && (
                           <TableRow>
-                            <TableCell className="text-sm">Travaux amélioration (sur 10 ans)</TableCell>
+                            <TableCell className="text-sm">Travaux amelioration (sur 10 ans)</TableCell>
                             <TableCell className="text-right font-semibold text-emerald-600">-{formatCurrency(resultatLMNP.amortissementTravaux)}/an</TableCell>
                           </TableRow>
                         )}
                         <TableRow className="border-t-2">
-                          <TableCell className="font-medium">Total déductible</TableCell>
+                          <TableCell className="font-medium">Total deductible</TableCell>
                           <TableCell className="text-right font-bold text-emerald-600">-{formatCurrency(resultatLMNP.totalAmortissements)}/an</TableCell>
                         </TableRow>
                       </TableBody>
@@ -803,13 +723,12 @@ export default function ComparateurLMNP() {
                 </Card>
               )}
 
-              {/* Simulation Plus-Value */}
               {simulerPlusValue && resultatPlusValue && (
                 <Card className="rounded-2xl border-red-200 bg-red-50/50 dark:bg-red-950/20">
                   <CardHeader className="pb-2">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <Scale className="w-5 h-5 text-red-600" />
-                      Impact Plus-Value à la Revente
+                      Impact Plus-Value a la Revente
                       <Badge variant="destructive" className="ml-auto text-xs">Loi 2025</Badge>
                     </CardTitle>
                   </CardHeader>
@@ -829,7 +748,7 @@ export default function ComparateurLMNP() {
                         <Table className="mt-2">
                           <TableHeader>
                             <TableRow>
-                              <TableHead className="w-[160px]"></TableHead>
+                              <TableHead className="w-[140px]"></TableHead>
                               <TableHead className="text-right text-xs">Location Nue</TableHead>
                               <TableHead className="text-right text-xs">LMNP</TableHead>
                             </TableRow>
@@ -841,17 +760,17 @@ export default function ComparateurLMNP() {
                               <TableCell className="text-right text-xs">{formatCurrency(resultatPlusValue.plusValueBruteLMNP)}</TableCell>
                             </TableRow>
                             <TableRow>
-                              <TableCell className="text-xs">Amort. réintégrés</TableCell>
-                              <TableCell className="text-right text-xs">—</TableCell>
+                              <TableCell className="text-xs">Amortissements reintegres</TableCell>
+                              <TableCell className="text-right text-xs">-</TableCell>
                               <TableCell className="text-right text-xs text-destructive">+{formatCurrency(resultatPlusValue.totalAmortissementsDeduits)}</TableCell>
                             </TableRow>
                             <TableRow>
-                              <TableCell className="text-xs">Abattement ({dureeDetention} ans)</TableCell>
+                              <TableCell className="text-xs">Abattement duree ({dureeDetention} ans)</TableCell>
                               <TableCell className="text-right text-xs text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIRNue * 100)}% IR</TableCell>
                               <TableCell className="text-right text-xs text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIRLMNP * 100)}% IR</TableCell>
                             </TableRow>
                             <TableRow className="border-t">
-                              <TableCell className="text-xs font-medium">Impôt Plus-Value</TableCell>
+                              <TableCell className="text-xs font-medium">Impot Plus-Value</TableCell>
                               <TableCell className="text-right font-bold">{formatCurrency(resultatPlusValue.impotPlusValueNue)}</TableCell>
                               <TableCell className="text-right font-bold text-destructive">{formatCurrency(resultatPlusValue.impotPlusValueLMNP)}</TableCell>
                             </TableRow>
@@ -862,9 +781,9 @@ export default function ComparateurLMNP() {
                           <Alert className="mt-3 border-amber-200 bg-amber-50/50 dark:bg-amber-950/30 dark:border-amber-800">
                             <AlertTriangle className="h-4 w-4 text-amber-600" />
                             <AlertDescription className="text-xs text-amber-700 dark:text-amber-400">
-                              <strong>Attention Loi 2025 :</strong> La réintégration des amortissements augmente 
+                              <strong>Attention Loi 2025 :</strong> La reintegration des amortissements augmente 
                               la plus-value de {formatCurrency(resultatPlusValue.totalAmortissementsDeduits)} en LMNP. 
-                              Surcoût à la revente : <strong>{formatCurrency(resultatPlusValue.impotPlusValueLMNP - resultatPlusValue.impotPlusValueNue)}</strong>.
+                              Surcout a la revente : <strong>{formatCurrency(resultatPlusValue.impotPlusValueLMNP - resultatPlusValue.impotPlusValueNue)}</strong>.
                             </AlertDescription>
                           </Alert>
                         )}
@@ -874,7 +793,6 @@ export default function ComparateurLMNP() {
                 </Card>
               )}
 
-              {/* Bilan Global */}
               <BilanGlobalCard
                 dureeDetention={bilanGlobal.annees}
                 totalImpotNue={bilanGlobal.totalImpotNue}
@@ -890,13 +808,12 @@ export default function ComparateurLMNP() {
                 simulerPlusValue={simulerPlusValue}
               />
 
-              {/* Message Conseil */}
               {economieAnnuelle > 500 && (
                 <Alert className="border-emerald-200 bg-emerald-50/50 dark:bg-emerald-950/20">
                   <CheckCircle className="h-4 w-4 text-emerald-600" />
                   <AlertDescription className="text-sm text-emerald-700 dark:text-emerald-400">
-                    Le <strong>LMNP</strong> vous fait économiser <strong>{formatCurrency(economieAnnuelle)}/an</strong> d'impôts 
-                    grâce aux amortissements. {simulerPlusValue && "Attention à l'impact sur la plus-value à la revente !"}
+                    Le <strong>LMNP</strong> vous fait economiser <strong>{formatCurrency(economieAnnuelle)}/an</strong> impots 
+                    grace aux amortissements. {simulerPlusValue && "Attention a impact sur la plus-value a la revente !"}
                   </AlertDescription>
                 </Alert>
               )}
@@ -906,17 +823,16 @@ export default function ComparateurLMNP() {
                   <Info className="h-4 w-4 text-blue-600" />
                   <AlertDescription className="text-sm text-blue-700 dark:text-blue-400">
                     La <strong>Location Nue</strong> est plus avantageuse dans votre situation, 
-                    {resultatLocationNue.deficitFoncier > 0 ? " notamment grâce au déficit foncier imputable sur vos revenus." : " grâce au régime Micro-Foncier."}
+                    {resultatLocationNue.deficitFoncier > 0 ? " notamment grace au deficit foncier imputable sur vos revenus." : " grace au regime Micro-Foncier."}
                   </AlertDescription>
                 </Alert>
               )}
             </div>
           </div>
 
-          {/* Produits recommandés */}
           <RecommendedProducts 
             productIds={["scpi", "assurance-vie", "per"]} 
-            title="Produits recommandés pour l'investissement immobilier" 
+            title="Produits recommandes pour investissement immobilier" 
           />
         </div>
       </PremiumToolLock>
