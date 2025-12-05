@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { PremiumBadge } from "@/components/premium/PremiumBadge";
 
 interface HeaderProps {
   title: string;
@@ -132,7 +133,10 @@ export function Header({ title }: HeaderProps) {
             <DropdownMenuContent className="w-56" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">{getDisplayName()}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium leading-none">{getDisplayName()}</p>
+                    <PremiumBadge />
+                  </div>
                   <p className="text-xs leading-none text-muted-foreground">
                     {user?.email}
                   </p>

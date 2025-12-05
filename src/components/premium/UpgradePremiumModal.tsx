@@ -10,13 +10,15 @@ import { Button } from "@/components/ui/button";
 import { 
   Sparkles, 
   Check, 
-  Zap, 
   Shield, 
   TrendingUp, 
   PieChart,
   Brain,
+  Zap,
   Loader2
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface UpgradePremiumModalProps {
   open: boolean;
@@ -51,18 +53,30 @@ const premiumFeatures = [
   },
 ];
 
+type PlanType = "monthly" | "annual";
+
 export function UpgradePremiumModal({ open, onOpenChange }: UpgradePremiumModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>("monthly");
 
   const handleUpgrade = async () => {
     setIsLoading(true);
-    // TODO: Integrate with Stripe checkout
-    // For now, simulate a delay
-    setTimeout(() => {
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceType: selectedPlan },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      toast.error("Une erreur est survenue. Veuillez réessayer.");
+    } finally {
       setIsLoading(false);
-      // This would redirect to Stripe checkout
-      alert("L'intégration Stripe sera bientôt disponible !");
-    }, 1000);
+    }
   };
 
   return (
@@ -78,12 +92,48 @@ export function UpgradePremiumModal({ open, onOpenChange }: UpgradePremiumModalP
         </DialogHeader>
 
         <div className="mt-4">
+          {/* Plan Toggle */}
+          <div className="flex gap-2 p-1 bg-muted rounded-xl mb-4">
+            <button
+              onClick={() => setSelectedPlan("monthly")}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all ${
+                selectedPlan === "monthly"
+                  ? "bg-background shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Mensuel
+            </button>
+            <button
+              onClick={() => setSelectedPlan("annual")}
+              className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all relative ${
+                selectedPlan === "annual"
+                  ? "bg-background shadow-sm text-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Annuel
+              <span className="absolute -top-2 -right-2 px-1.5 py-0.5 text-[10px] font-bold bg-success text-white rounded-full">
+                -30%
+              </span>
+            </button>
+          </div>
+
           {/* Price */}
           <div className="bg-gradient-to-r from-primary/10 to-amber-500/10 rounded-2xl p-6 text-center mb-6">
             <div className="flex items-baseline justify-center gap-1">
-              <span className="text-4xl font-bold text-foreground">9,99€</span>
-              <span className="text-muted-foreground">/mois</span>
+              <span className="text-4xl font-bold text-foreground">
+                {selectedPlan === "monthly" ? "5,99€" : "49,99€"}
+              </span>
+              <span className="text-muted-foreground">
+                /{selectedPlan === "monthly" ? "mois" : "an"}
+              </span>
             </div>
+            {selectedPlan === "annual" && (
+              <p className="text-sm text-success mt-2 font-medium">
+                Soit 4,17€/mois • Économisez 21,89€
+              </p>
+            )}
             <p className="text-sm text-muted-foreground mt-2">
               Sans engagement • Annulable à tout moment
             </p>
@@ -125,13 +175,13 @@ export function UpgradePremiumModal({ open, onOpenChange }: UpgradePremiumModalP
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Commencer l'essai gratuit
+                Passer à Premium
               </>
             )}
           </Button>
 
           <p className="text-xs text-center text-muted-foreground mt-3">
-            7 jours d'essai gratuit • Paiement sécurisé par Stripe
+            Paiement sécurisé par Stripe
           </p>
         </div>
       </DialogContent>

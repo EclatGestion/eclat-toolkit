@@ -4,27 +4,48 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts
 import { AlertTriangle, CheckCircle, Info } from "lucide-react";
 import { useWealth } from "@/contexts/WealthContext";
 
-const RULE_50_30_20 = {
-  besoins: { target: 50, label: "Besoins", color: "hsl(var(--chart-1))" },
-  envies: { target: 30, label: "Envies", color: "hsl(var(--chart-2))" },
-  epargne: { target: 20, label: "Épargne", color: "hsl(var(--chart-4))" },
+// Mapping des catégories selon la règle 50/30/20
+const CATEGORY_MAPPING = {
+  besoins: ["Logement", "Alimentation", "Transport", "Santé"],
+  envies: ["Loisirs", "Shopping", "Abonnements"],
 };
 
 export function BudgetRuleAnalysis() {
-  const { totalRevenus, totalDepenses, totalEpargne } = useWealth();
+  const { totalRevenus, totalDepenses, expensesByCategory, lastAnalysis } = useWealth();
 
-  const { analysis, alerts } = useMemo(() => {
+  const { analysis, alerts, hasData } = useMemo(() => {
     const monthlyIncome = totalRevenus / 12;
-    const monthlyExpenses = totalDepenses / 12;
-    const monthlySavings = monthlyIncome - monthlyExpenses;
+    
+    // Check if we have categorized expense data
+    const hasCsvData = lastAnalysis && expensesByCategory && Object.keys(expensesByCategory).length > 0;
+    
+    let besoinsAmount = 0;
+    let enviesAmount = 0;
+    let epargneAmount = 0;
 
-    // Estimate besoins vs envies (simplified: 60/40 split of expenses)
-    const besoinsEstimate = monthlyExpenses * 0.6;
-    const enviesEstimate = monthlyExpenses * 0.4;
+    if (hasCsvData) {
+      // Use real categorized data from CSV analysis
+      besoinsAmount = CATEGORY_MAPPING.besoins.reduce(
+        (sum, cat) => sum + (expensesByCategory[cat] || 0),
+        0
+      );
+      enviesAmount = CATEGORY_MAPPING.envies.reduce(
+        (sum, cat) => sum + (expensesByCategory[cat] || 0),
+        0
+      );
+      // Épargne from CSV if available, otherwise calculate
+      epargneAmount = expensesByCategory["Épargne"] || Math.max(0, monthlyIncome - besoinsAmount - enviesAmount);
+    } else {
+      // Fallback: use manual expenses with estimated 60/40 split
+      const monthlyExpenses = totalDepenses / 12;
+      besoinsAmount = monthlyExpenses * 0.6;
+      enviesAmount = monthlyExpenses * 0.4;
+      epargneAmount = Math.max(0, monthlyIncome - monthlyExpenses);
+    }
 
-    const besoinsPercent = monthlyIncome > 0 ? (besoinsEstimate / monthlyIncome) * 100 : 0;
-    const enviesPercent = monthlyIncome > 0 ? (enviesEstimate / monthlyIncome) * 100 : 0;
-    const epargnePercent = monthlyIncome > 0 ? (monthlySavings / monthlyIncome) * 100 : 0;
+    const besoinsPercent = monthlyIncome > 0 ? (besoinsAmount / monthlyIncome) * 100 : 0;
+    const enviesPercent = monthlyIncome > 0 ? (enviesAmount / monthlyIncome) * 100 : 0;
+    const epargnePercent = monthlyIncome > 0 ? (epargneAmount / monthlyIncome) * 100 : 0;
 
     const analysisData = [
       {
@@ -33,6 +54,7 @@ export function BudgetRuleAnalysis() {
         target: 50,
         color: besoinsPercent > 55 ? "hsl(0 84% 60%)" : "hsl(var(--chart-1))",
         isOver: besoinsPercent > 55,
+        amount: besoinsAmount,
       },
       {
         category: "Envies",
@@ -40,6 +62,7 @@ export function BudgetRuleAnalysis() {
         target: 30,
         color: enviesPercent > 35 ? "hsl(0 84% 60%)" : "hsl(var(--chart-2))",
         isOver: enviesPercent > 35,
+        amount: enviesAmount,
       },
       {
         category: "Épargne",
@@ -47,6 +70,7 @@ export function BudgetRuleAnalysis() {
         target: 20,
         color: epargnePercent < 15 ? "hsl(38 92% 50%)" : "hsl(var(--chart-4))",
         isUnder: epargnePercent < 15,
+        amount: epargneAmount,
       },
     ];
 
@@ -55,13 +79,17 @@ export function BudgetRuleAnalysis() {
     if (enviesPercent > 35) alertsList.push("Vos envies dépassent 30% de vos revenus");
     if (epargnePercent < 15) alertsList.push("Votre épargne est inférieure à 20%");
 
-    return { analysis: analysisData, alerts: alertsList };
-  }, [totalRevenus, totalDepenses]);
+    return { 
+      analysis: analysisData, 
+      alerts: alertsList,
+      hasData: hasCsvData,
+    };
+  }, [totalRevenus, totalDepenses, expensesByCategory, lastAnalysis]);
 
   const hasAlerts = alerts.length > 0;
 
   return (
-    <div className="bg-card rounded-3xl p-6 shadow-card">
+    <div className="bg-card rounded-3xl p-6 shadow-card h-full flex flex-col">
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-lg font-semibold text-foreground">Règle 50/30/20</h3>
         {hasAlerts ? (
@@ -81,7 +109,7 @@ export function BudgetRuleAnalysis() {
       </p>
 
       {/* Chart */}
-      <div className="h-[180px]">
+      <div className="h-[180px] flex-1">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={analysis}
@@ -163,7 +191,12 @@ export function BudgetRuleAnalysis() {
       {/* Tooltip info */}
       <div className="flex items-start gap-2 mt-3 text-xs text-muted-foreground">
         <Info className="w-3 h-3 shrink-0 mt-0.5" />
-        <span>50% besoins essentiels, 30% envies, 20% épargne</span>
+        <span>
+          {hasData 
+            ? "Basé sur vos données CSV importées"
+            : "50% besoins essentiels, 30% envies, 20% épargne"
+          }
+        </span>
       </div>
     </div>
   );
