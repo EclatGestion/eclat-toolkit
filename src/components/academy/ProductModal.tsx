@@ -1,4 +1,4 @@
-import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, Check, LucideIcon, MessageCircle } from "lucide-react";
+import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, Key, Users, Clock, Layers, TreePine, Check, LucideIcon, MessageCircle, Lightbulb } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,6 +17,13 @@ const iconMap: Record<string, LucideIcon> = {
   Rocket,
   LineChart,
   Building2,
+  TrendingUp,
+  Film,
+  Key,
+  Users,
+  Clock,
+  Layers,
+  TreePine,
 };
 
 interface ProductModalProps {
@@ -74,6 +81,18 @@ export function ProductModal({ product, open, onOpenChange }: ProductModalProps)
               ))}
             </ul>
           </div>
+
+          {/* Case Study */}
+          {product.caseStudy && (
+            <div className="p-4 bg-primary/5 border border-primary/10 rounded-2xl">
+              <div className="flex items-center gap-2 mb-2">
+                <Lightbulb className="w-4 h-4 text-primary" />
+                <h4 className="font-semibold text-foreground text-sm">{product.caseStudy.title}</h4>
+              </div>
+              <p className="text-sm text-muted-foreground mb-2">{product.caseStudy.scenario}</p>
+              <p className="text-sm font-semibold text-primary">{product.caseStudy.figures}</p>
+            </div>
+          )}
 
           {/* Ideal For */}
           <div className="p-4 bg-muted/50 rounded-2xl">
