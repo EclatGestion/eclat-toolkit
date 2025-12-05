@@ -129,8 +129,6 @@ export default function ComparateurLMNP() {
 
   // Section G: Simulation Plus-Value
   const [simulerPlusValue, setSimulerPlusValue] = useState(false);
-  const [dureeDetention, setDureeDetention] = useState(10);
-  const [prixRevente, setPrixRevente] = useState(250000);
   const [fraisNotaire, setFraisNotaire] = useState(16000);
   const [estResidencePrincipale, setEstResidencePrincipale] = useState(false);
 
@@ -313,12 +311,17 @@ export default function ComparateurLMNP() {
   }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmpruntEffectif, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation, cfe, revenusFoyer]);
 
   // ============================================================
-  // CALCUL PLUS-VALUE (Réforme 2025)
+  // CALCUL PLUS-VALUE (Réforme 2025) - Synchronisé avec bilanGlobal
   // ============================================================
   const resultatPlusValue = useMemo((): ResultatPlusValue | null => {
     if (!simulerPlusValue) return null;
 
     const prixAcquisition = prixBien + fraisNotaire;
+    // Utilise horizonBilan comme durée de détention (source unique)
+    const dureeDetention = horizonBilan;
+    // Prix de revente calculé automatiquement selon l'appréciation
+    const appreciationTotale = Math.pow(1 + tauxAppreciation / 100, dureeDetention) - 1;
+    const prixReventeCalcule = prixBien * (1 + appreciationTotale);
 
     // Exonération résidence principale
     if (estResidencePrincipale) {
@@ -366,14 +369,14 @@ export default function ComparateurLMNP() {
     const abattementDureePS = calculAbattementPS(dureeDetention);
 
     // Location Nue - Plus-value classique
-    const plusValueBruteNue = Math.max(0, prixRevente - prixAcquisition);
+    const plusValueBruteNue = Math.max(0, prixReventeCalcule - prixAcquisition);
     const pvImposableIRNue = plusValueBruteNue * (1 - abattementDureeIR);
     const pvImposablePSNue = plusValueBruteNue * (1 - abattementDureePS);
     const impotPlusValueNue = pvImposableIRNue * IMPOT_PLUS_VALUE + pvImposablePSNue * PRELEVEMENTS_SOCIAUX;
 
     // LMNP - Plus-value avec réintégration des amortissements (LOI 2025)
     const totalAmortissementsReintegres = (resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux) * dureeDetention;
-    const plusValueBruteLMNP = Math.max(0, prixRevente - prixAcquisition + totalAmortissementsReintegres);
+    const plusValueBruteLMNP = Math.max(0, prixReventeCalcule - prixAcquisition + totalAmortissementsReintegres);
     const pvImposableIRLMNP = plusValueBruteLMNP * (1 - abattementDureeIR);
     const pvImposablePSLMNP = plusValueBruteLMNP * (1 - abattementDureePS);
     const impotPlusValueLMNP = pvImposableIRLMNP * IMPOT_PLUS_VALUE + pvImposablePSLMNP * PRELEVEMENTS_SOCIAUX;
@@ -388,7 +391,7 @@ export default function ComparateurLMNP() {
       impotPlusValueLMNP,
       exoneration: { applicable: false, raison: "" },
     };
-  }, [simulerPlusValue, prixBien, fraisNotaire, prixRevente, dureeDetention, estResidencePrincipale, resultatLMNP]);
+  }, [simulerPlusValue, prixBien, fraisNotaire, horizonBilan, tauxAppreciation, estResidencePrincipale, resultatLMNP]);
 
   // Résultats comparatifs
   const economieAnnuelle = resultatLocationNue.impotTotal - resultatLMNP.impotTotal;
@@ -801,20 +804,25 @@ export default function ComparateurLMNP() {
                       <Label className="text-sm">Residence principale avant vente</Label>
                       <Switch checked={estResidencePrincipale} onCheckedChange={setEstResidencePrincipale} />
                     </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Durée de détention prévue</Label>
-                        <span className="text-sm font-semibold">{dureeDetention} ans</span>
+                    
+                    {/* Affichage en lecture seule - synchronisé avec le Bilan Global */}
+                    <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+                      <p className="text-xs text-muted-foreground mb-2">
+                        📊 Paramètres synchronisés avec le Bilan Global
+                      </p>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Durée de détention</span>
+                        <span className="font-semibold">{horizonBilan} ans</span>
                       </div>
-                      <Slider value={[dureeDetention]} onValueChange={([v]) => setDureeDetention(v)} min={1} max={35} step={1} />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <Label>Prix de revente estimé</Label>
-                        <span className="text-sm font-semibold text-primary">{formatCurrency(prixRevente)}</span>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Prix de revente estimé</span>
+                        <span className="font-semibold text-primary">{formatCurrency(bilanGlobal.prixReventeFinal)}</span>
                       </div>
-                      <Slider value={[prixRevente]} onValueChange={([v]) => setPrixRevente(v)} min={prixBien} max={prixBien * 2} step={10000} />
+                      <p className="text-xs text-muted-foreground">
+                        (basé sur +{tauxAppreciation}%/an pendant {horizonBilan} ans)
+                      </p>
                     </div>
+
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <Label>Frais de notaire (acquisition)</Label>
@@ -946,7 +954,7 @@ export default function ComparateurLMNP() {
                         <div className="text-center text-red-600">+{formatCurrency(resultatPlusValue.totalAmortissementsReintegres)}</div>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-xs">
-                        <div className="text-muted-foreground">Abattement ({dureeDetention} ans)</div>
+                        <div className="text-muted-foreground">Abattement ({horizonBilan} ans)</div>
                         <div className="text-center text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIR * 100)}%</div>
                         <div className="text-center text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIR * 100)}%</div>
                       </div>
