@@ -11,7 +11,9 @@ import { SavingsRateBooster } from "@/components/dashboard/SavingsRateBooster";
 import { BudgetRuleAnalysis } from "@/components/dashboard/BudgetRuleAnalysis";
 import { PremiumLock } from "@/components/premium/PremiumLock";
 import { PremiumBanner } from "@/components/premium/PremiumBanner";
+import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
 import { useWealth, Asset } from "@/contexts/WealthContext";
+import { usePremium } from "@/hooks/usePremium";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -22,8 +24,9 @@ import {
   Cell,
   Tooltip,
 } from "recharts";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useSearchParams } from "react-router-dom";
 
 const ASSET_COLORS: Record<string, string> = {
   Immobilier: "#2D60FF",
@@ -57,12 +60,24 @@ export default function Dashboard() {
     epargneMensuelle, 
     fireGoals 
   } = useWealth();
+  const { refreshSubscription } = usePremium();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
+
+  // Check for upgrade success from Stripe
+  useEffect(() => {
+    if (searchParams.get("upgrade") === "success") {
+      setIsSuccessModalOpen(true);
+      refreshSubscription();
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams, refreshSubscription]);
   
   const animatedPatrimoine = useAnimatedCounter(totalPatrimoine);
 
@@ -356,6 +371,7 @@ export default function Dashboard() {
       <AddIncomeModal open={isIncomeModalOpen} onOpenChange={setIsIncomeModalOpen} />
       <AddExpenseModal open={isExpenseModalOpen} onOpenChange={setIsExpenseModalOpen} />
       <GoalsModal open={isGoalsModalOpen} onOpenChange={setIsGoalsModalOpen} />
+      <UpgradeSuccessModal open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen} />
     </MainLayout>
   );
 }

@@ -41,6 +41,13 @@ export interface FireGoal {
   icon?: string;
 }
 
+export interface ExpenseAnalysis {
+  id: string;
+  analysis_date: string;
+  categorized_expenses: Record<string, number>;
+  total_amount: number;
+}
+
 interface WealthContextType {
   userProfile: UserProfile;
   setUserProfile: (profile: UserProfile) => void;
@@ -67,6 +74,8 @@ interface WealthContextType {
   totalDepenses: number;
   epargneMensuelle: number;
   isLoading: boolean;
+  expensesByCategory: Record<string, number>;
+  lastAnalysis: ExpenseAnalysis | null;
 }
 
 const WealthContext = createContext<WealthContextType | undefined>(undefined);
@@ -92,6 +101,8 @@ export function WealthProvider({ children }: { children: ReactNode }) {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [fireGoals, setFireGoals] = useState<FireGoal[]>(initialFireGoals);
   const [isLoading, setIsLoading] = useState(true);
+  const [expensesByCategory, setExpensesByCategory] = useState<Record<string, number>>({});
+  const [lastAnalysis, setLastAnalysis] = useState<ExpenseAnalysis | null>(null);
 
   // Load data from Supabase when user changes
   useEffect(() => {
@@ -157,6 +168,26 @@ export function WealthProvider({ children }: { children: ReactNode }) {
           frequency: e.frequency as Expense["frequency"],
           category: e.category,
         })));
+      }
+
+      // Load latest expense analysis
+      const { data: analysisData } = await supabase
+        .from("expense_analyses")
+        .select("*")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (analysisData) {
+        const categorized = analysisData.categorized_expenses as Record<string, number> || {};
+        setExpensesByCategory(categorized);
+        setLastAnalysis({
+          id: analysisData.id,
+          analysis_date: analysisData.analysis_date || "",
+          categorized_expenses: categorized,
+          total_amount: Number(analysisData.total_amount) || 0,
+        });
       }
     } catch (error) {
       console.error("Error loading user data:", error);
@@ -442,6 +473,8 @@ export function WealthProvider({ children }: { children: ReactNode }) {
         totalDepenses,
         epargneMensuelle,
         isLoading,
+        expensesByCategory,
+        lastAnalysis,
       }}
     >
       {children}
