@@ -6,11 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle } from "lucide-react";
+import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle, TrendingUp, Scale, CheckCircle } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Constantes fiscales 2025
 const PRELEVEMENTS_SOCIAUX = 0.172;
@@ -31,6 +33,20 @@ const MICRO_BIC_TOURISME_NON_CLASSE = { abattement: 0.30, plafond: 15000 }; // L
 // Seuil LMP et cotisations
 const SEUIL_LMP_RECETTES = 23000;
 const TAUX_COTISATIONS_LMP = 0.40; // ~40% de cotisations URSSAF
+
+// Plus-value immobilière
+const IMPOT_PLUS_VALUE = 0.19; // 19% d'IR sur plus-value
+
+interface ResultatPlusValue {
+  plusValueBruteNue: number;
+  plusValueBruteLMNP: number;
+  totalAmortissementsReintegres: number;
+  abattementDureeIR: number;
+  abattementDureePS: number;
+  impotPlusValueNue: number;
+  impotPlusValueLMNP: number;
+  exoneration: { applicable: boolean; raison: string };
+}
 
 interface ResultatLocationNue {
   loyersAnnuels: number;
@@ -92,6 +108,13 @@ export default function ComparateurLMNP() {
   // Section F: CFE et LMP
   const [cfe, setCfe] = useState(500);
   const [revenusFoyer, setRevenusFoyer] = useState(50000);
+
+  // Section G: Simulation Plus-Value
+  const [simulerPlusValue, setSimulerPlusValue] = useState(false);
+  const [dureeDetention, setDureeDetention] = useState(10);
+  const [prixRevente, setPrixRevente] = useState(250000);
+  const [fraisNotaire, setFraisNotaire] = useState(16000);
+  const [estResidencePrincipale, setEstResidencePrincipale] = useState(false);
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
@@ -240,6 +263,81 @@ export default function ComparateurLMNP() {
       tauxSocialApplique,
     };
   }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation, cfe, revenusFoyer]);
+
+  // Calcul Plus-Value (Réforme 2025)
+  const resultatPlusValue = useMemo((): ResultatPlusValue | null => {
+    if (!simulerPlusValue) return null;
+    
+    const prixAcquisition = prixBien + fraisNotaire;
+    
+    // Vérifier exonérations
+    if (estResidencePrincipale) {
+      return {
+        plusValueBruteNue: 0,
+        plusValueBruteLMNP: 0,
+        totalAmortissementsReintegres: 0,
+        abattementDureeIR: 1,
+        abattementDureePS: 1,
+        impotPlusValueNue: 0,
+        impotPlusValueLMNP: 0,
+        exoneration: { applicable: true, raison: "Résidence principale" },
+      };
+    }
+    
+    if (dureeDetention >= 30) {
+      return {
+        plusValueBruteNue: 0,
+        plusValueBruteLMNP: 0,
+        totalAmortissementsReintegres: 0,
+        abattementDureeIR: 1,
+        abattementDureePS: 1,
+        impotPlusValueNue: 0,
+        impotPlusValueLMNP: 0,
+        exoneration: { applicable: true, raison: "Détention > 30 ans" },
+      };
+    }
+    
+    // Calcul abattements pour durée de détention
+    const calculAbattementIR = (annees: number) => {
+      if (annees < 6) return 0;
+      if (annees >= 22) return 1;
+      return Math.min(1, (annees - 5) * 0.06);
+    };
+    
+    const calculAbattementPS = (annees: number) => {
+      if (annees < 6) return 0;
+      if (annees >= 30) return 1;
+      if (annees <= 21) return (annees - 5) * 0.0165;
+      return Math.min(1, 0.264 + (annees - 21) * 0.09);
+    };
+    
+    const abattementDureeIR = calculAbattementIR(dureeDetention);
+    const abattementDureePS = calculAbattementPS(dureeDetention);
+    
+    // Location Nue - Plus-value classique
+    const plusValueBruteNue = Math.max(0, prixRevente - prixAcquisition);
+    const pvImposableIRNue = plusValueBruteNue * (1 - abattementDureeIR);
+    const pvImposablePSNue = plusValueBruteNue * (1 - abattementDureePS);
+    const impotPlusValueNue = pvImposableIRNue * IMPOT_PLUS_VALUE + pvImposablePSNue * PRELEVEMENTS_SOCIAUX;
+    
+    // LMNP - Plus-value avec réintégration des amortissements (LOI 2025)
+    const totalAmortissementsReintegres = (resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux) * dureeDetention;
+    const plusValueBruteLMNP = Math.max(0, prixRevente - prixAcquisition + totalAmortissementsReintegres);
+    const pvImposableIRLMNP = plusValueBruteLMNP * (1 - abattementDureeIR);
+    const pvImposablePSLMNP = plusValueBruteLMNP * (1 - abattementDureePS);
+    const impotPlusValueLMNP = pvImposableIRLMNP * IMPOT_PLUS_VALUE + pvImposablePSLMNP * PRELEVEMENTS_SOCIAUX;
+    
+    return {
+      plusValueBruteNue,
+      plusValueBruteLMNP,
+      totalAmortissementsReintegres,
+      abattementDureeIR,
+      abattementDureePS,
+      impotPlusValueNue,
+      impotPlusValueLMNP,
+      exoneration: { applicable: false, raison: "" },
+    };
+  }, [simulerPlusValue, prixBien, fraisNotaire, prixRevente, dureeDetention, estResidencePrincipale, resultatLMNP]);
 
   const economieAnnuelle = resultatLocationNue.impotTotal - resultatLMNP.impotTotal;
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
@@ -526,6 +624,80 @@ export default function ComparateurLMNP() {
                 )}
               </CardContent>
             </Card>
+
+            {/* Section G: Simulation Plus-Value */}
+            <Card className="rounded-2xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="w-5 h-5 text-red-500" />
+                  Simulation Plus-Value
+                  <Badge variant="destructive" className="ml-2 text-xs">Réforme 2025</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <Label>Activer la simulation</Label>
+                  <Switch checked={simulerPlusValue} onCheckedChange={setSimulerPlusValue} />
+                </div>
+                
+                {simulerPlusValue && (
+                  <>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox 
+                        id="residence-principale"
+                        checked={estResidencePrincipale} 
+                        onCheckedChange={(v) => setEstResidencePrincipale(v === true)} 
+                      />
+                      <Label htmlFor="residence-principale" className="text-sm">
+                        Deviendra ma résidence principale avant vente
+                      </Label>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label>Durée de détention prévue</Label>
+                        <span className="text-sm font-semibold">{dureeDetention} ans</span>
+                      </div>
+                      <Slider
+                        value={[dureeDetention]}
+                        onValueChange={([v]) => setDureeDetention(v)}
+                        min={1}
+                        max={35}
+                        step={1}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label>Prix de revente estimé</Label>
+                        <span className="text-sm font-semibold text-primary">{formatCurrency(prixRevente)}</span>
+                      </div>
+                      <Slider
+                        value={[prixRevente]}
+                        onValueChange={([v]) => setPrixRevente(v)}
+                        min={prixBien}
+                        max={prixBien * 2}
+                        step={10000}
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <Label>Frais de notaire (acquisition)</Label>
+                        <span className="text-sm font-semibold">{formatCurrency(fraisNotaire)}</span>
+                      </div>
+                      <Slider
+                        value={[fraisNotaire]}
+                        onValueChange={([v]) => setFraisNotaire(v)}
+                        min={0}
+                        max={30000}
+                        step={500}
+                      />
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </div>
 
           {/* Colonne Droite: Résultats */}
@@ -610,8 +782,62 @@ export default function ComparateurLMNP() {
                     <span className="font-semibold">{formatCurrency(resultatLMNP.cashflowNet)}</span>
                   </div>
                 </CardContent>
+            </Card>
+
+            {/* Résultats Plus-Value */}
+            {resultatPlusValue && (
+              <Card className="rounded-2xl border-red-200 bg-red-50/50 dark:bg-red-950/20">
+                <CardHeader className="pb-2">
+                  <CardTitle className="flex items-center gap-2 text-sm">
+                    <Scale className="w-4 h-4 text-red-600" />
+                    Impact Plus-Value à la Revente
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {resultatPlusValue.exoneration.applicable ? (
+                    <div className="flex items-center gap-2 text-emerald-600">
+                      <CheckCircle className="w-5 h-5" />
+                      <span className="font-medium text-sm">Exonération : {resultatPlusValue.exoneration.raison}</span>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div></div>
+                        <div className="text-center font-medium text-primary">Location Nue</div>
+                        <div className="text-center font-medium text-emerald-600">LMNP</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-muted-foreground">PV brute</div>
+                        <div className="text-center">{formatCurrency(resultatPlusValue.plusValueBruteNue)}</div>
+                        <div className="text-center">{formatCurrency(resultatPlusValue.plusValueBruteLMNP)}</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-muted-foreground">Amort. réintégrés</div>
+                        <div className="text-center">—</div>
+                        <div className="text-center text-red-600">+{formatCurrency(resultatPlusValue.totalAmortissementsReintegres)}</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="text-muted-foreground">Abattement ({dureeDetention} ans)</div>
+                        <div className="text-center text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIR * 100)}%</div>
+                        <div className="text-center text-emerald-600">-{Math.round(resultatPlusValue.abattementDureeIR * 100)}%</div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm border-t pt-2">
+                        <div className="font-medium">Impôt PV</div>
+                        <div className="text-center font-bold">{formatCurrency(resultatPlusValue.impotPlusValueNue)}</div>
+                        <div className="text-center font-bold text-red-600">{formatCurrency(resultatPlusValue.impotPlusValueLMNP)}</div>
+                      </div>
+                      
+                      {resultatPlusValue.impotPlusValueLMNP > resultatPlusValue.impotPlusValueNue && (
+                        <p className="text-xs text-amber-600 mt-2 p-2 bg-amber-50 dark:bg-amber-950/30 rounded">
+                          ⚠️ La réforme 2025 augmente l'impôt plus-value LMNP de {formatCurrency(resultatPlusValue.impotPlusValueLMNP - resultatPlusValue.impotPlusValueNue)} via la réintégration des amortissements.
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
               </Card>
-            </div>
+            )}
+          </div>
 
             {/* Bandeau Conseil */}
             {economieAnnuelle > 500 && (
