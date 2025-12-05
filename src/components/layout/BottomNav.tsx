@@ -1,12 +1,12 @@
-import { LayoutDashboard, Grid3X3, Save, Settings, GraduationCap } from "lucide-react";
+import { LayoutDashboard, Grid3X3, Settings, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Outils", url: "/catalogue", icon: Grid3X3 },
-  { title: "Académie", url: "/academie-pro", icon: GraduationCap },
-  { title: "Profil", url: "/settings", icon: Settings },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, badge: null },
+  { title: "Outils", url: "/catalogue", icon: Grid3X3, badge: "5" },
+  { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null },
+  { title: "Profil", url: "/settings", icon: Settings, badge: null },
 ];
 
 export function BottomNav() {
@@ -19,12 +19,19 @@ export function BottomNav() {
             to={item.url}
             end={item.url === "/dashboard"}
             className={cn(
-              "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-muted-foreground transition-all duration-200",
+              "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-muted-foreground transition-all duration-200 relative",
               "hover:text-primary"
             )}
             activeClassName="text-primary bg-primary/10"
           >
-            <item.icon className="w-5 h-5" />
+            <div className="relative">
+              <item.icon className="w-5 h-5" />
+              {item.badge && (
+                <span className="absolute -top-1.5 -right-2 px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-[10px] font-semibold min-w-[16px] text-center">
+                  {item.badge}
+                </span>
+              )}
+            </div>
             <span className="text-xs font-medium">{item.title}</span>
           </NavLink>
         ))}

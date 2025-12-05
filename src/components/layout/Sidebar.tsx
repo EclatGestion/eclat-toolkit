@@ -3,11 +3,11 @@ import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3 },
-  { title: "Académie", url: "/academie-pro", icon: GraduationCap },
-  { title: "Mes Simulations", url: "/simulations", icon: Save },
-  { title: "Profil & Paramètres", url: "/settings", icon: Settings },
+  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, badge: null },
+  { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3, badge: "5" },
+  { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null },
+  { title: "Mes Simulations", url: "/simulations", icon: Save, badge: null },
+  { title: "Profil & Paramètres", url: "/settings", icon: Settings, badge: null },
 ];
 
 export function Sidebar() {
@@ -35,7 +35,12 @@ export function Sidebar() {
             activeClassName="bg-sidebar-accent text-sidebar-primary font-medium border-l-4 border-sidebar-primary"
           >
             <item.icon className="w-5 h-5" />
-            <span>{item.title}</span>
+            <span className="flex-1">{item.title}</span>
+            {item.badge && (
+              <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                {item.badge}
+              </span>
+            )}
           </NavLink>
         ))}
       </nav>

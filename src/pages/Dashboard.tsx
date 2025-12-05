@@ -15,8 +15,9 @@ import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
 import { useWealth, Asset } from "@/contexts/WealthContext";
 import { usePremium } from "@/hooks/usePremium";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings, Calculator, Home, ChartLine, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,
   PieChart,
@@ -51,6 +52,7 @@ const itemVariants = {
 };
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { 
     assets, 
     totalPatrimoine, 
@@ -129,6 +131,62 @@ export default function Dashboard() {
             <Plus className="w-4 h-4" />
             Ajouter un actif
           </Button>
+        </motion.div>
+
+        {/* Quick Access Tools */}
+        <motion.div variants={itemVariants} className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-foreground">Outils Rapides</h3>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate("/catalogue")}
+              className="text-primary hover:text-primary/80 gap-1"
+            >
+              Voir tout
+              <ArrowRight className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <button
+              onClick={() => navigate("/tools/simulateur-ir")}
+              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
+            >
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
+                <Calculator className="w-6 h-6 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-foreground truncate">Simulateur IR</p>
+                <p className="text-xs text-muted-foreground">Calculez votre impôt</p>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => navigate("/tools/simulateur-immobilier")}
+              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
+            >
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
+                <Home className="w-6 h-6 text-emerald-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-foreground truncate">Immobilier</p>
+                <p className="text-xs text-muted-foreground">Mensualité & Capacité</p>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => navigate("/tools/interets-composes")}
+              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
+            >
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-rose-500/10 group-hover:bg-rose-500/20 transition-colors">
+                <ChartLine className="w-6 h-6 text-rose-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-foreground truncate">Intérêts Composés</p>
+                <p className="text-xs text-muted-foreground">Projetez vos placements</p>
+              </div>
+            </button>
+          </div>
         </motion.div>
 
         {/* KPI Cards */}

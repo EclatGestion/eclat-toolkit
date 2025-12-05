@@ -1,85 +1,104 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown } from "lucide-react";
 
-const categories = [
+const freeTools = [
   {
-    name: "Fiscalité",
-    emoji: "🧾",
-    tools: [
-      {
-        id: "simulateur-ir",
-        title: "Simulateur Impôt sur le Revenu",
-        description: "Calculez votre TMI et votre impôt net instantanément",
-        icon: Calculator,
-        iconColor: "text-primary",
-        iconBg: "bg-primary/10",
-      },
-      {
-        id: "droits-succession",
-        title: "Droits de Succession",
-        description: "Estimez les droits à payer lors d'une succession",
-        icon: Scale,
-        iconColor: "text-purple-500",
-        iconBg: "bg-purple-500/10",
-      },
-    ],
+    id: "simulateur-ir",
+    title: "Simulateur Impôt sur le Revenu",
+    description: "Calculez votre TMI et votre impôt net. Optimisation PER/Girardin en Premium.",
+    icon: Calculator,
+    iconColor: "text-primary",
+    iconBg: "bg-primary/10",
+    isPremium: false,
   },
   {
-    name: "Immobilier",
-    emoji: "🏠",
-    tools: [
-      {
-        id: "simulateur-immobilier",
-        title: "Simulateur Immobilier 2-en-1",
-        description: "Calculez votre mensualité ou votre capacité d'emprunt",
-        icon: Home,
-        iconColor: "text-emerald-500",
-        iconBg: "bg-emerald-500/10",
-      },
-      {
-        id: "rentabilite-locative",
-        title: "Rentabilité Pinel/LMNP",
-        description: "Analysez la rentabilité de vos investissements locatifs",
-        icon: Key,
-        iconColor: "text-amber-500",
-        iconBg: "bg-amber-500/10",
-      },
-    ],
+    id: "simulateur-immobilier",
+    title: "Simulateur Immobilier",
+    description: "Calculez votre mensualité. Capacité d'emprunt en Premium.",
+    icon: Home,
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-500/10",
+    isPremium: false,
   },
   {
-    name: "Marchés Financiers",
-    emoji: "📈",
-    tools: [
-      {
-        id: "interets-composes",
-        title: "Intérêts Composés",
-        description: "Projetez la croissance de vos placements sur le long terme",
-        icon: TrendingUp,
-        iconColor: "text-rose-500",
-        iconBg: "bg-rose-500/10",
-      },
-    ],
+    id: "interets-composes",
+    title: "Intérêts Composés",
+    description: "Projetez vos placements avec le scénario Équilibré. Tous scénarios en Premium.",
+    icon: TrendingUp,
+    iconColor: "text-rose-500",
+    iconBg: "bg-rose-500/10",
+    isPremium: false,
+  },
+];
+
+const premiumTools = [
+  {
+    id: "droits-succession",
+    title: "Droits de Succession",
+    description: "Estimez les droits à payer lors d'une succession et optimisez la transmission",
+    icon: Scale,
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-500/10",
+    isPremium: true,
+  },
+  {
+    id: "rentabilite-locative",
+    title: "Rentabilité Pinel/LMNP",
+    description: "Analysez la rentabilité complète de vos investissements locatifs",
+    icon: Key,
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-500/10",
+    isPremium: true,
   },
 ];
 
 export default function Catalogue() {
   return (
     <MainLayout title="Catalogue d'Outils">
-      <div className="space-y-8">
-        {categories.map((category) => (
-          <section key={category.name}>
-            <h2 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-              <span>{category.emoji}</span>
-              <span>{category.name}</span>
+      <div className="space-y-10">
+        {/* Section Outils Gratuits */}
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-semibold text-foreground">
+              🚀 Outils Gratuits
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {category.tools.map((tool) => (
-                <ToolCard key={tool.id} {...tool} />
-              ))}
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-xs font-medium">
+              {freeTools.length} outils
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Accédez aux fonctionnalités de base pour gérer votre patrimoine
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {freeTools.map((tool) => (
+              <ToolCard key={tool.id} {...tool} />
+            ))}
+          </div>
+        </section>
+
+        {/* Section Outils Premium */}
+        <section>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Crown className="w-5 h-5 text-amber-500" />
+              <h2 className="text-xl font-semibold text-foreground">
+                Outils Premium
+              </h2>
             </div>
-          </section>
-        ))}
+            <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-xs font-medium">
+              {premiumTools.length} outils
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Débloquez des analyses avancées pour optimiser votre stratégie patrimoniale
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {premiumTools.map((tool) => (
+              <ToolCard key={tool.id} {...tool} />
+            ))}
+          </div>
+        </section>
       </div>
     </MainLayout>
   );
