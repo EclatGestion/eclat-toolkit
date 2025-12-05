@@ -107,9 +107,21 @@ ${pdfContent}`;
 
     let analysisResult;
     try {
-      analysisResult = JSON.parse(responseText);
+      // Strip markdown code blocks if present
+      let cleanedResponse = responseText.trim();
+      if (cleanedResponse.startsWith("```json")) {
+        cleanedResponse = cleanedResponse.slice(7);
+      } else if (cleanedResponse.startsWith("```")) {
+        cleanedResponse = cleanedResponse.slice(3);
+      }
+      if (cleanedResponse.endsWith("```")) {
+        cleanedResponse = cleanedResponse.slice(0, -3);
+      }
+      cleanedResponse = cleanedResponse.trim();
+      
+      analysisResult = JSON.parse(cleanedResponse);
     } catch (parseError) {
-      console.error("Failed to parse Gemini response:", responseText);
+      console.error("Failed to parse AI response:", responseText);
       throw new Error("Failed to parse AI response as JSON");
     }
 
