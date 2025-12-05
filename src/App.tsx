@@ -55,6 +55,7 @@ const App = () => (
                 <Route path="/blog" element={<BlogIndex />} />
                 <Route path="/blog/:slug" element={<BlogArticle />} />
                 <Route path="/powens-callback" element={<PowensCallback />} />
+                <Route path="/powens/callback" element={<PowensCallback />} />
                 
                 {/* Protected Pages */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
