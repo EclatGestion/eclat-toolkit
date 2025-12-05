@@ -3,6 +3,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
   const { user, loading: authLoading } = useAuth();
   const [checkingOnboarding, setCheckingOnboarding] = useState(true);
   const [needsOnboarding, setNeedsOnboarding] = useState(false);
+  const [showRetry, setShowRetry] = useState(false);
 
   useEffect(() => {
     const checkOnboarding = async () => {
@@ -37,10 +39,26 @@ export function OnboardingGuard({ children }: OnboardingGuardProps) {
     }
   }, [user, authLoading]);
 
+  useEffect(() => {
+    if (authLoading || checkingOnboarding) {
+      const timer = setTimeout(() => setShowRetry(true), 5000);
+      return () => clearTimeout(timer);
+    }
+    setShowRetry(false);
+  }, [authLoading, checkingOnboarding]);
+
   if (authLoading || checkingOnboarding) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        {showRetry && (
+          <Button 
+            variant="outline" 
+            onClick={() => window.location.reload()}
+          >
+            Réessayer
+          </Button>
+        )}
       </div>
     );
   }
