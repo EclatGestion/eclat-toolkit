@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin } from "lucide-react";
+import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
@@ -27,6 +27,10 @@ const PLAFOND_DEFICIT_FONCIER_ENERGIE = 21400; // Doublé si travaux énergétiq
 const MICRO_BIC_LONGUE_DUREE = { abattement: 0.50, plafond: 77700 };
 const MICRO_BIC_TOURISME_CLASSE = { abattement: 0.50, plafond: 77700 };
 const MICRO_BIC_TOURISME_NON_CLASSE = { abattement: 0.30, plafond: 15000 }; // Loi Le Meur 2025
+
+// Seuil LMP et cotisations
+const SEUIL_LMP_RECETTES = 23000;
+const TAUX_COTISATIONS_LMP = 0.40; // ~40% de cotisations URSSAF
 
 interface ResultatLocationNue {
   loyersAnnuels: number;
@@ -56,6 +60,9 @@ interface ResultatLMNP {
   amortissementMeubles: number;
   amortissementTravaux: number;
   deficitReportable: number;
+  cfeAnnuel: number;
+  alerteLMP: boolean;
+  tauxSocialApplique: number;
 }
 
 export default function ComparateurLMNP() {
@@ -81,6 +88,10 @@ export default function ComparateurLMNP() {
 
   // Section E: Type de Location (Loi Le Meur 2025)
   const [typeLocation, setTypeLocation] = useState<"longue_duree" | "tourisme_classe" | "tourisme_non_classe">("longue_duree");
+
+  // Section F: CFE et LMP
+  const [cfe, setCfe] = useState(500);
+  const [revenusFoyer, setRevenusFoyer] = useState(50000);
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
@@ -153,7 +164,16 @@ export default function ComparateurLMNP() {
   // Calcul LMNP
   const resultatLMNP = useMemo((): ResultatLMNP => {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
-    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion;
+    const cfeAnnuel = cfe;
+    
+    // Alerte LMP: > 23k€ ET > revenus pro du foyer
+    const alerteLMP = loyersAnnuels > SEUIL_LMP_RECETTES && loyersAnnuels > revenusFoyer;
+    
+    // Taux social selon LMP ou LMNP
+    const tauxSocialApplique = alerteLMP ? TAUX_COTISATIONS_LMP : PRELEVEMENTS_SOCIAUX;
+    
+    // Charges déductibles (incluant CFE pour LMNP)
+    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion + cfeAnnuel;
 
     // Micro-BIC selon type de location (Loi Le Meur 2025)
     const getMicroBICParams = () => {
@@ -198,8 +218,8 @@ export default function ComparateurLMNP() {
       : baseImposableReel;
     const regimeChoisi: "Micro-BIC" | "Réel Simplifié" = baseImposable === baseImposableMicro ? "Micro-BIC" : "Réel Simplifié";
 
-    // Impôt
-    const impotTotal = baseImposable * (tmi / 100 + PRELEVEMENTS_SOCIAUX);
+    // Impôt (avec taux social adapté selon LMP/LMNP)
+    const impotTotal = baseImposable * (tmi / 100 + tauxSocialApplique);
     const cashflowNet = loyersAnnuels - chargesDeductibles - travauxDeductiblesImmediat - impotTotal;
 
     return {
@@ -215,8 +235,11 @@ export default function ComparateurLMNP() {
       amortissementMeubles,
       amortissementTravaux,
       deficitReportable,
+      cfeAnnuel,
+      alerteLMP,
+      tauxSocialApplique,
     };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation]);
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation, cfe, revenusFoyer]);
 
   const economieAnnuelle = resultatLocationNue.impotTotal - resultatLMNP.impotTotal;
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
@@ -388,6 +411,20 @@ export default function ComparateurLMNP() {
                     placeholder="0"
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs">CFE (LMNP uniquement)</Label>
+                  <Input
+                    type="number"
+                    value={cfe}
+                    onChange={(e) => setCfe(Number(e.target.value))}
+                    className="h-9"
+                    placeholder="500"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Cotisation Foncière des Entreprises, applicable en LMNP
+                  </p>
+                </div>
               </CardContent>
             </Card>
 
@@ -399,7 +436,7 @@ export default function ComparateurLMNP() {
                   Votre Profil Fiscal
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>Tranche Marginale d'Imposition (TMI)</Label>
                   <Select value={String(tmi)} onValueChange={(v) => setTmi(Number(v))}>
@@ -416,6 +453,23 @@ export default function ComparateurLMNP() {
                   </Select>
                   <p className="text-xs text-muted-foreground mt-1">
                     + 17,2% de prélèvements sociaux = {tmi + 17.2}% d'imposition totale
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <Label>Revenus professionnels du foyer</Label>
+                    <span className="text-sm font-semibold">{formatCurrency(revenusFoyer)}</span>
+                  </div>
+                  <Slider
+                    value={[revenusFoyer]}
+                    onValueChange={([v]) => setRevenusFoyer(v)}
+                    min={0}
+                    max={200000}
+                    step={5000}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Utilisé pour déterminer le passage en LMP (si recettes &gt; 23k€ ET &gt; revenus pro)
                   </p>
                 </div>
               </CardContent>
@@ -571,6 +625,26 @@ export default function ComparateurLMNP() {
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
                         Soit environ {formatCurrency(economieAnnuelle * 10)} sur 10 ans grâce aux amortissements
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Alerte LMP */}
+            {resultatLMNP.alerteLMP && (
+              <Card className="rounded-2xl border-red-300 bg-red-50 dark:bg-red-950/30">
+                <CardContent className="py-4">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-semibold text-red-700 dark:text-red-400 text-sm">
+                        ⚠️ Passage en Loueur Meublé Professionnel (LMP)
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Vos recettes ({formatCurrency(resultatLMNP.loyersAnnuels)}) dépassent 23 000€ ET vos revenus pro ({formatCurrency(revenusFoyer)}).
+                        Cotisations URSSAF ~40% au lieu de 17,2% de PS.
                       </p>
                     </div>
                   </div>
