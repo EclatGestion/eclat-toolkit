@@ -12,7 +12,7 @@ import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
+// Checkbox removed - using Switch instead
 
 // ============================================================
 // CONSTANTES FISCALES 2025
@@ -575,13 +575,9 @@ export default function ComparateurLMNP() {
                 </div>
                 {simulerPlusValue && (
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="residence-principale"
-                        checked={estResidencePrincipale}
-                        onCheckedChange={(v) => setEstResidencePrincipale(v === true)}
-                      />
-                      <Label htmlFor="residence-principale" className="text-sm">Deviendra ma résidence principale avant vente</Label>
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm">Residence principale avant vente</Label>
+                      <Switch checked={estResidencePrincipale} onCheckedChange={setEstResidencePrincipale} />
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between">
