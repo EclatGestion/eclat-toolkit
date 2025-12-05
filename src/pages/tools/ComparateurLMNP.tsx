@@ -6,23 +6,27 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer } from "lucide-react";
+import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
+import { Badge } from "@/components/ui/badge";
 
 // Constantes fiscales 2025
 const PRELEVEMENTS_SOCIAUX = 0.172;
 const MICRO_FONCIER_ABATTEMENT = 0.30;
-const MICRO_BIC_ABATTEMENT = 0.50;
 const AMORTISSEMENT_BATI_PART = 0.85; // 85% du bien est amortissable
 const AMORTISSEMENT_BATI_DUREE = 35; // 35 ans
 const AMORTISSEMENT_MEUBLES_DUREE = 7; // 7 ans
 const AMORTISSEMENT_TRAVAUX_DUREE = 10; // 10 ans pour travaux d'amélioration
 const PLAFOND_MICRO_FONCIER = 15000;
-const PLAFOND_MICRO_BIC = 77700;
 const PLAFOND_DEFICIT_FONCIER = 10700;
 const PLAFOND_DEFICIT_FONCIER_ENERGIE = 21400; // Doublé si travaux énergétiques
+
+// Micro-BIC selon type de location (Loi Le Meur 2025)
+const MICRO_BIC_LONGUE_DUREE = { abattement: 0.50, plafond: 77700 };
+const MICRO_BIC_TOURISME_CLASSE = { abattement: 0.50, plafond: 77700 };
+const MICRO_BIC_TOURISME_NON_CLASSE = { abattement: 0.30, plafond: 15000 }; // Loi Le Meur 2025
 
 interface ResultatLocationNue {
   loyersAnnuels: number;
@@ -74,6 +78,9 @@ export default function ComparateurLMNP() {
   // Section D: Travaux
   const [montantTravaux, setMontantTravaux] = useState(0);
   const [typeTravaux, setTypeTravaux] = useState<"entretien" | "amelioration" | "energie">("entretien");
+
+  // Section E: Type de Location (Loi Le Meur 2025)
+  const [typeLocation, setTypeLocation] = useState<"longue_duree" | "tourisme_classe" | "tourisme_non_classe">("longue_duree");
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
@@ -148,9 +155,21 @@ export default function ComparateurLMNP() {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
     const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion;
 
-    // Micro-BIC (50% abattement si loyers < 77.7k€)
-    const baseImposableMicro = loyersAnnuels <= PLAFOND_MICRO_BIC
-      ? loyersAnnuels * (1 - MICRO_BIC_ABATTEMENT)
+    // Micro-BIC selon type de location (Loi Le Meur 2025)
+    const getMicroBICParams = () => {
+      switch (typeLocation) {
+        case "tourisme_non_classe":
+          return MICRO_BIC_TOURISME_NON_CLASSE;
+        case "tourisme_classe":
+          return MICRO_BIC_TOURISME_CLASSE;
+        default:
+          return MICRO_BIC_LONGUE_DUREE;
+      }
+    };
+
+    const microBICParams = getMicroBICParams();
+    const baseImposableMicro = loyersAnnuels <= microBICParams.plafond
+      ? loyersAnnuels * (1 - microBICParams.abattement)
       : null;
 
     // Amortissements standards
@@ -197,7 +216,7 @@ export default function ComparateurLMNP() {
       amortissementTravaux,
       deficitReportable,
     };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux]);
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation]);
 
   const economieAnnuelle = resultatLocationNue.impotTotal - resultatLMNP.impotTotal;
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
@@ -208,6 +227,39 @@ export default function ComparateurLMNP() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Colonne Gauche: Inputs */}
           <div className="space-y-6">
+            {/* Section E: Type de Location (Loi Le Meur 2025) */}
+            <Card className="rounded-2xl">
+              <CardHeader className="pb-4">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <MapPin className="w-5 h-5 text-violet-500" />
+                  Type de Location
+                  <Badge variant="outline" className="ml-2 text-xs">Loi Le Meur 2025</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select value={typeLocation} onValueChange={(v) => setTypeLocation(v as typeof typeLocation)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="longue_duree">Location longue durée (50% - 77 700€)</SelectItem>
+                    <SelectItem value="tourisme_classe">Meublé tourisme classé (50% - 77 700€)</SelectItem>
+                    <SelectItem value="tourisme_non_classe">Meublé tourisme non classé (30% - 15 000€)</SelectItem>
+                  </SelectContent>
+                </Select>
+                {typeLocation === "tourisme_non_classe" && (
+                  <p className="text-xs text-amber-600 mt-2">
+                    ⚠️ Loi Le Meur 2025 : L'abattement Micro-BIC est réduit à 30% avec un plafond de 15 000€ pour les meublés de tourisme non classés.
+                  </p>
+                )}
+                {typeLocation === "tourisme_classe" && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Les meublés de tourisme classés conservent un abattement de 50% jusqu'à 77 700€ de recettes.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Section A: Le Projet */}
             <Card className="rounded-2xl">
               <CardHeader className="pb-4">
