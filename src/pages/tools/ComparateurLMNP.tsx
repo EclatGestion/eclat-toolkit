@@ -107,6 +107,11 @@ export default function ComparateurLMNP() {
   const [montantEmprunt, setMontantEmprunt] = useState(160000);
   const [dureeCredit, setDureeCredit] = useState(20);
   const [tauxCredit, setTauxCredit] = useState(3.5);
+  const [financer110, setFinancer110] = useState(false);
+
+  // Section H: Paramètres Bilan
+  const [horizonBilan, setHorizonBilan] = useState(10);
+  const [tauxAppreciation, setTauxAppreciation] = useState(2.5);
 
   // Section C: Profil Fiscal
   const [tmi, setTmi] = useState(30);
@@ -138,14 +143,22 @@ export default function ComparateurLMNP() {
     }).format(value);
   };
 
-  // --- CALCUL INTÉRÊTS EMPRUNT ---
-  const interetsEmprunt = useMemo(() => {
-    if (montantEmprunt <= 0 || dureeCredit <= 0 || tauxCredit <= 0) return 0;
+  // --- CALCUL CRÉDIT AUTOMATIQUE (FINANCEMENT 110%) ---
+  const montantCreditEffectif = useMemo(() => {
+    if (financer110) {
+      return prixBien + fraisNotaire + montantTravaux;
+    }
+    return montantEmprunt;
+  }, [financer110, prixBien, fraisNotaire, montantTravaux, montantEmprunt]);
+
+  // --- CALCUL INTÉRÊTS EMPRUNT (avec montant effectif) ---
+  const interetsEmpruntEffectif = useMemo(() => {
+    const capital = montantCreditEffectif;
+    if (capital <= 0 || dureeCredit <= 0 || tauxCredit <= 0) return 0;
     const tauxMensuel = tauxCredit / 100 / 12;
     const nbMensualites = dureeCredit * 12;
-    const mensualite = montantEmprunt * (tauxMensuel * Math.pow(1 + tauxMensuel, nbMensualites)) / (Math.pow(1 + tauxMensuel, nbMensualites) - 1);
-    // Intérêts première année (plus conservateur)
-    let capitalRestant = montantEmprunt;
+    const mensualite = capital * (tauxMensuel * Math.pow(1 + tauxMensuel, nbMensualites)) / (Math.pow(1 + tauxMensuel, nbMensualites) - 1);
+    let capitalRestant = capital;
     let interetsAnnee1 = 0;
     for (let i = 0; i < 12; i++) {
       const interetsMois = capitalRestant * tauxMensuel;
@@ -153,14 +166,14 @@ export default function ComparateurLMNP() {
       capitalRestant -= (mensualite - interetsMois);
     }
     return Math.round(interetsAnnee1);
-  }, [montantEmprunt, dureeCredit, tauxCredit]);
+  }, [montantCreditEffectif, dureeCredit, tauxCredit]);
 
   // ============================================================
   // CALCUL LOCATION NUE
   // ============================================================
   const resultatLocationNue = useMemo((): ResultatLocationNue => {
     const loyersAnnuels = loyerMensuel * 12 * (1 - tauxVacance / 100);
-    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion;
+    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmpruntEffectif + assurancePNO + fraisGestion;
     const travauxDeductibles = typeTravaux !== "amelioration" ? montantTravaux : 0;
 
     // Micro-Foncier (30% abattement si loyers < 15k€)
@@ -218,7 +231,7 @@ export default function ComparateurLMNP() {
       deficitImputeRevenuGlobal,
       economieDeficitFoncier,
     };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, tmi, montantTravaux, typeTravaux]);
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmpruntEffectif, assurancePNO, fraisGestion, tmi, montantTravaux, typeTravaux]);
 
   // ============================================================
   // CALCUL LMNP
@@ -232,7 +245,7 @@ export default function ComparateurLMNP() {
     const tauxSocialApplique = alerteLMP ? TAUX_COTISATIONS_LMP : PRELEVEMENTS_SOCIAUX;
 
     // Charges déductibles
-    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmprunt + assurancePNO + fraisGestion + cfeAnnuel;
+    const chargesDeductibles = chargesCopro + taxeFonciere + interetsEmpruntEffectif + assurancePNO + fraisGestion + cfeAnnuel;
 
     // Micro-BIC selon type de location
     const getMicroBICParams = () => {
@@ -297,7 +310,7 @@ export default function ComparateurLMNP() {
       alerteLMP,
       tauxSocialApplique,
     };
-  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmprunt, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation, cfe, revenusFoyer]);
+  }, [loyerMensuel, tauxVacance, chargesCopro, taxeFonciere, interetsEmpruntEffectif, assurancePNO, fraisGestion, prixBien, montantMeubles, tmi, montantTravaux, typeTravaux, typeLocation, cfe, revenusFoyer]);
 
   // ============================================================
   // CALCUL PLUS-VALUE (Réforme 2025)
@@ -382,11 +395,12 @@ export default function ComparateurLMNP() {
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
 
   // ============================================================
-  // BILAN GLOBAL 10 ANS
+  // BILAN GLOBAL PARAMÉTRABLE
   // ============================================================
-  const bilan10Ans = useMemo(() => {
-    const duree = 10;
+  const bilanGlobal = useMemo(() => {
+    const duree = horizonBilan;
     const investissementTotal = prixBien + montantMeubles + fraisNotaire + montantTravaux;
+    const apportPersonnel = investissementTotal - montantCreditEffectif;
     
     // Loyers cumulés (avec vacance)
     const loyersCumules = resultatLocationNue.loyersAnnuels * duree;
@@ -399,51 +413,76 @@ export default function ComparateurLMNP() {
     const cashflowCumuleNue = resultatLocationNue.cashflowNet * duree;
     const cashflowCumuleLMNP = resultatLMNP.cashflowNet * duree;
     
-    // Plus-value à 10 ans (estimation +25% de valorisation)
-    const tauxAppreciation = 0.25;
-    const prixRevente10Ans = prixBien * (1 + tauxAppreciation);
+    // Appréciation du bien
+    const appreciationTotale = Math.pow(1 + tauxAppreciation / 100, duree) - 1;
+    const prixReventeFinal = prixBien * (1 + appreciationTotale);
     const prixAcquisition = prixBien + fraisNotaire;
     
-    // Abattements PV pour 10 ans
-    const abattementIR10 = Math.min(1, (10 - 5) * 0.06); // 30% après 10 ans
-    const abattementPS10 = Math.min(1, (10 - 5) * 0.0165); // ~8.25% après 10 ans
+    // Abattements PV selon durée de détention
+    const calculAbattementIR = (annees: number) => {
+      if (annees < 6) return 0;
+      if (annees >= 22) return 1;
+      return Math.min(1, (annees - 5) * 0.06);
+    };
+    const calculAbattementPS = (annees: number) => {
+      if (annees < 6) return 0;
+      if (annees >= 30) return 1;
+      if (annees <= 21) return (annees - 5) * 0.0165;
+      return Math.min(1, 0.264 + (annees - 21) * 0.09);
+    };
+    
+    const abattementIR = calculAbattementIR(duree);
+    const abattementPS = calculAbattementPS(duree);
     
     // PV Location Nue
-    const pvBruteNue = Math.max(0, prixRevente10Ans - prixAcquisition);
-    const impotPVNue = pvBruteNue * (1 - abattementIR10) * IMPOT_PLUS_VALUE + pvBruteNue * (1 - abattementPS10) * PRELEVEMENTS_SOCIAUX;
+    const pvBruteNue = Math.max(0, prixReventeFinal - prixAcquisition);
+    const impotPVNue = pvBruteNue * (1 - abattementIR) * IMPOT_PLUS_VALUE + pvBruteNue * (1 - abattementPS) * PRELEVEMENTS_SOCIAUX;
     
     // PV LMNP (avec réintégration amortissements)
     const amortissementsReintegres = (resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux) * duree;
-    const pvBruteLMNP = Math.max(0, prixRevente10Ans - prixAcquisition + amortissementsReintegres);
-    const impotPVLMNP = pvBruteLMNP * (1 - abattementIR10) * IMPOT_PLUS_VALUE + pvBruteLMNP * (1 - abattementPS10) * PRELEVEMENTS_SOCIAUX;
+    const pvBruteLMNP = Math.max(0, prixReventeFinal - prixAcquisition + amortissementsReintegres);
+    const impotPVLMNP = pvBruteLMNP * (1 - abattementIR) * IMPOT_PLUS_VALUE + pvBruteLMNP * (1 - abattementPS) * PRELEVEMENTS_SOCIAUX;
     
-    // Bilan total
-    const gainNetNue = cashflowCumuleNue + (prixRevente10Ans - prixBien) - impotPVNue;
-    const gainNetLMNP = cashflowCumuleLMNP + (prixRevente10Ans - prixBien) - impotPVLMNP;
+    // Valorisation nette du bien (plus-value réelle après impôt)
+    const valorisationNetteNue = (prixReventeFinal - prixBien) - impotPVNue;
+    const valorisationNetteLMNP = (prixReventeFinal - prixBien) - impotPVLMNP;
     
-    // ROI
-    const roiNue = (gainNetNue / investissementTotal) * 100;
-    const roiLMNP = (gainNetLMNP / investissementTotal) * 100;
+    // Gain net total = cashflows + valorisation nette
+    const gainNetNue = cashflowCumuleNue + valorisationNetteNue;
+    const gainNetLMNP = cashflowCumuleLMNP + valorisationNetteLMNP;
+    
+    // ROI annualisé (CAGR) basé sur l'apport personnel (ce que l'investisseur sort de sa poche)
+    const baseInvestissement = Math.max(apportPersonnel, 1); // éviter division par 0
+    const roiAnnualiseNue = (Math.pow(1 + gainNetNue / baseInvestissement, 1 / duree) - 1) * 100;
+    const roiAnnualiseLMNP = (Math.pow(1 + gainNetLMNP / baseInvestissement, 1 / duree) - 1) * 100;
     
     return {
       duree,
       investissementTotal,
+      apportPersonnel,
       loyersCumules,
       impotsCumulesNue,
       impotsCumulesLMNP,
       cashflowCumuleNue,
       cashflowCumuleLMNP,
-      prixRevente10Ans,
+      appreciationTotale: appreciationTotale * 100,
+      prixReventeFinal,
+      pvBruteNue,
+      pvBruteLMNP,
       impotPVNue,
       impotPVLMNP,
       amortissementsReintegres,
+      valorisationNetteNue,
+      valorisationNetteLMNP,
       gainNetNue,
       gainNetLMNP,
-      roiNue,
-      roiLMNP,
+      roiAnnualiseNue,
+      roiAnnualiseLMNP,
+      abattementIR: abattementIR * 100,
+      abattementPS: abattementPS * 100,
       gagnant: gainNetLMNP > gainNetNue ? "LMNP" : "Location Nue",
     };
-  }, [prixBien, montantMeubles, fraisNotaire, montantTravaux, resultatLocationNue, resultatLMNP]);
+  }, [horizonBilan, tauxAppreciation, prixBien, montantMeubles, fraisNotaire, montantTravaux, montantCreditEffectif, resultatLocationNue, resultatLMNP]);
 
   // ============================================================
   // RENDU JSX
@@ -571,13 +610,44 @@ export default function ComparateurLMNP() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>Montant emprunté</Label>
-                    <span className="text-sm font-semibold text-primary">{formatCurrency(montantEmprunt)}</span>
+                {/* Switch Financer 110% */}
+                <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                  <div>
+                    <Label className="text-sm font-medium">Financer 110%</Label>
+                    <p className="text-xs text-muted-foreground">Bien + frais notaire + travaux</p>
                   </div>
-                  <Slider value={[montantEmprunt]} onValueChange={([v]) => setMontantEmprunt(v)} min={0} max={prixBien} step={5000} />
+                  <Switch checked={financer110} onCheckedChange={setFinancer110} />
                 </div>
+                
+                {financer110 ? (
+                  <div className="p-3 bg-muted/50 rounded-lg space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Prix du bien</span>
+                      <span>{formatCurrency(prixBien)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">+ Frais de notaire</span>
+                      <span>{formatCurrency(fraisNotaire)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">+ Travaux</span>
+                      <span>{formatCurrency(montantTravaux)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-semibold border-t pt-2">
+                      <span>= Crédit total</span>
+                      <span className="text-primary">{formatCurrency(montantCreditEffectif)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <Label>Montant emprunté</Label>
+                      <span className="text-sm font-semibold text-primary">{formatCurrency(montantEmprunt)}</span>
+                    </div>
+                    <Slider value={[montantEmprunt]} onValueChange={([v]) => setMontantEmprunt(v)} min={0} max={prixBien + fraisNotaire + montantTravaux} step={5000} />
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <Label>Durée du crédit</Label>
@@ -595,7 +665,7 @@ export default function ComparateurLMNP() {
                 <div className="p-3 bg-muted/50 rounded-lg">
                   <div className="flex justify-between text-sm">
                     <span className="text-muted-foreground">Intérêts déductibles (1ère année)</span>
-                    <span className="font-semibold text-primary">{formatCurrency(interetsEmprunt)}</span>
+                    <span className="font-semibold text-primary">{formatCurrency(interetsEmpruntEffectif)}</span>
                   </div>
                 </div>
               </CardContent>
@@ -862,16 +932,43 @@ export default function ComparateurLMNP() {
               </Card>
             )}
 
-            {/* Bilan Global 10 Ans */}
+            {/* Bilan Global Paramétrable */}
             <Card className="rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
               <CardHeader className="pb-2">
                 <CardTitle className="flex items-center gap-2 text-base">
                   <TrendingUp className="w-5 h-5 text-primary" />
-                  Bilan Global sur 10 ans
+                  Bilan Global sur {bilanGlobal.duree} ans
                   <Badge variant="outline" className="ml-auto text-xs">Projection</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Paramètres du bilan */}
+                <div className="p-3 bg-muted/30 rounded-lg space-y-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Label>Horizon de projection</Label>
+                      <span className="font-semibold text-primary">{horizonBilan} ans</span>
+                    </div>
+                    <Slider value={[horizonBilan]} onValueChange={([v]) => setHorizonBilan(v)} min={5} max={20} step={5} />
+                    <div className="flex justify-between text-xs text-muted-foreground">
+                      <span>5 ans</span>
+                      <span>10 ans</span>
+                      <span>15 ans</span>
+                      <span>20 ans</span>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <Label>Appréciation annuelle du bien</Label>
+                      <span className="font-semibold text-emerald-600">+{tauxAppreciation}% / an</span>
+                    </div>
+                    <Slider value={[tauxAppreciation]} onValueChange={([v]) => setTauxAppreciation(v)} min={0} max={5} step={0.5} />
+                    <p className="text-xs text-muted-foreground">
+                      → Appréciation totale sur {horizonBilan} ans : +{bilanGlobal.appreciationTotale.toFixed(1)}% ({formatCurrency(bilanGlobal.prixReventeFinal)})
+                    </p>
+                  </div>
+                </div>
+                
                 {/* Tableau comparatif */}
                 <div className="overflow-hidden rounded-lg border">
                   <Table>
@@ -882,36 +979,42 @@ export default function ComparateurLMNP() {
                         <TableCell className="text-center text-xs py-2 font-semibold text-emerald-600">LMNP</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">Impôts cumulés</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotsCumulesNue)}</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotsCumulesLMNP)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground py-2">Impôts cumulés ({horizonBilan} ans)</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotsCumulesNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotsCumulesLMNP)}</TableCell>
                       </TableRow>
                       <TableRow>
                         <TableCell className="text-xs text-muted-foreground py-2">Cashflow cumulé</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.cashflowCumuleNue)}</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.cashflowCumuleLMNP)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.cashflowCumuleNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.cashflowCumuleLMNP)}</TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">Impôt Plus-Value</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotPVNue)}</TableCell>
-                        <TableCell className="text-center text-xs py-2 font-medium text-red-600">{formatCurrency(bilan10Ans.impotPVLMNP)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground py-2">
+                          Impôt Plus-Value
+                          <span className="text-[10px] ml-1">(abatt. IR -{bilanGlobal.abattementIR.toFixed(0)}%)</span>
+                        </TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilanGlobal.impotPVNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium text-red-600">{formatCurrency(bilanGlobal.impotPVLMNP)}</TableCell>
                       </TableRow>
                       <TableRow className="bg-primary/5 border-t-2">
                         <TableCell className="font-semibold text-sm py-3">Gain Net Total</TableCell>
-                        <TableCell className={`text-center font-bold text-sm py-3 ${bilan10Ans.gagnant === "Location Nue" ? "text-primary" : ""}`}>
-                          {formatCurrency(bilan10Ans.gainNetNue)}
+                        <TableCell className={`text-center font-bold text-sm py-3 ${bilanGlobal.gagnant === "Location Nue" ? "text-primary" : ""}`}>
+                          {formatCurrency(bilanGlobal.gainNetNue)}
                         </TableCell>
-                        <TableCell className={`text-center font-bold text-sm py-3 ${bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
-                          {formatCurrency(bilan10Ans.gainNetLMNP)}
+                        <TableCell className={`text-center font-bold text-sm py-3 ${bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
+                          {formatCurrency(bilanGlobal.gainNetLMNP)}
                         </TableCell>
                       </TableRow>
                       <TableRow>
-                        <TableCell className="text-xs text-muted-foreground py-2">ROI sur investissement</TableCell>
-                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilan10Ans.gagnant === "Location Nue" ? "text-primary" : ""}`}>
-                          {bilan10Ans.roiNue.toFixed(1)}%
+                        <TableCell className="text-xs text-muted-foreground py-2">
+                          ROI annualisé
+                          <span className="text-[10px] ml-1">(sur apport {formatCurrency(bilanGlobal.apportPersonnel)})</span>
                         </TableCell>
-                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
-                          {bilan10Ans.roiLMNP.toFixed(1)}%
+                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilanGlobal.gagnant === "Location Nue" ? "text-primary" : ""}`}>
+                          {bilanGlobal.roiAnnualiseNue.toFixed(1)}% / an
+                        </TableCell>
+                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
+                          {bilanGlobal.roiAnnualiseLMNP.toFixed(1)}% / an
                         </TableCell>
                       </TableRow>
                     </TableBody>
@@ -919,15 +1022,11 @@ export default function ComparateurLMNP() {
                 </div>
                 
                 {/* Badge Gagnant */}
-                <div className={`p-3 rounded-lg text-center ${bilan10Ans.gagnant === "LMNP" ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-primary/10"}`}>
+                <div className={`p-3 rounded-lg text-center ${bilanGlobal.gagnant === "LMNP" ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-primary/10"}`}>
                   <span className="text-sm font-semibold">
-                    🏆 Sur 10 ans, <span className={bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilan10Ans.gagnant}</span> génère {formatCurrency(Math.abs(bilan10Ans.gainNetLMNP - bilan10Ans.gainNetNue))} de plus
+                    🏆 Sur {bilanGlobal.duree} ans, <span className={bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilanGlobal.gagnant}</span> génère {formatCurrency(Math.abs(bilanGlobal.gainNetLMNP - bilanGlobal.gainNetNue))} de plus
                   </span>
                 </div>
-                
-                <p className="text-xs text-muted-foreground">
-                  * Hypothèse : valorisation du bien +25% sur 10 ans. Prix revente estimé : {formatCurrency(bilan10Ans.prixRevente10Ans)}
-                </p>
               </CardContent>
             </Card>
 
