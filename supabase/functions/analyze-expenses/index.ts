@@ -30,9 +30,9 @@ serve(async (req) => {
       throw new Error("PDF content is required");
     }
 
-    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
-    if (!GOOGLE_API_KEY) {
-      throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     console.log("Analyzing expenses from PDF:", fileName);
@@ -47,9 +47,9 @@ RÈGLES IMPORTANTES:
 - Pour topExpenses: trie les 5 plus GROSSES dépenses par montant absolu (pas les mêmes montants!)
 - Utilise les montants EXACTS du relevé
 
-Catégories: ${EXPENSE_CATEGORIES.join(", ")}
+Catégories: ${EXPENSE_CATEGORIES.join(", ")}`;
 
-Format JSON STRICT:
+    const userPrompt = `Analyse ce relevé bancaire et retourne un JSON avec cette structure exacte:
 {
   "transactions": [{"date": "DD/MM/YYYY", "label": "description", "amount": -123.45, "category": "Catégorie"}],
   "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
@@ -62,34 +62,25 @@ Format JSON STRICT:
 Relevé bancaire:
 ${pdfContent}`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: systemPrompt
-              }
-            ]
-          }
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt }
         ],
-        generationConfig: {
-          temperature: 0.1,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 8192,
-          responseMimeType: "application/json"
-        }
+        temperature: 0.1,
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Google Gemini API error:", response.status, errorText);
+      console.error("Lovable AI error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -97,15 +88,21 @@ ${pdfContent}`;
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      throw new Error(`Google Gemini API error: ${response.status}`);
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "Crédits épuisés. Veuillez recharger votre compte." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      throw new Error(`Lovable AI error: ${response.status}`);
     }
 
-    const geminiResponse = await response.json();
-    console.log("Gemini Response received");
+    const aiResponse = await response.json();
+    console.log("AI Response received");
 
-    const responseText = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
+    const responseText = aiResponse.choices?.[0]?.message?.content;
     if (!responseText) {
-      throw new Error("Invalid Gemini response format");
+      throw new Error("Invalid AI response format");
     }
 
     let analysisResult;
