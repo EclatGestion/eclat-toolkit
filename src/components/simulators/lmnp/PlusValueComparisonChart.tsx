@@ -4,13 +4,12 @@ import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 interface PlusValueComparisonChartProps {
   plusValueNue: number;
   plusValueLMNP: number;
-  amortissementsReintegres: number;
+  amortissementsReintegres?: number;
 }
 
 export function PlusValueComparisonChart({ 
   plusValueNue, 
   plusValueLMNP,
-  amortissementsReintegres 
 }: PlusValueComparisonChartProps) {
   const data = [
     { 
@@ -21,8 +20,7 @@ export function PlusValueComparisonChart({
     { 
       name: "LMNP", 
       value: plusValueLMNP, 
-      fill: "hsl(var(--destructive))",
-      amortissements: amortissementsReintegres
+      fill: "hsl(var(--destructive))"
     },
   ];
 

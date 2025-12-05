@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, Trophy, ArrowRight } from "lucide-react";
+import { TrendingUp, Trophy } from "lucide-react";
 
 interface BilanGlobalCardProps {
   dureeDetention: number;
