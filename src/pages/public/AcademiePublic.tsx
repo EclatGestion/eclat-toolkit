@@ -16,6 +16,8 @@ const filters: { id: CategoryFilter; label: string }[] = [
   { id: "retraite", label: "Retraite" },
   { id: "performance", label: "Performance" },
   { id: "immobilier", label: "Immobilier" },
+  { id: "bourse", label: "Bourse" },
+  { id: "alternatif", label: "Alternatif" },
 ];
 
 // JSON-LD Schema for SEO
@@ -23,7 +25,7 @@ const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "name": "Guides d'investissement et de défiscalisation",
-  "description": "Découvrez nos solutions d'investissement : Assurance-Vie, PER, Girardin, Private Equity, SCPI et Compte-Titres",
+  "description": "Découvrez nos solutions d'investissement : Assurance-Vie, PER, PEA, Girardin, Private Equity, SCPI, GFI et plus encore",
   "numberOfItems": financialProducts.length,
   "itemListElement": financialProducts.map((product, index) => ({
     "@type": "ListItem",
@@ -45,7 +47,7 @@ export default function AcademiePublic() {
   return (
     <PublicPageLayout 
       title="Académie Financière | Guides Investissement & Défiscalisation"
-      description="Découvrez nos solutions d'investissement et de défiscalisation : Assurance-Vie, PER, Girardin, Private Equity, SCPI et plus encore."
+      description="Découvrez nos solutions d'investissement et de défiscalisation : Assurance-Vie, PER, PEA, Girardin, SCPI, Private Equity, GFI et plus encore."
       jsonLd={jsonLdSchema}
     >
       {/* Intro Section */}
@@ -128,24 +130,24 @@ export default function AcademiePublic() {
           Investir son argent intelligemment nécessite de comprendre les différentes enveloppes fiscales 
           et produits financiers disponibles. Notre académie vous guide à travers les principales solutions 
           d'investissement en France, de l'<strong>assurance-vie</strong> au <strong>PER</strong> en passant 
-          par le <strong>Private Equity</strong> et les <strong>SCPI</strong>.
+          par le <strong>PEA</strong>, le <strong>Private Equity</strong> et les <strong>SCPI</strong>.
         </p>
 
         <h3 className="text-xl font-semibold text-gray-900 mt-8">Les enveloppes fiscales avantageuses</h3>
         <p className="text-gray-600 leading-relaxed">
           L'<strong>assurance-vie</strong> reste le placement préféré des Français grâce à sa fiscalité 
           avantageuse après 8 ans et ses atouts en matière de transmission. Le <strong>Plan d'Épargne 
+          Actions (PEA)</strong> offre une exonération d'impôt sur les plus-values après 5 ans. Le <strong>Plan d'Épargne 
           Retraite (PER)</strong> permet de réduire immédiatement son impôt sur le revenu tout en 
-          préparant sa retraite. Le <strong>Girardin Industriel</strong> offre une réduction d'impôt 
-          supérieure au montant investi.
+          préparant sa retraite. Le <strong>Girardin Industriel</strong> et les <strong>SOFICA</strong> offrent des réductions d'impôt exceptionnelles.
         </p>
 
         <h3 className="text-xl font-semibold text-gray-900 mt-8">Diversifier avec l'immobilier et le non-coté</h3>
         <p className="text-gray-600 leading-relaxed">
           Les <strong>SCPI (Sociétés Civiles de Placement Immobilier)</strong> permettent d'investir 
-          dans l'immobilier professionnel sans les contraintes de gestion, avec des rendements de 4% à 7%. 
-          Le <strong>Private Equity</strong> donne accès à des entreprises non cotées à fort potentiel 
-          de croissance.
+          dans l'immobilier professionnel sans les contraintes de gestion, avec des rendements de 4% à 6%. 
+          La <strong>nue-propriété</strong> offre une décote de 40% sur l'achat immobilier. Le <strong>Private Equity</strong> donne accès à des entreprises non cotées à fort potentiel 
+          de croissance. Les <strong>Groupements Forestiers (GFI)</strong> combinent écologie et avantages fiscaux exceptionnels.
         </p>
       </section>
     </PublicPageLayout>

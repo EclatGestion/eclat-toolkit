@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, LucideIcon } from "lucide-react";
+import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, Key, Users, Clock, Layers, TreePine, LucideIcon } from "lucide-react";
 import { FinancialProduct, getRiskLabel } from "@/data/financialProducts";
 import { cn } from "@/lib/utils";
 import { ProductModal } from "./ProductModal";
@@ -11,6 +11,13 @@ const iconMap: Record<string, LucideIcon> = {
   Rocket,
   LineChart,
   Building2,
+  TrendingUp,
+  Film,
+  Key,
+  Users,
+  Clock,
+  Layers,
+  TreePine,
 };
 
 interface ProductCardProps {
