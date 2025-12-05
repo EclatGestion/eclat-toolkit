@@ -33,6 +33,7 @@ const SimulateurIRPublic = lazy(() => import("./pages/public/SimulateurIRPublic"
 const AcademiePublic = lazy(() => import("./pages/public/AcademiePublic"));
 const BlogIndex = lazy(() => import("./pages/public/BlogIndex"));
 const BlogArticle = lazy(() => import("./pages/public/BlogArticle"));
+const PowensCallback = lazy(() => import("./pages/PowensCallback"));
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                 <Route path="/academie" element={<AcademiePublic />} />
                 <Route path="/blog" element={<BlogIndex />} />
                 <Route path="/blog/:slug" element={<BlogArticle />} />
+                <Route path="/powens-callback" element={<PowensCallback />} />
                 
                 {/* Protected Pages */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />

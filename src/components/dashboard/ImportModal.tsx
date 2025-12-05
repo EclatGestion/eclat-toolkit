@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { usePowens } from "@/hooks/usePowens";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
 import {
   Dialog,
@@ -10,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { FileText, Link2, Upload, Loader2, AlertCircle } from "lucide-react";
+import { FileText, Link2, Upload, Loader2, AlertCircle, RefreshCw, Building2, X } from "lucide-react";
 
 // Configuration du worker PDF.js (version legacy compatible)
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
@@ -34,6 +35,15 @@ export function ImportModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { 
+    isConnected, 
+    bankConnection, 
+    isLoading: isPowensLoading, 
+    initConnection, 
+    syncTransactions,
+    disconnect 
+  } = usePowens();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -62,7 +72,6 @@ export function ImportModal({
       const page = await pdf.getPage(pageNum);
       const textContent = await page.getTextContent();
       
-      // Extraire UNIQUEMENT les chaînes de texte
       const pageText = textContent.items
         .filter((item) => 'str' in item && typeof (item as any).str === 'string')
         .map((item) => (item as any).str as string)
@@ -71,17 +80,15 @@ export function ImportModal({
       fullText += pageText + '\n';
     }
     
-    // Nettoyage du texte
     const cleanedText = fullText
-      .replace(/\n{3,}/g, '\n\n')           // Supprimer sauts de ligne excessifs
-      .replace(/Page \d+\/\d+/gi, '')        // Supprimer "Page 1/4"
-      .replace(/Capital social.*$/gim, '')   // Supprimer mentions légales
-      .replace(/RCS.*$/gim, '')              // Supprimer numéros RCS
-      .replace(/SIRET.*$/gim, '')            // Supprimer SIRET
-      .replace(/^\s+|\s+$/g, '')             // Trim
-      .replace(/\s{2,}/g, ' ');              // Espaces multiples → un seul
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/Page \d+\/\d+/gi, '')
+      .replace(/Capital social.*$/gim, '')
+      .replace(/RCS.*$/gim, '')
+      .replace(/SIRET.*$/gim, '')
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\s{2,}/g, ' ');
     
-    // DEBUG: Afficher dans la console
     console.log("📄 Texte envoyé à l'IA :", cleanedText);
     console.log("📊 Nombre de caractères :", cleanedText.length);
     
@@ -97,22 +104,18 @@ export function ImportModal({
     onOpenChange(false);
 
     try {
-      // Extract text from PDF (optimized - text only, no binary)
       const pdfContent = await extractTextFromPDF(selectedFile);
 
-      // Upload original PDF to storage (for record keeping)
       const filePath = `${user.id}/${Date.now()}_${selectedFile.name}`;
       await supabase.storage
         .from("bank-statements")
         .upload(filePath, selectedFile);
 
-      // Call the analysis edge function with cleaned text
-      // Note: userId is extracted from JWT token server-side for security
       const { data: functionData, error: functionError } = await supabase.functions.invoke(
         "analyze-expenses",
         {
           body: {
-            pdfContent, // Now contains cleaned text, not base64
+            pdfContent,
             fileName: selectedFile.name,
           },
         }
@@ -149,6 +152,19 @@ export function ImportModal({
       setIsLoading(false);
       setSelectedFile(null);
     }
+  };
+
+  const handlePowensSync = async () => {
+    setIsLoading(true);
+    onOpenChange(false);
+    
+    const data = await syncTransactions();
+    
+    if (data) {
+      onAnalysisComplete(data);
+    }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -191,23 +207,70 @@ export function ImportModal({
             </div>
           </div>
 
-          {/* Powens Option - Disabled */}
-          <div className="relative border-2 border-border rounded-2xl p-6 opacity-60 cursor-not-allowed">
-            <div className="absolute top-3 right-3 px-2 py-0.5 bg-muted rounded-full">
-              <span className="text-xs text-muted-foreground">Bientôt</span>
-            </div>
-            <div className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
-                <Link2 className="w-6 h-6 text-muted-foreground" />
+          {/* Powens Option */}
+          {isConnected && bankConnection ? (
+            <div className="relative border-2 border-emerald-500/50 rounded-2xl p-6 bg-emerald-500/5">
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+                  <Building2 className="w-6 h-6 text-emerald-500" />
+                </div>
+                <h4 className="font-medium text-foreground mb-1">
+                  {bankConnection.bank_name || "Banque connectée"}
+                </h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  {bankConnection.last_sync_at 
+                    ? `Dernière synchro : ${new Date(bankConnection.last_sync_at).toLocaleDateString("fr-FR")}`
+                    : "Prêt à synchroniser"
+                  }
+                </p>
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={handlePowensSync}
+                    disabled={isPowensLoading}
+                    size="sm"
+                    className="gap-2"
+                  >
+                    {isPowensLoading ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <RefreshCw className="w-4 h-4" />
+                    )}
+                    Synchroniser
+                  </Button>
+                  <Button 
+                    onClick={disconnect}
+                    disabled={isPowensLoading}
+                    variant="outline"
+                    size="sm"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-              <h4 className="font-medium text-foreground mb-1">
-                Synchronisation Powens
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                Connectez votre banque pour un import automatique
-              </p>
             </div>
-          </div>
+          ) : (
+            <div 
+              onClick={initConnection}
+              className="relative border-2 border-dashed border-border rounded-2xl p-6 hover:border-primary/50 hover:bg-muted/50 transition-colors cursor-pointer"
+            >
+              {isPowensLoading && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center rounded-2xl">
+                  <Loader2 className="w-6 h-6 text-primary animate-spin" />
+                </div>
+              )}
+              <div className="flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                  <Link2 className="w-6 h-6 text-primary" />
+                </div>
+                <h4 className="font-medium text-foreground mb-1">
+                  Synchronisation bancaire
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  Connectez votre banque pour un import automatique
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Error Message */}
           {error && (
@@ -236,7 +299,7 @@ export function ImportModal({
             ) : (
               <>
                 <Upload className="w-4 h-4" />
-                Analyser
+                Analyser PDF
               </>
             )}
           </Button>
