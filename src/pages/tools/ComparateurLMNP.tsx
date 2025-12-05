@@ -12,7 +12,7 @@ import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-// Checkbox removed - using Switch instead
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 
 // ============================================================
 // CONSTANTES FISCALES 2025
@@ -483,6 +483,40 @@ export default function ComparateurLMNP() {
       gagnant: gainNetLMNP > gainNetNue ? "LMNP" : "Location Nue",
     };
   }, [horizonBilan, tauxAppreciation, prixBien, montantMeubles, fraisNotaire, montantTravaux, montantCreditEffectif, resultatLocationNue, resultatLMNP]);
+
+  // ============================================================
+  // DONNÉES GRAPHIQUE ÉVOLUTION ANNUELLE
+  // ============================================================
+  const evolutionAnnuelle = useMemo(() => {
+    const data = [];
+    const apportPersonnel = bilanGlobal.apportPersonnel;
+    
+    for (let annee = 0; annee <= horizonBilan; annee++) {
+      // Cashflows cumulés
+      const cashflowCumuleNue = resultatLocationNue.cashflowNet * annee;
+      const cashflowCumuleLMNP = resultatLMNP.cashflowNet * annee;
+      
+      // Valorisation du bien à cette année
+      const appreciationAnnee = Math.pow(1 + tauxAppreciation / 100, annee) - 1;
+      const valorisationBien = prixBien * appreciationAnnee;
+      
+      // Patrimoine net = apport initial + cashflows cumulés + valorisation
+      const patrimoineNue = apportPersonnel + cashflowCumuleNue + valorisationBien;
+      const patrimoineLMNP = apportPersonnel + cashflowCumuleLMNP + valorisationBien;
+      
+      data.push({
+        annee: `Année ${annee}`,
+        anneeNum: annee,
+        patrimoineNue: Math.round(patrimoineNue),
+        patrimoineLMNP: Math.round(patrimoineLMNP),
+        cashflowNue: Math.round(cashflowCumuleNue),
+        cashflowLMNP: Math.round(cashflowCumuleLMNP),
+        valorisation: Math.round(valorisationBien),
+      });
+    }
+    
+    return data;
+  }, [horizonBilan, tauxAppreciation, prixBien, bilanGlobal.apportPersonnel, resultatLocationNue.cashflowNet, resultatLMNP.cashflowNet]);
 
   // ============================================================
   // RENDU JSX
@@ -1027,6 +1061,82 @@ export default function ComparateurLMNP() {
                     🏆 Sur {bilanGlobal.duree} ans, <span className={bilanGlobal.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilanGlobal.gagnant}</span> génère {formatCurrency(Math.abs(bilanGlobal.gainNetLMNP - bilanGlobal.gainNetNue))} de plus
                   </span>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Graphique Évolution du Patrimoine */}
+            <Card className="rounded-2xl">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="w-5 h-5 text-emerald-500" />
+                  Évolution du Patrimoine
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[280px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={evolutionAnnuelle} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorNue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                        </linearGradient>
+                        <linearGradient id="colorLMNP" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis 
+                        dataKey="anneeNum" 
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(value) => `${value}a`}
+                        className="text-muted-foreground"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 11 }}
+                        tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                        className="text-muted-foreground"
+                      />
+                      <Tooltip 
+                        formatter={(value: number, name: string) => [
+                          formatCurrency(value),
+                          name === "patrimoineNue" ? "Location Nue" : "LMNP"
+                        ]}
+                        labelFormatter={(label) => `Année ${label}`}
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--background))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          fontSize: '12px'
+                        }}
+                      />
+                      <Legend 
+                        formatter={(value) => value === "patrimoineNue" ? "Location Nue" : "LMNP"}
+                        wrapperStyle={{ fontSize: '12px' }}
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="patrimoineNue" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={2}
+                        fill="url(#colorNue)" 
+                        name="patrimoineNue"
+                      />
+                      <Area 
+                        type="monotone" 
+                        dataKey="patrimoineLMNP" 
+                        stroke="#10b981" 
+                        strokeWidth={2}
+                        fill="url(#colorLMNP)" 
+                        name="patrimoineLMNP"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-xs text-muted-foreground mt-3 text-center">
+                  Patrimoine net = Apport ({formatCurrency(bilanGlobal.apportPersonnel)}) + Cashflows cumulés + Valorisation du bien
+                </p>
               </CardContent>
             </Card>
 
