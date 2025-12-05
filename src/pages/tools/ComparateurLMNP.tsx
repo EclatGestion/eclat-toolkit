@@ -382,6 +382,70 @@ export default function ComparateurLMNP() {
   const lmnpGagnant = resultatLMNP.impotTotal < resultatLocationNue.impotTotal;
 
   // ============================================================
+  // BILAN GLOBAL 10 ANS
+  // ============================================================
+  const bilan10Ans = useMemo(() => {
+    const duree = 10;
+    const investissementTotal = prixBien + montantMeubles + fraisNotaire + montantTravaux;
+    
+    // Loyers cumulés (avec vacance)
+    const loyersCumules = resultatLocationNue.loyersAnnuels * duree;
+    
+    // Impôts cumulés
+    const impotsCumulesNue = resultatLocationNue.impotTotal * duree;
+    const impotsCumulesLMNP = resultatLMNP.impotTotal * duree;
+    
+    // Cashflows cumulés
+    const cashflowCumuleNue = resultatLocationNue.cashflowNet * duree;
+    const cashflowCumuleLMNP = resultatLMNP.cashflowNet * duree;
+    
+    // Plus-value à 10 ans (estimation +25% de valorisation)
+    const tauxAppreciation = 0.25;
+    const prixRevente10Ans = prixBien * (1 + tauxAppreciation);
+    const prixAcquisition = prixBien + fraisNotaire;
+    
+    // Abattements PV pour 10 ans
+    const abattementIR10 = Math.min(1, (10 - 5) * 0.06); // 30% après 10 ans
+    const abattementPS10 = Math.min(1, (10 - 5) * 0.0165); // ~8.25% après 10 ans
+    
+    // PV Location Nue
+    const pvBruteNue = Math.max(0, prixRevente10Ans - prixAcquisition);
+    const impotPVNue = pvBruteNue * (1 - abattementIR10) * IMPOT_PLUS_VALUE + pvBruteNue * (1 - abattementPS10) * PRELEVEMENTS_SOCIAUX;
+    
+    // PV LMNP (avec réintégration amortissements)
+    const amortissementsReintegres = (resultatLMNP.amortissementBati + resultatLMNP.amortissementMeubles + resultatLMNP.amortissementTravaux) * duree;
+    const pvBruteLMNP = Math.max(0, prixRevente10Ans - prixAcquisition + amortissementsReintegres);
+    const impotPVLMNP = pvBruteLMNP * (1 - abattementIR10) * IMPOT_PLUS_VALUE + pvBruteLMNP * (1 - abattementPS10) * PRELEVEMENTS_SOCIAUX;
+    
+    // Bilan total
+    const gainNetNue = cashflowCumuleNue + (prixRevente10Ans - prixBien) - impotPVNue;
+    const gainNetLMNP = cashflowCumuleLMNP + (prixRevente10Ans - prixBien) - impotPVLMNP;
+    
+    // ROI
+    const roiNue = (gainNetNue / investissementTotal) * 100;
+    const roiLMNP = (gainNetLMNP / investissementTotal) * 100;
+    
+    return {
+      duree,
+      investissementTotal,
+      loyersCumules,
+      impotsCumulesNue,
+      impotsCumulesLMNP,
+      cashflowCumuleNue,
+      cashflowCumuleLMNP,
+      prixRevente10Ans,
+      impotPVNue,
+      impotPVLMNP,
+      amortissementsReintegres,
+      gainNetNue,
+      gainNetLMNP,
+      roiNue,
+      roiLMNP,
+      gagnant: gainNetLMNP > gainNetNue ? "LMNP" : "Location Nue",
+    };
+  }, [prixBien, montantMeubles, fraisNotaire, montantTravaux, resultatLocationNue, resultatLMNP]);
+
+  // ============================================================
   // RENDU JSX
   // ============================================================
   return (
@@ -797,6 +861,75 @@ export default function ComparateurLMNP() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Bilan Global 10 Ans */}
+            <Card className="rounded-2xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                  Bilan Global sur 10 ans
+                  <Badge variant="outline" className="ml-auto text-xs">Projection</Badge>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {/* Tableau comparatif */}
+                <div className="overflow-hidden rounded-lg border">
+                  <Table>
+                    <TableBody>
+                      <TableRow className="bg-muted/50">
+                        <TableCell className="font-medium text-xs py-2"></TableCell>
+                        <TableCell className="text-center text-xs py-2 font-semibold text-primary">Location Nue</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-semibold text-emerald-600">LMNP</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">Impôts cumulés</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotsCumulesNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotsCumulesLMNP)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">Cashflow cumulé</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.cashflowCumuleNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.cashflowCumuleLMNP)}</TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">Impôt Plus-Value</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium">{formatCurrency(bilan10Ans.impotPVNue)}</TableCell>
+                        <TableCell className="text-center text-xs py-2 font-medium text-red-600">{formatCurrency(bilan10Ans.impotPVLMNP)}</TableCell>
+                      </TableRow>
+                      <TableRow className="bg-primary/5 border-t-2">
+                        <TableCell className="font-semibold text-sm py-3">Gain Net Total</TableCell>
+                        <TableCell className={`text-center font-bold text-sm py-3 ${bilan10Ans.gagnant === "Location Nue" ? "text-primary" : ""}`}>
+                          {formatCurrency(bilan10Ans.gainNetNue)}
+                        </TableCell>
+                        <TableCell className={`text-center font-bold text-sm py-3 ${bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
+                          {formatCurrency(bilan10Ans.gainNetLMNP)}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="text-xs text-muted-foreground py-2">ROI sur investissement</TableCell>
+                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilan10Ans.gagnant === "Location Nue" ? "text-primary" : ""}`}>
+                          {bilan10Ans.roiNue.toFixed(1)}%
+                        </TableCell>
+                        <TableCell className={`text-center text-xs py-2 font-semibold ${bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : ""}`}>
+                          {bilan10Ans.roiLMNP.toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+                
+                {/* Badge Gagnant */}
+                <div className={`p-3 rounded-lg text-center ${bilan10Ans.gagnant === "LMNP" ? "bg-emerald-50 dark:bg-emerald-950/30" : "bg-primary/10"}`}>
+                  <span className="text-sm font-semibold">
+                    🏆 Sur 10 ans, <span className={bilan10Ans.gagnant === "LMNP" ? "text-emerald-600" : "text-primary"}>{bilan10Ans.gagnant}</span> génère {formatCurrency(Math.abs(bilan10Ans.gainNetLMNP - bilan10Ans.gainNetNue))} de plus
+                  </span>
+                </div>
+                
+                <p className="text-xs text-muted-foreground">
+                  * Hypothèse : valorisation du bien +25% sur 10 ans. Prix revente estimé : {formatCurrency(bilan10Ans.prixRevente10Ans)}
+                </p>
+              </CardContent>
+            </Card>
 
             {/* Bandeau Conseil */}
             {economieAnnuelle > 500 && (
