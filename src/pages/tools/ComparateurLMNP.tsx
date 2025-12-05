@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+// LMNP Comparator V2 - 2025 Fiscal Updates
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
