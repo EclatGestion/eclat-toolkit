@@ -18,69 +18,28 @@ const EXPENSE_CATEGORIES = [
   "Divers"
 ];
 
-interface ParsedTransaction {
-  date: string;
-  label: string;
-  amount: number;
-}
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { pdfContent, transactions, userId, fileName, source } = await req.json();
+    const { pdfContent, userId, fileName } = await req.json();
     
-    // Support both PDF (legacy) and CSV (new structured format)
-    const isCSV = source === "csv" && Array.isArray(transactions);
-    
-    if (!pdfContent && !isCSV) {
-      throw new Error("PDF content or transactions array is required");
+    if (!pdfContent) {
+      throw new Error("PDF content is required");
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const GOOGLE_API_KEY = Deno.env.get("GOOGLE_GEMINI_API_KEY");
+    if (!GOOGLE_API_KEY) {
+      throw new Error("GOOGLE_GEMINI_API_KEY is not configured");
     }
 
-    console.log("Analyzing expenses from:", source || "pdf", "- File:", fileName);
-    
-    let userPrompt: string;
-    
-    if (isCSV) {
-      // Optimized prompt for structured CSV data - much fewer tokens!
-      const txList = (transactions as ParsedTransaction[])
-        .map(t => `${t.date}|${t.label}|${t.amount}`)
-        .join("\n");
-      
-      console.log("Processing", transactions.length, "structured transactions");
-      
-      userPrompt = `Voici une liste de dépenses extraites d'un relevé bancaire (format: date|libellé|montant).
+    console.log("Analyzing expenses from PDF:", fileName);
+    console.log("Text content length:", pdfContent.length, "characters");
 
-TÂCHES:
-1. Catégorise chaque transaction dans une des catégories: ${EXPENSE_CATEGORIES.join(", ")}
-2. Calcule les totaux par catégorie avec pourcentages
-3. Identifie les 5 plus grosses dépenses (par montant absolu)
-4. Génère 2-3 recommandations d'économies personnalisées
-
-TRANSACTIONS:
-${txList}
-
-Réponds en JSON STRICT:
-{
-  "transactions": [{"date": "YYYY-MM-DD", "label": "description", "amount": -123.45, "category": "Catégorie"}],
-  "categorizedExpenses": [{"category": "Catégorie", "total": 123.45, "count": 5, "percentage": 25.5}],
-  "topExpenses": [{"label": "description", "amount": -543.21, "category": "Catégorie", "date": "YYYY-MM-DD"}],
-  "recommendations": [{"title": "Titre", "description": "Conseil actionnable", "potentialSavings": 50, "priority": "high|medium|low"}],
-  "totalExpenses": 1234.56,
-  "period": "Période analysée"
-}`;
-    } else {
-      // Legacy PDF prompt
-      console.log("Text content length:", pdfContent.length, "characters");
-      
-      userPrompt = `Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
+    // Prompt optimisé pour texte brut
+    const systemPrompt = `Tu es un expert financier. Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
 
 RÈGLES IMPORTANTES:
 - Chaque transaction a un montant UNIQUE et DIFFÉRENT - ne jamais inventer ou dupliquer les montants
@@ -102,31 +61,35 @@ Format JSON STRICT:
 
 Relevé bancaire:
 ${pdfContent}`;
-    }
 
-    // Use Lovable AI Gateway
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GOOGLE_API_KEY}`, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          { 
-            role: "system", 
-            content: "Tu es un expert financier spécialisé dans l'analyse de relevés bancaires. Tu réponds toujours en JSON valide uniquement, sans texte supplémentaire." 
-          },
-          { role: "user", content: userPrompt }
+        contents: [
+          {
+            parts: [
+              {
+                text: systemPrompt
+              }
+            ]
+          }
         ],
-        temperature: 0.1,
+        generationConfig: {
+          temperature: 0.1,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 8192,
+          responseMimeType: "application/json"
+        }
       }),
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("Lovable AI Gateway error:", response.status, errorText);
+      console.error("Google Gemini API error:", response.status, errorText);
       
       if (response.status === 429) {
         return new Response(
@@ -134,44 +97,22 @@ ${pdfContent}`;
           { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "Crédits épuisés. Veuillez recharger votre compte Lovable." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      throw new Error(`AI Gateway error: ${response.status}`);
+      throw new Error(`Google Gemini API error: ${response.status}`);
     }
 
-    const aiResponse = await response.json();
-    console.log("AI Response received");
+    const geminiResponse = await response.json();
+    console.log("Gemini Response received");
 
-    const responseText = aiResponse.choices?.[0]?.message?.content;
+    const responseText = geminiResponse.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!responseText) {
-      console.error("Invalid AI response:", JSON.stringify(aiResponse));
-      throw new Error("Invalid AI response format");
+      throw new Error("Invalid Gemini response format");
     }
 
     let analysisResult;
     try {
-      // Clean response if it contains markdown code blocks
-      let cleanedResponse = responseText.trim();
-      
-      // Remove markdown code block markers with regex for better handling
-      cleanedResponse = cleanedResponse
-        .replace(/^```json\s*/i, '')
-        .replace(/^```\s*/i, '')
-        .replace(/\s*```$/i, '');
-      
-      // Try to extract JSON object if there's extra content
-      const jsonMatch = cleanedResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        cleanedResponse = jsonMatch[0];
-      }
-      
-      analysisResult = JSON.parse(cleanedResponse);
+      analysisResult = JSON.parse(responseText);
     } catch (parseError) {
-      console.error("Failed to parse AI response:", responseText.substring(0, 500));
+      console.error("Failed to parse Gemini response:", responseText);
       throw new Error("Failed to parse AI response as JSON");
     }
 
@@ -191,7 +132,7 @@ ${pdfContent}`;
         .insert({
           user_id: userId,
           file_name: fileName,
-          source: source || "pdf",
+          source: "pdf",
           raw_transactions: analysisResult.transactions,
           categorized_expenses: analysisResult.categorizedExpenses,
           top_expenses: analysisResult.topExpenses,
