@@ -10,6 +10,7 @@ import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { TMIGauge } from "@/components/simulators/ir/TMIGauge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
+import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 
 // ============= CONSTANTES FISCALES 2025 =============
 const TAX_BRACKETS = [
@@ -316,155 +317,165 @@ export default function SimulateurIR() {
               </div>
 
               {/* PER - Plan d'Épargne Retraite */}
-              <div className="bg-card rounded-3xl p-6 shadow-card">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-emerald-500/10 rounded-xl">
-                      <PiggyBank className="w-5 h-5 text-emerald-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">PER - Épargne Retraite</h3>
-                      <p className="text-xs text-muted-foreground">Réduit votre revenu imposable</p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={perActif}
-                    onCheckedChange={setPerActif}
-                  />
-                </div>
-
-                {perActif && (
-                  <div className="pt-4 border-t border-border space-y-4">
-                    <InputSlider
-                      label="Versement sur le PER"
-                      value={montantPER}
-                      onChange={setMontantPER}
-                      min={0}
-                      max={Math.ceil(plafondPER / 1000) * 1000}
-                      step={500}
-                      unit="€"
-                    />
-                    
-                    <div className="p-3 bg-muted/50 rounded-xl space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground flex items-center gap-1">
-                          Plafond disponible
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="w-3 h-3" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs">
-                              <p>10% de vos revenus (min {formatCurrency(PER_PLANCHER)}, max {formatCurrency(PER_PLAFOND_BASE)}) + report des 3 années antérieures</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                        <span className="font-medium text-foreground">{formatCurrency(plafondPER)}</span>
+              <PremiumToolLock 
+                featureName="Optimisation PER"
+                teaser={`Économisez potentiellement ${formatCurrency(Math.round(revenuNet * 0.1 * (resultatInitial.tmi / 100)))} avec le PER`}
+              >
+                <div className="bg-card rounded-3xl p-6 shadow-card">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-emerald-500/10 rounded-xl">
+                        <PiggyBank className="w-5 h-5 text-emerald-500" />
                       </div>
-                      
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">PER - Épargne Retraite</h3>
+                        <p className="text-xs text-muted-foreground">Réduit votre revenu imposable</p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={perActif}
+                      onCheckedChange={setPerActif}
+                    />
+                  </div>
+
+                  {perActif && (
+                    <div className="pt-4 border-t border-border space-y-4">
                       <InputSlider
-                        label="Report années antérieures"
-                        value={reportPER}
-                        onChange={setReportPER}
+                        label="Versement sur le PER"
+                        value={montantPER}
+                        onChange={setMontantPER}
                         min={0}
-                        max={100000}
-                        step={1000}
+                        max={Math.ceil(plafondPER / 1000) * 1000}
+                        step={500}
                         unit="€"
                       />
-                    </div>
-
-                    {montantPER > plafondPER && (
-                      <div className="flex items-center gap-2 p-2 bg-amber-500/10 text-amber-600 rounded-lg text-xs">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>Montant limité au plafond de {formatCurrency(plafondPER)}</span>
+                      
+                      <div className="p-3 bg-muted/50 rounded-xl space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground flex items-center gap-1">
+                            Plafond disponible
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3" />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p>10% de vos revenus (min {formatCurrency(PER_PLANCHER)}, max {formatCurrency(PER_PLAFOND_BASE)}) + report des 3 années antérieures</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                          <span className="font-medium text-foreground">{formatCurrency(plafondPER)}</span>
+                        </div>
+                        
+                        <InputSlider
+                          label="Report années antérieures"
+                          value={reportPER}
+                          onChange={setReportPER}
+                          min={0}
+                          max={100000}
+                          step={1000}
+                          unit="€"
+                        />
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
+
+                      {montantPER > plafondPER && (
+                        <div className="flex items-center gap-2 p-2 bg-amber-500/10 text-amber-600 rounded-lg text-xs">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>Montant limité au plafond de {formatCurrency(plafondPER)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </PremiumToolLock>
 
               {/* Girardin - Investissement Outre-Mer */}
-              <div className="bg-card rounded-3xl p-6 shadow-card">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500/10 rounded-xl">
-                      <Palmtree className="w-5 h-5 text-blue-500" />
+              <PremiumToolLock 
+                featureName="Optimisation Girardin"
+                teaser={`Crédit d'impôt jusqu'à ${formatCurrency(Math.min(resultatInitial.tax, 50000))} avec Girardin`}
+              >
+                <div className="bg-card rounded-3xl p-6 shadow-card">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500/10 rounded-xl">
+                        <Palmtree className="w-5 h-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-foreground">Girardin Industriel</h3>
+                        <p className="text-xs text-muted-foreground">Crédit d'impôt one-shot (+15%)</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">Girardin Industriel</h3>
-                      <p className="text-xs text-muted-foreground">Crédit d'impôt one-shot (+15%)</p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={girardinActif}
-                    onCheckedChange={setGirardinActif}
-                  />
-                </div>
-
-                {girardinActif && (
-                  <div className="pt-4 border-t border-border space-y-4">
-                    <InputSlider
-                      label="Montant investi"
-                      value={montantGirardin}
-                      onChange={setMontantGirardin}
-                      min={0}
-                      max={Math.max(1000, Math.ceil(plafondGirardin / 1000) * 1000)}
-                      step={500}
-                      unit="€"
+                    <Switch
+                      checked={girardinActif}
+                      onCheckedChange={setGirardinActif}
                     />
-                    
-                    <div className="p-3 bg-blue-500/10 rounded-xl space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Crédit d'impôt obtenu</span>
-                        <span className="font-bold text-blue-500">
-                          {formatCurrency(Math.min(montantGirardin, plafondGirardin) * (1 + GIRARDIN_RENDEMENT))}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-xs">
-                        <span className="text-muted-foreground">Rendement</span>
-                        <span className="text-emerald-500 font-medium">+15%</span>
-                      </div>
-                    </div>
-
-                    <div className="p-3 bg-muted/50 rounded-xl space-y-1 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground flex items-center gap-1">
-                          Plafond par impôt
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="w-3 h-3" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Le crédit ne peut pas dépasser votre impôt dû</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                        <span className="font-medium">{formatCurrency(resultatInitial.tax / (1 + GIRARDIN_RENDEMENT))}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground flex items-center gap-1">
-                          Plafond niches fiscales
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="w-3 h-3" />
-                            </TooltipTrigger>
-                            <TooltipContent className="max-w-xs">
-                              <p>Girardin impacte les niches à 41%. Plafond outre-mer : 18 000€ → max crédit ~43 902€</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </span>
-                        <span className="font-medium">{formatCurrency(PLAFOND_NICHES_OUTREMER / GIRARDIN_TAUX_NICHES / (1 + GIRARDIN_RENDEMENT))}</span>
-                      </div>
-                    </div>
-
-                    {montantGirardin > plafondGirardin && (
-                      <div className="flex items-center gap-2 p-2 bg-amber-500/10 text-amber-600 rounded-lg text-xs">
-                        <AlertTriangle className="w-3 h-3" />
-                        <span>Montant limité à {formatCurrency(plafondGirardin)}</span>
-                      </div>
-                    )}
                   </div>
-                )}
-              </div>
+
+                  {girardinActif && (
+                    <div className="pt-4 border-t border-border space-y-4">
+                      <InputSlider
+                        label="Montant investi"
+                        value={montantGirardin}
+                        onChange={setMontantGirardin}
+                        min={0}
+                        max={Math.max(1000, Math.ceil(plafondGirardin / 1000) * 1000)}
+                        step={500}
+                        unit="€"
+                      />
+                      
+                      <div className="p-3 bg-blue-500/10 rounded-xl space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Crédit d'impôt obtenu</span>
+                          <span className="font-bold text-blue-500">
+                            {formatCurrency(Math.min(montantGirardin, plafondGirardin) * (1 + GIRARDIN_RENDEMENT))}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs">
+                          <span className="text-muted-foreground">Rendement</span>
+                          <span className="text-emerald-500 font-medium">+15%</span>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-muted/50 rounded-xl space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground flex items-center gap-1">
+                            Plafond par impôt
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3" />
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Le crédit ne peut pas dépasser votre impôt dû</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                          <span className="font-medium">{formatCurrency(resultatInitial.tax / (1 + GIRARDIN_RENDEMENT))}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground flex items-center gap-1">
+                            Plafond niches fiscales
+                            <Tooltip>
+                              <TooltipTrigger>
+                                <Info className="w-3 h-3" />
+                              </TooltipTrigger>
+                              <TooltipContent className="max-w-xs">
+                                <p>Girardin impacte les niches à 41%. Plafond outre-mer : 18 000€ → max crédit ~43 902€</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </span>
+                          <span className="font-medium">{formatCurrency(PLAFOND_NICHES_OUTREMER / GIRARDIN_TAUX_NICHES / (1 + GIRARDIN_RENDEMENT))}</span>
+                        </div>
+                      </div>
+
+                      {montantGirardin > plafondGirardin && (
+                        <div className="flex items-center gap-2 p-2 bg-amber-500/10 text-amber-600 rounded-lg text-xs">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>Montant limité à {formatCurrency(plafondGirardin)}</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </PremiumToolLock>
             </div>
 
             {/* Colonne Droite - Résultats */}

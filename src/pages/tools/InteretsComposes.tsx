@@ -1,15 +1,17 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock, Crown } from "lucide-react";
 import { InputSlider } from "@/components/simulators/interets-composes/InputSlider";
-import { ScenarioBadges } from "@/components/simulators/interets-composes/ScenarioBadges";
 import { ComparisonChart } from "@/components/simulators/interets-composes/ComparisonChart";
 import { KPIResults } from "@/components/simulators/interets-composes/KPIResults";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
+import { usePremium } from "@/hooks/usePremium";
+import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { cn } from "@/lib/utils";
 
 interface ChartDataPoint {
   year: number;
@@ -17,6 +19,20 @@ interface ChartDataPoint {
   votreScenario: number;
   scenarioSecurise: number;
 }
+
+interface Scenario {
+  id: string;
+  label: string;
+  rate: number;
+  isPremium: boolean;
+}
+
+const scenarios: Scenario[] = [
+  { id: "securise", label: "Sécurisé (Livret A)", rate: 3, isPremium: true },
+  { id: "prudent", label: "Prudent (Fonds Euro)", rate: 4, isPremium: true },
+  { id: "equilibre", label: "Équilibré (Actions Monde)", rate: 8.5, isPremium: false },
+  { id: "dynamique", label: "Dynamique (S&P 500)", rate: 10.5, isPremium: true },
+];
 
 function calculateCompoundInterest(
   principal: number,
@@ -45,6 +61,7 @@ function calculateCompoundInterest(
 
 export default function InteretsComposes() {
   const navigate = useNavigate();
+  const { isPremium } = usePremium();
 
   // Input states
   const [capitalInitial, setCapitalInitial] = useState(10000);
@@ -55,15 +72,24 @@ export default function InteretsComposes() {
   const [showComparison, setShowComparison] = useState(false);
 
   // Handle scenario selection
-  const handleScenarioSelect = (scenarioId: string, rate: number) => {
-    setSelectedScenario(scenarioId);
-    setRendement(rate);
+  const handleScenarioSelect = (scenario: Scenario) => {
+    if (scenario.isPremium && !isPremium) {
+      return; // Don't allow selection if premium scenario and not premium user
+    }
+    setSelectedScenario(scenario.id);
+    setRendement(scenario.rate);
   };
 
   // Handle manual rendement change (deselects scenario)
   const handleRendementChange = (value: number) => {
     setRendement(value);
     setSelectedScenario(null);
+  };
+
+  // Handle comparison toggle
+  const handleComparisonToggle = (checked: boolean) => {
+    if (!isPremium) return;
+    setShowComparison(checked);
   };
 
   // Calculate chart data
@@ -150,10 +176,36 @@ export default function InteretsComposes() {
               />
 
               <div className="pt-4 border-t border-border">
-                <ScenarioBadges
-                  selectedScenario={selectedScenario}
-                  onSelect={handleScenarioSelect}
-                />
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-muted-foreground">Scénarios historiques :</p>
+                  <div className="flex flex-wrap gap-2">
+                    {scenarios.map((scenario) => {
+                      const isLocked = scenario.isPremium && !isPremium;
+                      return (
+                        <button
+                          key={scenario.id}
+                          onClick={() => handleScenarioSelect(scenario)}
+                          disabled={isLocked}
+                          className={cn(
+                            "px-4 py-2 rounded-2xl font-medium text-sm transition-all duration-200 relative",
+                            selectedScenario === scenario.id
+                              ? "bg-primary text-primary-foreground shadow-md"
+                              : isLocked
+                                ? "bg-muted/50 text-muted-foreground/50 cursor-not-allowed"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                          )}
+                        >
+                          {scenario.label}
+                          {isLocked && (
+                            <span className="absolute -top-1 -right-1 flex items-center gap-0.5 px-1 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[8px] font-semibold">
+                              <Crown className="w-2 h-2" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
               <InputSlider
@@ -177,20 +229,33 @@ export default function InteretsComposes() {
               </h2>
 
               {/* Comparison Toggle */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 relative">
                 <Switch
                   id="comparison"
-                  checked={showComparison}
-                  onCheckedChange={setShowComparison}
+                  checked={showComparison && isPremium}
+                  onCheckedChange={handleComparisonToggle}
+                  disabled={!isPremium}
                 />
-                <Label htmlFor="comparison" className="text-sm text-muted-foreground cursor-pointer">
+                <Label 
+                  htmlFor="comparison" 
+                  className={cn(
+                    "text-sm cursor-pointer",
+                    !isPremium ? "text-muted-foreground/50" : "text-muted-foreground"
+                  )}
+                >
                   Comparer avec 3%
                 </Label>
+                {!isPremium && (
+                  <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[10px] font-semibold">
+                    <Crown className="w-2.5 h-2.5" />
+                    PRO
+                  </span>
+                )}
               </div>
             </div>
 
             {/* Chart */}
-            <ComparisonChart data={chartData} showComparison={showComparison} />
+            <ComparisonChart data={chartData} showComparison={showComparison && isPremium} />
 
             {/* KPIs */}
             <KPIResults
@@ -203,10 +268,22 @@ export default function InteretsComposes() {
 
         {/* Recommended Products */}
         <div className="mt-6">
-          <RecommendedProducts
-            productIds={["private-equity", "scpi", "compte-titres"]}
-            title="Les véhicules pour booster votre rendement :"
-          />
+          {isPremium ? (
+            <RecommendedProducts
+              productIds={["private-equity", "scpi", "compte-titres"]}
+              title="Les véhicules pour booster votre rendement :"
+            />
+          ) : (
+            <PremiumToolLock 
+              featureName="Produits recommandés"
+              teaser="Découvrez les véhicules d'investissement adaptés à votre profil"
+            >
+              <RecommendedProducts
+                productIds={["private-equity", "scpi", "compte-titres"]}
+                title="Les véhicules pour booster votre rendement :"
+              />
+            </PremiumToolLock>
+          )}
         </div>
       </div>
     </MainLayout>

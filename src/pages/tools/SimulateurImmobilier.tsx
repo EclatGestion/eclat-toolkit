@@ -9,7 +9,9 @@ import { TauxBadges } from "@/components/simulators/immobilier/TauxBadges";
 import { DurationPills } from "@/components/simulators/immobilier/DurationPills";
 import { DonutChart } from "@/components/simulators/immobilier/DonutChart";
 import { CapacityBar } from "@/components/simulators/immobilier/CapacityBar";
-import { Home, TrendingUp, ArrowRight } from "lucide-react";
+import { Home, TrendingUp, ArrowRight, Lock, Crown } from "lucide-react";
+import { usePremium } from "@/hooks/usePremium";
+import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 
 function calculateMensualite(montant: number, tauxAnnuel: number, dureeAnnees: number) {
   if (montant <= 0 || tauxAnnuel <= 0 || dureeAnnees <= 0) {
@@ -59,6 +61,7 @@ function calculateCapacite(
 }
 
 export default function SimulateurImmobilier() {
+  const { isPremium } = usePremium();
   const [activeTab, setActiveTab] = useState("mensualite");
   
   // Tab A - Mensualité
@@ -92,12 +95,19 @@ export default function SimulateurImmobilier() {
     }).format(value);
   };
 
+  const handleTabChange = (value: string) => {
+    if (value === "capacite" && !isPremium) {
+      return; // Don't change tab if not premium
+    }
+    setActiveTab(value);
+  };
+
   return (
     <MainLayout title="Simulateur Immobilier">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Carte Gauche - Paramètres */}
         <div className="bg-card rounded-3xl p-6 md:p-8 shadow-card">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-2 rounded-2xl bg-muted p-1 mb-6">
               <TabsTrigger 
                 value="mensualite" 
@@ -108,10 +118,17 @@ export default function SimulateurImmobilier() {
               </TabsTrigger>
               <TabsTrigger 
                 value="capacite"
-                className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="rounded-xl data-[state=active]:bg-primary data-[state=active]:text-primary-foreground relative"
+                disabled={!isPremium}
               >
                 <TrendingUp className="w-4 h-4 mr-2" />
                 Capacité
+                {!isPremium && (
+                  <span className="absolute -top-1 -right-1 flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 text-white text-[10px] font-semibold">
+                    <Crown className="w-2.5 h-2.5" />
+                    PRO
+                  </span>
+                )}
               </TabsTrigger>
             </TabsList>
 
@@ -260,6 +277,24 @@ export default function SimulateurImmobilier() {
                   </p>
                 </div>
               </div>
+
+              {/* Premium CTA for Capacité */}
+              {!isPremium && (
+                <div className="mt-6">
+                  <PremiumToolLock 
+                    variant="tab"
+                    featureName="Capacité d'emprunt"
+                    teaser="Découvrez le montant maximum que vous pouvez emprunter selon vos revenus"
+                  >
+                    <div className="p-6 bg-muted/30 rounded-2xl">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold text-foreground">~{formatCurrency(salaire * 12 * 4)}</p>
+                        <p className="text-sm text-muted-foreground">Capacité estimée</p>
+                      </div>
+                    </div>
+                  </PremiumToolLock>
+                </div>
+              )}
             </TabsContent>
 
             {/* Résultats Capacité */}
