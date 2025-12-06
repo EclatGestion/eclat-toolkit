@@ -43,39 +43,62 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    // Find the Powens user by looking for recent users (since we don't have state param reliably)
-    // In production, you'd pass the user_id in the state parameter
-    const { data: powensUsers } = await supabaseAdmin
-      .from("powens_users")
-      .select("*")
-      .order("updated_at", { ascending: false })
-      .limit(10);
-
-    if (!powensUsers || powensUsers.length === 0) {
-      throw new Error("No Powens users found");
-    }
-
-    // Try to find which user this connection belongs to
     let matchedUser = null;
     let connectionDetails = null;
 
-    for (const pu of powensUsers) {
-      if (!pu.access_token) continue;
+    // Priority 1: Use state parameter (user_id) if available
+    if (userId) {
+      console.log("🔍 Looking for user via state parameter:", userId);
+      const { data: powensUser } = await supabaseAdmin
+        .from("powens_users")
+        .select("*")
+        .eq("user_id", userId)
+        .single();
 
-      try {
-        // Get connection details using this user's token
-        const connResponse = await fetch(`https://${powensDomain}/users/me/connections/${connectionId}`, {
-          headers: { "Authorization": `Bearer ${pu.access_token}` },
+      if (powensUser && powensUser.access_token) {
+        // Verify connection belongs to this user
+        const connResponse = await fetch(`https://${powensDomain}/2.0/users/me/connections/${connectionId}`, {
+          headers: { "Authorization": `Bearer ${powensUser.access_token}` },
         });
 
         if (connResponse.ok) {
           connectionDetails = await connResponse.json();
-          matchedUser = pu;
-          console.log("✅ Found matching user:", pu.user_id);
-          break;
+          matchedUser = powensUser;
+          console.log("✅ Found user via state parameter:", userId);
         }
-      } catch (e) {
-        // This user doesn't own this connection, continue
+      }
+    }
+
+    // Priority 2: Fallback to searching recent users
+    if (!matchedUser) {
+      console.log("🔍 Fallback: searching recent Powens users...");
+      const { data: powensUsers } = await supabaseAdmin
+        .from("powens_users")
+        .select("*")
+        .order("updated_at", { ascending: false })
+        .limit(10);
+
+      if (!powensUsers || powensUsers.length === 0) {
+        throw new Error("No Powens users found");
+      }
+
+      for (const pu of powensUsers) {
+        if (!pu.access_token) continue;
+
+        try {
+          const connResponse = await fetch(`https://${powensDomain}/2.0/users/me/connections/${connectionId}`, {
+            headers: { "Authorization": `Bearer ${pu.access_token}` },
+          });
+
+          if (connResponse.ok) {
+            connectionDetails = await connResponse.json();
+            matchedUser = pu;
+            console.log("✅ Found matching user via fallback:", pu.user_id);
+            break;
+          }
+        } catch (e) {
+          // This user doesn't own this connection, continue
+        }
       }
     }
 
@@ -89,7 +112,7 @@ serve(async (req) => {
 
     if (connectionDetails.id_connector) {
       try {
-        const connectorResponse = await fetch(`https://${powensDomain}/connectors/${connectionDetails.id_connector}`, {
+        const connectorResponse = await fetch(`https://${powensDomain}/2.0/connectors/${connectionDetails.id_connector}`, {
           headers: { "Authorization": `Bearer ${matchedUser.access_token}` },
         });
         if (connectorResponse.ok) {

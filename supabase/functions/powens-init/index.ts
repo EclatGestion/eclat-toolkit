@@ -76,10 +76,10 @@ serve(async (req) => {
         powensUserId = existingPowensUser.powens_user_id;
         console.log("✅ Existing token valid");
 
-        // Build webview URL using new format
+        // Build webview URL using new format with state parameter
         const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
         const redirectUri = encodeURIComponent(callbackUrl);
-        const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}`;
+        const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${user.id}`;
 
         return new Response(
           JSON.stringify({ 
@@ -136,11 +136,11 @@ serve(async (req) => {
       });
     }
 
-    // Build webview URL using new format (no temp code needed)
+    // Build webview URL using new format with state parameter (no temp code needed)
     const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
     const redirectUri = encodeURIComponent(callbackUrl);
     
-    const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}`;
+    const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${user.id}`;
 
     console.log("🌐 Webview URL generated");
 
