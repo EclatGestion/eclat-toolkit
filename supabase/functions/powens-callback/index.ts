@@ -6,33 +6,113 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Verify HMAC signature from state parameter
+async function verifySignedState(signedState: string, secret: string): Promise<{ valid: boolean; userId?: string; error?: string }> {
+  try {
+    const parts = signedState.split(':');
+    if (parts.length !== 3) {
+      return { valid: false, error: "Invalid state format" };
+    }
+
+    const [userId, timestampStr, providedSignature] = parts;
+    const timestamp = parseInt(timestampStr, 10);
+
+    if (isNaN(timestamp)) {
+      return { valid: false, error: "Invalid timestamp" };
+    }
+
+    // Check if state is expired (10 minutes = 600000ms)
+    const now = Date.now();
+    const age = now - timestamp;
+    if (age > 600000) {
+      return { valid: false, error: "State expired" };
+    }
+
+    // Check if timestamp is not in the future (with 30s tolerance for clock skew)
+    if (timestamp > now + 30000) {
+      return { valid: false, error: "Invalid timestamp (future)" };
+    }
+
+    // Verify HMAC signature
+    const encoder = new TextEncoder();
+    const data = encoder.encode(`${userId}:${timestampStr}`);
+    const keyData = encoder.encode(secret);
+    
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    
+    const expectedSignature = await crypto.subtle.sign("HMAC", key, data);
+    const expectedSignatureHex = Array.from(new Uint8Array(expectedSignature))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+
+    if (providedSignature !== expectedSignatureHex) {
+      return { valid: false, error: "Invalid signature" };
+    }
+
+    return { valid: true, userId };
+  } catch (e) {
+    console.error("Signature verification error:", e);
+    return { valid: false, error: "Verification failed" };
+  }
+}
+
 serve(async (req) => {
   // Handle CORS
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Get frontend URL from environment or fallback
+  const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://eclat-toolkit.lovable.app";
+
   try {
     const url = new URL(req.url);
     
     // Get connection_id from query params (Powens redirects with this)
     const connectionId = url.searchParams.get("connection_id");
-    const userId = url.searchParams.get("state"); // We can pass user ID as state
+    const signedState = url.searchParams.get("state");
     const error = url.searchParams.get("error");
 
-    console.log("📥 Callback received:", { connectionId, userId, error });
-
-    // Get frontend URL from environment or fallback
-    const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://eclat-toolkit.lovable.app";
+    console.log("📥 Callback received:", { connectionId, hasState: !!signedState, error });
 
     if (error) {
+      console.warn("⚠️ Callback error from Powens:", error);
       // Redirect to frontend with error
       return Response.redirect(`${frontendUrl}/powens-callback?error=${encodeURIComponent(error)}`, 302);
     }
 
     if (!connectionId) {
+      console.error("❌ Missing connection_id in callback");
       throw new Error("Missing connection_id in callback");
     }
+
+    if (!signedState) {
+      console.error("❌ Missing state parameter in callback");
+      throw new Error("Missing state parameter");
+    }
+
+    // Get Powens credentials for signature verification
+    const clientSecret = Deno.env.get("POWENS_CLIENT_SECRET") ?? "";
+    if (!clientSecret) {
+      console.error("❌ POWENS_CLIENT_SECRET not configured");
+      throw new Error("Server configuration error");
+    }
+
+    // Verify the signed state parameter
+    const verification = await verifySignedState(decodeURIComponent(signedState), clientSecret);
+    if (!verification.valid) {
+      console.error("❌ State verification failed:", verification.error);
+      throw new Error(`Invalid callback state: ${verification.error}`);
+    }
+
+    const userId = verification.userId!;
+    console.log("✅ State verified for user:", userId);
 
     // Get Powens credentials
     let powensDomain = Deno.env.get("POWENS_DOMAIN") ?? "";
@@ -43,68 +123,30 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
-    let matchedUser = null;
-    let connectionDetails = null;
+    // Fetch the user's Powens data
+    const { data: powensUser, error: powensUserError } = await supabaseAdmin
+      .from("powens_users")
+      .select("*")
+      .eq("user_id", userId)
+      .single();
 
-    // Priority 1: Use state parameter (user_id) if available
-    if (userId) {
-      console.log("🔍 Looking for user via state parameter:", userId);
-      const { data: powensUser } = await supabaseAdmin
-        .from("powens_users")
-        .select("*")
-        .eq("user_id", userId)
-        .single();
-
-      if (powensUser && powensUser.access_token) {
-        // Verify connection belongs to this user
-        const connResponse = await fetch(`https://${powensDomain}/2.0/users/me/connections/${connectionId}`, {
-          headers: { "Authorization": `Bearer ${powensUser.access_token}` },
-        });
-
-        if (connResponse.ok) {
-          connectionDetails = await connResponse.json();
-          matchedUser = powensUser;
-          console.log("✅ Found user via state parameter:", userId);
-        }
-      }
+    if (powensUserError || !powensUser?.access_token) {
+      console.error("❌ Could not find Powens user for verified userId:", userId);
+      throw new Error("User configuration not found");
     }
 
-    // Priority 2: Fallback to searching recent users
-    if (!matchedUser) {
-      console.log("🔍 Fallback: searching recent Powens users...");
-      const { data: powensUsers } = await supabaseAdmin
-        .from("powens_users")
-        .select("*")
-        .order("updated_at", { ascending: false })
-        .limit(10);
+    // Verify connection belongs to this user
+    const connResponse = await fetch(`https://${powensDomain}/2.0/users/me/connections/${connectionId}`, {
+      headers: { "Authorization": `Bearer ${powensUser.access_token}` },
+    });
 
-      if (!powensUsers || powensUsers.length === 0) {
-        throw new Error("No Powens users found");
-      }
-
-      for (const pu of powensUsers) {
-        if (!pu.access_token) continue;
-
-        try {
-          const connResponse = await fetch(`https://${powensDomain}/2.0/users/me/connections/${connectionId}`, {
-            headers: { "Authorization": `Bearer ${pu.access_token}` },
-          });
-
-          if (connResponse.ok) {
-            connectionDetails = await connResponse.json();
-            matchedUser = pu;
-            console.log("✅ Found matching user via fallback:", pu.user_id);
-            break;
-          }
-        } catch (e) {
-          // This user doesn't own this connection, continue
-        }
-      }
+    if (!connResponse.ok) {
+      console.error("❌ Connection does not belong to user or invalid:", connResponse.status);
+      throw new Error("Connection validation failed");
     }
 
-    if (!matchedUser || !connectionDetails) {
-      throw new Error("Could not find user for this connection");
-    }
+    const connectionDetails = await connResponse.json();
+    console.log("✅ Connection validated:", connectionId);
 
     // Get bank info from connector
     let bankName = "Banque connectée";
@@ -113,7 +155,7 @@ serve(async (req) => {
     if (connectionDetails.id_connector) {
       try {
         const connectorResponse = await fetch(`https://${powensDomain}/2.0/connectors/${connectionDetails.id_connector}`, {
-          headers: { "Authorization": `Bearer ${matchedUser.access_token}` },
+          headers: { "Authorization": `Bearer ${powensUser.access_token}` },
         });
         if (connectorResponse.ok) {
           const connector = await connectorResponse.json();
@@ -129,7 +171,7 @@ serve(async (req) => {
     const { error: insertError } = await supabaseAdmin
       .from("bank_connections")
       .upsert({
-        user_id: matchedUser.user_id,
+        user_id: userId,
         powens_connection_id: parseInt(connectionId),
         bank_name: bankName,
         bank_logo_url: bankLogo,
@@ -152,7 +194,6 @@ serve(async (req) => {
   } catch (error) {
     console.error("❌ Error in powens-callback:", error);
     
-    const errorFrontendUrl = Deno.env.get("FRONTEND_URL") || "https://eclat-toolkit.lovable.app";
-    return Response.redirect(`${errorFrontendUrl}/powens-callback?error=${encodeURIComponent(error instanceof Error ? error.message : "Unknown error")}`, 302);
+    return Response.redirect(`${frontendUrl}/powens-callback?error=${encodeURIComponent(error instanceof Error ? error.message : "Unknown error")}`, 302);
   }
 });

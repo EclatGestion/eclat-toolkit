@@ -6,6 +6,29 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Generate HMAC signature for state parameter
+async function generateSignedState(userId: string, timestamp: number, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(`${userId}:${timestamp}`);
+  const keyData = encoder.encode(secret);
+  
+  const key = await crypto.subtle.importKey(
+    "raw",
+    keyData,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+  
+  const signature = await crypto.subtle.sign("HMAC", key, data);
+  const signatureHex = Array.from(new Uint8Array(signature))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+  
+  // Format: userId:timestamp:signature
+  return `${userId}:${timestamp}:${signatureHex}`;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -48,6 +71,11 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
     );
 
+    // Generate signed state parameter with timestamp (valid for 10 minutes)
+    const timestamp = Date.now();
+    // Use POWENS_CLIENT_SECRET as the signing key (already a secret)
+    const signedState = await generateSignedState(user.id, timestamp, clientSecret);
+
     // Check if user already has a Powens account
     const { data: existingPowensUser } = await supabaseAdmin
       .from("powens_users")
@@ -76,10 +104,10 @@ serve(async (req) => {
         powensUserId = existingPowensUser.powens_user_id;
         console.log("✅ Existing token valid");
 
-        // Build webview URL using new format with state parameter
+        // Build webview URL using new format with signed state parameter
         const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
         const redirectUri = encodeURIComponent(callbackUrl);
-        const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${user.id}`;
+        const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${encodeURIComponent(signedState)}`;
 
         return new Response(
           JSON.stringify({ 
@@ -136,13 +164,13 @@ serve(async (req) => {
       });
     }
 
-    // Build webview URL using new format with state parameter (no temp code needed)
+    // Build webview URL using new format with signed state parameter
     const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
     const redirectUri = encodeURIComponent(callbackUrl);
     
-    const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${user.id}`;
+    const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}&state=${encodeURIComponent(signedState)}`;
 
-    console.log("🌐 Webview URL generated");
+    console.log("🌐 Webview URL generated with signed state");
 
     return new Response(
       JSON.stringify({ 
