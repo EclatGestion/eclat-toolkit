@@ -71,17 +71,15 @@ serve(async (req) => {
       });
 
       if (testResponse.ok) {
-        // Token is valid
+        // Token is valid, user already exists in Powens
         accessToken = existingPowensUser.access_token;
         powensUserId = existingPowensUser.powens_user_id;
-        const codeData = await testResponse.json();
-        const tempCode = codeData.code;
-        console.log("✅ Existing token valid, temp code generated");
+        console.log("✅ Existing token valid");
 
-        // Build webview URL
+        // Build webview URL using new format
         const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
         const redirectUri = encodeURIComponent(callbackUrl);
-        const webviewUrl = `https://${powensDomain}/auth/webview/connect?client_id=${clientId}&code=${tempCode}&redirect_uri=${redirectUri}`;
+        const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}`;
 
         return new Response(
           JSON.stringify({ 
@@ -138,30 +136,11 @@ serve(async (req) => {
       });
     }
 
-    // Generate temporary code for webview
-    console.log("🔑 Generating temp code...");
-    const codeResponse = await fetch(`https://${powensDomain}/2.0/auth/token/code`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${accessToken!}`,
-      },
-    });
-
-    if (!codeResponse.ok) {
-      const errorText = await codeResponse.text();
-      console.error("Code generation error:", errorText);
-      throw new Error(`Failed to generate auth code: ${codeResponse.status}`);
-    }
-
-    const codeData = await codeResponse.json();
-    const tempCode = codeData.code;
-    console.log("✅ Temp code generated");
-
-    // Build webview URL
+    // Build webview URL using new format (no temp code needed)
     const callbackUrl = `${Deno.env.get("SUPABASE_URL")?.replace("/rest/v1", "")}/functions/v1/powens-callback`;
     const redirectUri = encodeURIComponent(callbackUrl);
     
-    const webviewUrl = `https://${powensDomain}/auth/webview/connect?client_id=${clientId}&code=${tempCode}&redirect_uri=${redirectUri}`;
+    const webviewUrl = `https://webview.powens.com/connect?domain=${powensDomain}&client_id=${clientId}&redirect_uri=${redirectUri}`;
 
     console.log("🌐 Webview URL generated");
 
