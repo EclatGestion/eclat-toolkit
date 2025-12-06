@@ -63,7 +63,7 @@ serve(async (req) => {
       // Try to use existing Powens account - test if token is still valid
       console.log("🔍 Testing existing Powens user:", existingPowensUser.powens_user_id);
       
-      const testResponse = await fetch(`https://${powensDomain}/auth/token/code`, {
+      const testResponse = await fetch(`https://${powensDomain}/2.0/auth/token/code`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${existingPowensUser.access_token}`,
@@ -104,7 +104,7 @@ serve(async (req) => {
       // Create new Powens user via auth/init
       console.log("🆕 Creating new Powens user...");
       
-      const initResponse = await fetch(`https://${powensDomain}/auth/init`, {
+      const initResponse = await fetch(`https://${powensDomain}/2.0/auth/init`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -140,7 +140,7 @@ serve(async (req) => {
 
     // Generate temporary code for webview
     console.log("🔑 Generating temp code...");
-    const codeResponse = await fetch(`https://${powensDomain}/auth/token/code`, {
+    const codeResponse = await fetch(`https://${powensDomain}/2.0/auth/token/code`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${accessToken!}`,
