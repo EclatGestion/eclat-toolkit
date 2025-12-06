@@ -262,10 +262,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      powens_users_safe: {
+        Row: {
+          created_at: string | null
+          id: string | null
+          powens_user_id: string | null
+          token_expires_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string | null
+          powens_user_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string | null
+          powens_user_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      get_powens_user_safe: {
+        Args: { p_user_id: string }
+        Returns: {
+          created_at: string
+          has_valid_token: boolean
+          id: string
+          powens_user_id: string
+          token_expires_at: string
+          updated_at: string
+          user_id: string
+        }[]
+      }
+      has_powens_connection: { Args: { p_user_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
