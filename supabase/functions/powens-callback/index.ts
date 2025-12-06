@@ -22,11 +22,11 @@ serve(async (req) => {
 
     console.log("📥 Callback received:", { connectionId, userId, error });
 
+    // Get frontend URL from environment or fallback
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://eclat-toolkit.lovable.app";
+
     if (error) {
       // Redirect to frontend with error
-      const frontendUrl = Deno.env.get("SUPABASE_URL")?.includes("localhost") 
-        ? "http://localhost:5173" 
-        : "https://eclat-toolkit.lovable.app";
       return Response.redirect(`${frontendUrl}/powens-callback?error=${encodeURIComponent(error)}`, 302);
     }
 
