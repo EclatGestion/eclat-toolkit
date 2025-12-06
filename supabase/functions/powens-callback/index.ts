@@ -147,19 +147,12 @@ serve(async (req) => {
     console.log("✅ Bank connection saved:", bankName);
 
     // Redirect to frontend success page
-    const frontendUrl = Deno.env.get("SUPABASE_URL")?.includes("localhost") 
-      ? "http://localhost:5173" 
-      : "https://eclat-toolkit.lovable.app";
-    
     return Response.redirect(`${frontendUrl}/powens-callback?success=true&bank=${encodeURIComponent(bankName)}`, 302);
 
   } catch (error) {
     console.error("❌ Error in powens-callback:", error);
     
-    const frontendUrl = Deno.env.get("SUPABASE_URL")?.includes("localhost") 
-      ? "http://localhost:5173" 
-      : "https://eclat-toolkit.lovable.app";
-    
-    return Response.redirect(`${frontendUrl}/powens-callback?error=${encodeURIComponent(error instanceof Error ? error.message : "Unknown error")}`, 302);
+    const errorFrontendUrl = Deno.env.get("FRONTEND_URL") || "https://eclat-toolkit.lovable.app";
+    return Response.redirect(`${errorFrontendUrl}/powens-callback?error=${encodeURIComponent(error instanceof Error ? error.message : "Unknown error")}`, 302);
   }
 });
