@@ -53,26 +53,28 @@ export function ProfilSelector({ profilActif, onSelect }: ProfilSelectorProps) {
             key={profil.id}
             onClick={() => onSelect(profil.id)}
             className={cn(
-              "p-4 rounded-2xl border-2 transition-all duration-200 text-left",
+              "p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 text-left",
               "hover:scale-[1.02] hover:shadow-md",
               isActive
                 ? `${profil.borderColor} ${profil.bgColor}`
                 : "border-border bg-card hover:border-muted-foreground/30"
             )}
           >
-            <div className={cn("p-2 rounded-xl w-fit mb-2", profil.bgColor)}>
-              <Icon className={cn("h-4 w-4", profil.color)} />
-            </div>
-            <div className="space-y-1">
-              <p className={cn("font-medium text-sm", isActive && profil.color)}>
-                {profil.label}
-              </p>
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {profil.description}
-              </p>
-              <p className={cn("text-sm font-semibold", profil.color)}>
-                {profil.montant} €/mois
-              </p>
+            <div className="flex sm:flex-col items-center sm:items-start gap-3 sm:gap-0">
+              <div className={cn("p-2 rounded-xl w-fit sm:mb-2", profil.bgColor)}>
+                <Icon className={cn("h-4 w-4", profil.color)} />
+              </div>
+              <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
+                <p className={cn("font-medium text-xs sm:text-sm", isActive && profil.color)}>
+                  {profil.label}
+                </p>
+                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">
+                  {profil.description}
+                </p>
+                <p className={cn("text-xs sm:text-sm font-semibold", profil.color)}>
+                  {profil.montant} €/mois
+                </p>
+              </div>
             </div>
           </button>
         );
