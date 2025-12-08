@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target } from "lucide-react";
 
 const freeTools = [
   {
@@ -55,6 +55,15 @@ const freeTools = [
     icon: TrendingUp,
     iconColor: "text-rose-500",
     iconBg: "bg-rose-500/10",
+    isPremium: false,
+  },
+  {
+    id: "optimisation-per",
+    title: "Optimisation PER",
+    description: "Calculez votre réduction d'impôt et projetez la valeur future de votre PER.",
+    icon: Target,
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-500/10",
     isPremium: false,
   },
 ];

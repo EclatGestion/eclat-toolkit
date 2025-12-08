@@ -112,7 +112,7 @@ export const blogPosts: BlogPost[] = [
     readTime: 12,
     author: "Thomas Durand",
     authorRole: "Expert Fiscalité",
-    relatedTool: "simulateur-ir",
+    relatedTool: "optimisation-per",
     metaTitle: "Guide PER 2025 : Comment Réduire vos Impôts jusqu'à 45% | Éclat Toolkit",
     metaDescription: "Découvrez comment le Plan d'Épargne Retraite (PER) peut réduire votre impôt sur le revenu de plusieurs milliers d'euros. Guide complet avec calculs et exemples.",
     content: `
