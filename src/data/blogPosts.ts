@@ -469,6 +469,57 @@ export const blogPosts: BlogPost[] = [
 
       <p>Pour calculer précisément l'impact d'un investissement Girardin sur votre impôt, utilisez notre simulateur qui intègre les plafonds des niches fiscales et votre TMI.</p>
     `
+  },
+  {
+    id: "inflation-guide",
+    slug: "inflation-ennemie-epargne",
+    title: "Pourquoi l'Inflation est l'Ennemie de Votre Épargne",
+    excerpt: "Comprendre comment l'inflation érode votre pouvoir d'achat et les stratégies pour protéger votre patrimoine de l'érosion monétaire.",
+    date: "2025-01-25",
+    category: "epargne",
+    readTime: 10,
+    author: "Thomas Durand",
+    authorRole: "Expert Patrimoine",
+    relatedTool: "inflation",
+    metaTitle: "Inflation et Épargne : Comment Protéger Votre Pouvoir d'Achat | Éclat Toolkit",
+    metaDescription: "Découvrez l'impact réel de l'inflation sur votre épargne et les stratégies pour préserver votre pouvoir d'achat. Guide pratique avec calculs et solutions.",
+    content: `
+      <h2>L'inflation : ce voleur silencieux de votre épargne</h2>
+      <p>L'inflation représente la hausse générale des prix sur une période donnée. Quand on parle d'une inflation de 3%, cela signifie que ce qui coûtait 100€ l'année dernière en coûte maintenant 103€. Mais surtout, cela veut dire que <strong>vos 100€ d'épargne ne peuvent plus acheter la même chose</strong>.</p>
+
+      <p>C'est ce qu'on appelle la <strong>perte de pouvoir d'achat</strong> : votre argent vaut nominalement la même chose, mais sa valeur réelle diminue chaque année.</p>
+
+      <h2>L'effet dévastateur sur le long terme</h2>
+      <p>L'impact de l'inflation peut sembler négligeable sur une année, mais il devient considérable sur la durée. Voici l'effet d'une inflation moyenne de 2,5% sur 10 000€ :</p>
+
+      <ul>
+        <li><strong>Après 5 ans</strong> : pouvoir d'achat équivalent à 8 839€ (perte de 1 161€)</li>
+        <li><strong>Après 10 ans</strong> : pouvoir d'achat équivalent à 7 812€ (perte de 2 188€)</li>
+        <li><strong>Après 20 ans</strong> : pouvoir d'achat équivalent à 6 103€ (perte de 3 897€)</li>
+        <li><strong>Après 30 ans</strong> : pouvoir d'achat équivalent à 4 767€ (perte de plus de la moitié !)</li>
+      </ul>
+
+      <p>En laissant 10 000€ "dormir" pendant 30 ans, vous perdez en réalité plus de la moitié de leur valeur en termes de ce que vous pouvez réellement acheter.</p>
+
+      <h2>Pourquoi le livret A ne suffit pas</h2>
+      <p>Le Livret A est souvent perçu comme un placement "sûr". Et il l'est, nominalement. Mais il faut comparer son rendement à l'inflation pour comprendre qu'il protège rarement votre pouvoir d'achat sur le long terme.</p>
+
+      <h2>Les stratégies pour battre l'inflation</h2>
+
+      <h3>1. Diversifier vers des actifs réels</h3>
+      <p>Les <strong>actifs réels</strong> (immobilier, or, matières premières) tendent à suivre l'inflation car leur valeur augmente avec les prix.</p>
+
+      <h3>2. Investir en actions sur le long terme</h3>
+      <p>Historiquement, les marchés actions offrent des rendements supérieurs à l'inflation sur le long terme (7-10% annualisé en moyenne).</p>
+
+      <h3>3. Les SCPI</h3>
+      <p>Les Sociétés Civiles de Placement Immobilier offrent généralement des rendements de 4-6% annuels, supérieurs à l'inflation moyenne.</p>
+
+      <h2>Conclusion : agir plutôt que subir</h2>
+      <p>L'inflation est inévitable dans une économie moderne. Les solutions existent : limiter l'épargne dormante, investir sur des supports offrant des rendements réels positifs, diversifier, et adopter une vision long terme.</p>
+
+      <p>Utilisez notre calculateur d'inflation pour visualiser concrètement l'impact sur votre épargne.</p>
+    `
   }
 ];
 

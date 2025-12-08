@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown } from "lucide-react";
 
 const freeTools = [
   {
@@ -10,6 +10,15 @@ const freeTools = [
     icon: PiggyBank,
     iconColor: "text-teal-500",
     iconBg: "bg-teal-500/10",
+    isPremium: false,
+  },
+  {
+    id: "inflation",
+    title: "Calculateur d'Inflation",
+    description: "Visualisez la perte de pouvoir d'achat de votre épargne face à l'inflation.",
+    icon: TrendingDown,
+    iconColor: "text-orange-500",
+    iconBg: "bg-orange-500/10",
     isPremium: false,
   },
   {
