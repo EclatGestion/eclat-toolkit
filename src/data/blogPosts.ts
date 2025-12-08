@@ -5,7 +5,7 @@ export interface BlogPost {
   excerpt: string;
   content: string;
   date: string;
-  category: "fiscalite" | "succession" | "investissement" | "retraite";
+  category: "fiscalite" | "succession" | "investissement" | "retraite" | "epargne";
   readTime: number;
   author: string;
   authorRole: string;
@@ -15,6 +15,93 @@ export interface BlogPost {
 }
 
 export const blogPosts: BlogPost[] = [
+  {
+    id: "capacite-epargne-guide",
+    slug: "comment-ameliorer-capacite-epargne",
+    title: "Comment Améliorer sa Capacité d'Épargne : Guide Pratique",
+    excerpt: "Découvrez les meilleures stratégies pour augmenter votre épargne mensuelle et atteindre vos objectifs financiers plus rapidement.",
+    date: "2025-01-20",
+    category: "epargne",
+    readTime: 8,
+    author: "Marie Dupont",
+    authorRole: "Coach Financier",
+    relatedTool: "capacite-epargne",
+    metaTitle: "Améliorer sa Capacité d'Épargne : 10 Conseils Pratiques | Éclat Toolkit",
+    metaDescription: "Apprenez à optimiser votre budget et augmenter votre taux d'épargne grâce à des méthodes éprouvées : règle 50/30/20, automatisation, réduction des dépenses.",
+    content: `
+      <h2>Pourquoi la capacité d'épargne est-elle cruciale ?</h2>
+      <p>Votre capacité d'épargne mensuelle représente la différence entre vos revenus et vos dépenses. C'est le <strong>moteur de votre enrichissement</strong> : plus elle est élevée, plus vite vous atteignez vos objectifs financiers, qu'il s'agisse de constituer un fonds d'urgence, préparer un achat immobilier ou anticiper votre retraite.</p>
+
+      <p>Le <strong>taux d'épargne</strong> (épargne / revenus × 100) est un indicateur clé de votre santé financière :</p>
+      <ul>
+        <li><strong>Moins de 10%</strong> : situation fragile, à améliorer</li>
+        <li><strong>10-20%</strong> : correct, marge d'optimisation possible</li>
+        <li><strong>20-30%</strong> : excellent, vous construisez votre patrimoine</li>
+        <li><strong>Plus de 30%</strong> : exceptionnel, objectif FIRE accessible</li>
+      </ul>
+
+      <h2>La règle 50/30/20 : une base solide</h2>
+      <p>Cette méthode simple, popularisée par Elizabeth Warren, propose de répartir vos revenus nets en trois catégories :</p>
+
+      <h3>50% pour les besoins essentiels</h3>
+      <p>Logement, alimentation, transport, assurances, santé. Ces dépenses sont <strong>incompressibles</strong> ou difficilement réductibles à court terme.</p>
+
+      <h3>30% pour les envies</h3>
+      <p>Loisirs, restaurants, shopping, abonnements de divertissement. C'est ici que vous avez le plus de <strong>marge de manœuvre</strong> pour augmenter votre épargne.</p>
+
+      <h3>20% pour l'épargne</h3>
+      <p>Fonds d'urgence, investissements, remboursement anticipé de dettes. Cet objectif de 20% est un <strong>minimum recommandé</strong> pour construire un patrimoine.</p>
+
+      <h2>10 stratégies pour augmenter votre capacité d'épargne</h2>
+
+      <h3>1. Automatisez votre épargne</h3>
+      <p>Mettez en place un virement automatique vers un compte épargne dès la réception de votre salaire. Ce qui n'est pas sur votre compte courant ne sera pas dépensé. Commencez petit (50€) et augmentez progressivement.</p>
+
+      <h3>2. Auditez vos abonnements</h3>
+      <p>Listez tous vos abonnements : streaming, salle de sport, magazines, applications... Supprimez ceux que vous n'utilisez plus. Un ménage annuel peut facilement économiser <strong>30 à 100€/mois</strong>.</p>
+
+      <h3>3. Renégociez vos contrats</h3>
+      <p>Assurance habitation, auto, mutuelle, téléphone, internet... Faites jouer la concurrence chaque année. Les économies peuvent atteindre <strong>plusieurs centaines d'euros par an</strong>.</p>
+
+      <h3>4. Adoptez le délai de réflexion</h3>
+      <p>Pour tout achat non essentiel de plus de 50€, attendez 48h avant de concrétiser. Vous serez surpris du nombre d'achats impulsifs évités.</p>
+
+      <h3>5. Cuisinez davantage</h3>
+      <p>Les repas au restaurant et la livraison coûtent en moyenne <strong>3 à 5 fois plus cher</strong> que les repas maison. Préparer vos déjeuners peut économiser 150-200€/mois.</p>
+
+      <h3>6. Optimisez vos transports</h3>
+      <p>Covoiturage, vélo, transports en commun, télétravail... Chaque kilomètre en moins en voiture représente une économie sur le carburant, l'usure et l'assurance.</p>
+
+      <h3>7. Profitez des promotions intelligemment</h3>
+      <p>Achetez les produits non périssables en promotion, mais uniquement ce que vous consommez réellement. Les fausses bonnes affaires sont le piège classique du consommateur.</p>
+
+      <h3>8. Vendez ce que vous n'utilisez plus</h3>
+      <p>Vêtements, électronique, meubles... Ce qui encombre votre logement peut devenir une source de revenus ponctuels à réinvestir dans votre épargne.</p>
+
+      <h3>9. Fixez-vous des objectifs concrets</h3>
+      <p>Un objectif précis (voyage, apport immobilier, fonds d'urgence de 6 mois) est bien plus motivant qu'un vague "je veux économiser plus".</p>
+
+      <h3>10. Suivez vos progrès mensuellement</h3>
+      <p>Ce qui se mesure s'améliore. Utilisez notre calculateur de capacité d'épargne chaque mois pour suivre votre évolution et identifier les axes d'amélioration.</p>
+
+      <h2>Le fonds d'urgence : votre priorité n°1</h2>
+      <p>Avant d'investir, constituez un <strong>fonds d'urgence</strong> équivalent à 3-6 mois de dépenses sur un livret accessible (Livret A, LDDS). Ce coussin de sécurité vous protège des imprévus sans avoir à toucher à vos investissements.</p>
+
+      <h2>Après l'épargne de précaution : investir</h2>
+      <p>Une fois votre fonds d'urgence constitué, l'épargne supplémentaire doit être investie pour faire travailler votre argent. Les options incluent :</p>
+      <ul>
+        <li><strong>PER</strong> : pour défiscaliser et préparer la retraite</li>
+        <li><strong>Assurance-vie</strong> : pour la flexibilité et la transmission</li>
+        <li><strong>PEA</strong> : pour investir en actions avec une fiscalité avantageuse</li>
+        <li><strong>SCPI</strong> : pour l'immobilier sans contrainte de gestion</li>
+      </ul>
+
+      <h2>Conclusion : la constance prime sur le montant</h2>
+      <p>L'important n'est pas d'épargner beaucoup immédiatement, mais d'épargner <strong>régulièrement</strong>. 100€ épargnés chaque mois pendant 30 ans à 5% de rendement génèrent plus de 83 000€. La magie des intérêts composés fait le reste !</p>
+
+      <p>Utilisez notre calculateur pour évaluer votre capacité d'épargne actuelle et identifier les leviers d'amélioration adaptés à votre situation.</p>
+    `
+  },
   {
     id: "per-guide-2025",
     slug: "per-plan-epargne-retraite-guide-2025",
@@ -390,7 +477,8 @@ export const getCategoryLabel = (category: BlogPost["category"]): string => {
     fiscalite: "Fiscalité",
     succession: "Succession",
     investissement: "Investissement",
-    retraite: "Retraite"
+    retraite: "Retraite",
+    epargne: "Épargne"
   };
   return labels[category];
 };
@@ -400,7 +488,8 @@ export const getCategoryColor = (category: BlogPost["category"]): string => {
     fiscalite: "bg-emerald-100 text-emerald-700",
     succession: "bg-purple-100 text-purple-700",
     investissement: "bg-blue-100 text-blue-700",
-    retraite: "bg-amber-100 text-amber-700"
+    retraite: "bg-amber-100 text-amber-700",
+    epargne: "bg-teal-100 text-teal-700"
   };
   return colors[category];
 };

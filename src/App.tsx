@@ -27,6 +27,7 @@ const SimulateurImmobilier = lazy(() => import("./pages/tools/SimulateurImmobili
 const SimulateurIR = lazy(() => import("./pages/tools/SimulateurIR"));
 const SimulateurSuccession = lazy(() => import("./pages/tools/SimulateurSuccession"));
 const ComparateurLMNP = lazy(() => import("./pages/tools/ComparateurLMNP"));
+const CapaciteEpargne = lazy(() => import("./pages/tools/CapaciteEpargne"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Academie = lazy(() => import("./pages/Academie"));
 const SimulateurIRPublic = lazy(() => import("./pages/public/SimulateurIRPublic"));
@@ -68,6 +69,7 @@ const App = () => (
                 <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/droits-succession" element={<ProtectedRoute><OnboardingGuard><SimulateurSuccession /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/comparateur-lmnp" element={<ProtectedRoute><OnboardingGuard><ComparateurLMNP /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/capacite-epargne" element={<ProtectedRoute><OnboardingGuard><CapaciteEpargne /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
                 
                 <Route path="*" element={<NotFound />} />
