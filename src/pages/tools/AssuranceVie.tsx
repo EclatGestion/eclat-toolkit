@@ -79,11 +79,8 @@ export default function AssuranceVie() {
     const totalInvesti = montantInitial + versementsAnnuels * horizon;
     const gainNet = valeurFinale - totalInvesti;
 
-    // Rendement annuel moyen (CAGR)
-    const rendementMoyen =
-      totalInvesti > 0
-        ? (Math.pow(valeurFinale / totalInvesti, 1 / horizon) - 1) * 100
-        : 0;
+    // Rendement annuel moyen = rendement net appliqué (après frais)
+    const rendementMoyen = rendementNet * 100;
 
     return {
       valeurFinale,
