@@ -262,33 +262,7 @@ export type Database = {
       }
     }
     Views: {
-      powens_users_safe: {
-        Row: {
-          created_at: string | null
-          id: string | null
-          powens_user_id: string | null
-          token_expires_at: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string | null
-          powens_user_id?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string | null
-          powens_user_id?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       get_powens_user_safe: {
