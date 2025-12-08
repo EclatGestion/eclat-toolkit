@@ -60,7 +60,7 @@ export function FraisCard({
             <span>2%</span>
           </div>
           <Badge variant="outline" className="text-xs">
-            Moyenne marché : 0.5% - 0.75%
+            Notre tarif : 1%
           </Badge>
         </div>
 
