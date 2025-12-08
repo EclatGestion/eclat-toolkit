@@ -1,8 +1,17 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank } from "lucide-react";
 
 const freeTools = [
+  {
+    id: "capacite-epargne",
+    title: "Capacité d'Épargne Mensuelle",
+    description: "Calculez votre potentiel d'épargne et recevez des conseils personnalisés.",
+    icon: PiggyBank,
+    iconColor: "text-teal-500",
+    iconBg: "bg-teal-500/10",
+    isPremium: false,
+  },
   {
     id: "simulateur-ir",
     title: "Simulateur Impôt sur le Revenu",
