@@ -27,7 +27,7 @@ export default function AssuranceVie() {
   const [tauxAutres, setTauxAutres] = useState(4);
 
   // État des frais
-  const [fraisGestion, setFraisGestion] = useState(0.7);
+  const [fraisGestion, setFraisGestion] = useState(1);
   const [fraisUC, setFraisUC] = useState(0.8);
 
   // État de la simulation
