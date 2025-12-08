@@ -43,7 +43,7 @@ const profils = [
 
 export function ProfilSelector({ profilActif, onSelect }: ProfilSelectorProps) {
   return (
-    <div className="grid grid-cols-3 gap-3">
+    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
       {profils.map((profil) => {
         const Icon = profil.icon;
         const isActive = profilActif === profil.id;
