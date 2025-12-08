@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Euro, ArrowDownRight, TrendingUp, Sparkles } from "lucide-react";
+import { Euro, ArrowDownRight, TrendingUp, Sparkles, PiggyBank } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -18,7 +18,8 @@ interface ResultatsPERProps {
   effortReel: number;
   valeurFuture: number;
   gainTotal: number;
-  evolutionData: Array<{ annee: number; capital: number }>;
+  totalVerse: number;
+  evolutionData: Array<{ annee: number; capital: number; versementsCumules: number }>;
 }
 
 export function ResultatsPER({
@@ -26,27 +27,41 @@ export function ResultatsPER({
   effortReel,
   valeurFuture,
   gainTotal,
+  totalVerse,
   evolutionData,
 }: ResultatsPERProps) {
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(value);
 
   const barData = [
-    { name: "Effort Réel", value: effortReel, color: "hsl(var(--muted-foreground))" },
+    { name: "Total Versé", value: totalVerse, color: "hsl(var(--muted-foreground))" },
+    { name: "Effort Réel", value: effortReel, color: "hsl(142, 76%, 36%)" },
     { name: "Valeur Future", value: valeurFuture, color: "hsl(var(--primary))" },
   ];
 
   return (
     <div className="space-y-6">
       {/* KPIs principaux */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+        <Card className="bg-card border-0 shadow-card rounded-2xl">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-2">
+              <PiggyBank className="h-4 w-4 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">Total versé</span>
+            </div>
+            <p className="text-xl lg:text-2xl font-bold text-foreground">
+              {formatCurrency(totalVerse)}
+            </p>
+          </CardContent>
+        </Card>
+
         <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-0 rounded-2xl">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Euro className="h-4 w-4 text-emerald-500" />
               <span className="text-xs font-medium text-muted-foreground">Réduction d'impôt</span>
             </div>
-            <p className="text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl lg:text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(reductionIR)}
             </p>
           </CardContent>
@@ -58,7 +73,7 @@ export function ResultatsPER({
               <ArrowDownRight className="h-4 w-4 text-muted-foreground" />
               <span className="text-xs font-medium text-muted-foreground">Effort net réel</span>
             </div>
-            <p className="text-2xl lg:text-3xl font-bold text-foreground">
+            <p className="text-xl lg:text-2xl font-bold text-foreground">
               {formatCurrency(effortReel)}
             </p>
           </CardContent>
@@ -68,9 +83,9 @@ export function ResultatsPER({
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <TrendingUp className="h-4 w-4 text-primary" />
-              <span className="text-xs font-medium text-muted-foreground">Valeur future du PER</span>
+              <span className="text-xs font-medium text-muted-foreground">Valeur future</span>
             </div>
-            <p className="text-2xl lg:text-3xl font-bold text-primary">
+            <p className="text-xl lg:text-2xl font-bold text-primary">
               {formatCurrency(valeurFuture)}
             </p>
           </CardContent>
@@ -82,7 +97,7 @@ export function ResultatsPER({
               <Sparkles className="h-4 w-4 text-amber-500" />
               <span className="text-xs font-medium text-muted-foreground">Gain total</span>
             </div>
-            <p className="text-2xl lg:text-3xl font-bold text-amber-600 dark:text-amber-400">
+            <p className="text-xl lg:text-2xl font-bold text-amber-600 dark:text-amber-400">
               {formatCurrency(gainTotal)}
             </p>
           </CardContent>
@@ -140,6 +155,10 @@ export function ResultatsPER({
                       <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
                       <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                     </linearGradient>
+                    <linearGradient id="colorVersements" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0} />
+                    </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                   <XAxis
@@ -154,13 +173,25 @@ export function ResultatsPER({
                     tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                   />
                   <Tooltip
-                    formatter={(value: number) => formatCurrency(value)}
+                    formatter={(value: number, name: string) => [
+                      formatCurrency(value),
+                      name === "capital" ? "Capital" : "Versements cumulés"
+                    ]}
                     labelFormatter={(label) => `Année ${label}`}
                     contentStyle={{
                       backgroundColor: "hsl(var(--card))",
                       border: "1px solid hsl(var(--border))",
                       borderRadius: "12px",
                     }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="versementsCumules"
+                    stroke="hsl(var(--muted-foreground))"
+                    strokeWidth={2}
+                    strokeDasharray="4 4"
+                    fillOpacity={1}
+                    fill="url(#colorVersements)"
                   />
                   <Area
                     type="monotone"
