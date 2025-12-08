@@ -520,6 +520,146 @@ export const blogPosts: BlogPost[] = [
 
       <p>Utilisez notre calculateur d'inflation pour visualiser concrètement l'impact sur votre épargne.</p>
     `
+  },
+  {
+    id: "assurance-vie-guide-2025",
+    slug: "guide-assurance-vie-2025",
+    title: "Assurance-Vie : Le Guide Complet pour Comprendre et Optimiser votre Contrat",
+    excerpt: "Découvrez le fonctionnement de l'assurance-vie, les différences entre fonds euros et unités de compte, et les stratégies pour maximiser votre rendement.",
+    date: "2025-01-25",
+    category: "investissement",
+    readTime: 14,
+    author: "Thomas Durand",
+    authorRole: "Expert Patrimonial",
+    relatedTool: "assurance-vie",
+    metaTitle: "Guide Assurance-Vie 2025 : Fonds Euros, UC et Optimisation | Éclat Toolkit",
+    metaDescription: "Tout comprendre sur l'assurance-vie : rendement des fonds euros, unités de compte, fiscalité après 8 ans, frais et stratégies d'investissement. Guide complet.",
+    content: `
+      <h2>Qu'est-ce que l'assurance-vie ?</h2>
+      <p>L'assurance-vie est le <strong>placement préféré des Français</strong>, avec plus de 1 900 milliards d'euros d'encours. Ce n'est pas une assurance décès, mais un <strong>contrat d'épargne</strong> polyvalent qui permet de constituer un capital, préparer sa retraite et transmettre son patrimoine dans des conditions fiscales avantageuses.</p>
+      
+      <p>Contrairement aux idées reçues, l'assurance-vie est :</p>
+      <ul>
+        <li><strong>Disponible à tout moment</strong> : vous pouvez retirer vos fonds quand vous le souhaitez</li>
+        <li><strong>Flexible</strong> : versements libres ou programmés, selon vos capacités</li>
+        <li><strong>Fiscalement optimisée</strong> : avantages croissants avec l'ancienneté du contrat</li>
+      </ul>
+
+      <h2>Les deux types de supports : fonds euros vs unités de compte</h2>
+      
+      <h3>Le fonds euros : la sécurité avant tout</h3>
+      <p>Le fonds euros est le <strong>support garanti</strong> de l'assurance-vie. Votre capital est protégé et ne peut pas baisser. Les caractéristiques :</p>
+      <ul>
+        <li><strong>Garantie du capital</strong> : vous ne pouvez pas perdre d'argent</li>
+        <li><strong>Rendement modeste</strong> : entre 2% et 3% en moyenne en 2024</li>
+        <li><strong>Effet cliquet</strong> : les intérêts acquis sont définitivement sécurisés</li>
+        <li><strong>Liquidité totale</strong> : disponible à tout moment</li>
+      </ul>
+      <p>Le fonds euros convient aux épargnants <strong>prudents</strong> et comme base de sécurité dans tout contrat.</p>
+
+      <h3>Les unités de compte (UC) : le potentiel de performance</h3>
+      <p>Les unités de compte sont des supports <strong>non garantis</strong> investis sur les marchés financiers. Ils offrent un potentiel de rendement supérieur, mais avec un risque de perte en capital.</p>
+      <ul>
+        <li><strong>Actions</strong> : entreprises cotées, potentiel élevé mais volatil</li>
+        <li><strong>Obligations</strong> : dettes d'États ou d'entreprises, moins risquées</li>
+        <li><strong>Immobilier (SCPI, OPCI)</strong> : pierre-papier pour diversifier</li>
+        <li><strong>Fonds thématiques</strong> : tech, santé, environnement...</li>
+      </ul>
+      <p>Sur le long terme (10+ ans), les UC offrent historiquement des rendements de <strong>5% à 8% annuels</strong>.</p>
+
+      <h2>Comprendre l'impact des frais</h2>
+      <p>Les frais sont le <strong>principal ennemi de la performance</strong>. Un contrat avec 2% de frais annuels performera significativement moins qu'un contrat à 0.5%.</p>
+
+      <h3>Les types de frais</h3>
+      <ul>
+        <li><strong>Frais sur versements</strong> : prélevés à chaque versement (0% à 5%). Les contrats en ligne sont souvent à 0%.</li>
+        <li><strong>Frais de gestion du contrat</strong> : prélevés annuellement sur le capital (0.5% à 1% pour le fonds euros, 0.6% à 1.2% pour les UC).</li>
+        <li><strong>Frais d'arbitrage</strong> : lors des transferts entre supports (souvent gratuits en ligne).</li>
+        <li><strong>Frais des supports UC</strong> : frais internes aux fonds (0.5% à 2% selon le fonds).</li>
+      </ul>
+
+      <h3>Exemple d'impact sur 20 ans</h3>
+      <blockquote>
+        <p>10 000 € investis à 5% brut pendant 20 ans :</p>
+        <ul>
+          <li>Avec 0.5% de frais : <strong>24 117 €</strong></li>
+          <li>Avec 1.5% de frais : <strong>19 898 €</strong></li>
+          <li>Différence : <strong>4 219 €</strong> soit 42% de votre mise initiale !</li>
+        </ul>
+      </blockquote>
+
+      <h2>La fiscalité avantageuse de l'assurance-vie</h2>
+      
+      <h3>Pendant la vie du contrat</h3>
+      <p>Tant que vous ne retirez pas d'argent, <strong>aucun impôt</strong> n'est dû. Les gains sont capitalisés en franchise d'impôt.</p>
+
+      <h3>Lors des retraits (rachats)</h3>
+      <p>Seuls les <strong>gains</strong> sont imposés, pas le capital investi. La fiscalité dépend de l'ancienneté du contrat :</p>
+
+      <h4>Contrat de moins de 8 ans</h4>
+      <ul>
+        <li><strong>Prélèvement Forfaitaire Unique (PFU)</strong> : 30% sur les gains (12.8% IR + 17.2% prélèvements sociaux)</li>
+        <li>Ou option pour le barème progressif si plus avantageux</li>
+      </ul>
+
+      <h4>Contrat de plus de 8 ans</h4>
+      <p>C'est là que l'assurance-vie devient vraiment intéressante :</p>
+      <ul>
+        <li><strong>Abattement annuel</strong> : 4 600 € pour une personne seule, 9 200 € pour un couple</li>
+        <li>Au-delà : 7.5% + 17.2% de prélèvements sociaux (soit 24.7%) pour les versements < 150 000 €</li>
+        <li>Au-delà de 150 000 € de versements : PFU à 30%</li>
+      </ul>
+
+      <h2>La transmission : l'atout maître</h2>
+      <p>L'assurance-vie bénéficie d'un régime de transmission <strong>hors succession</strong>, très avantageux :</p>
+
+      <h3>Versements avant 70 ans</h3>
+      <ul>
+        <li><strong>152 500 € par bénéficiaire</strong> exonérés de droits</li>
+        <li>Au-delà : 20% jusqu'à 700 000 €, puis 31.25%</li>
+      </ul>
+
+      <h3>Versements après 70 ans</h3>
+      <ul>
+        <li><strong>30 500 €</strong> exonérés (tous bénéficiaires confondus)</li>
+        <li>Au-delà : droits de succession classiques (mais les gains restent exonérés)</li>
+      </ul>
+
+      <h2>Quelle répartition choisir ?</h2>
+      <p>La répartition idéale dépend de votre <strong>profil de risque</strong> et de votre <strong>horizon de placement</strong> :</p>
+
+      <h3>Profil prudent (horizon < 5 ans)</h3>
+      <ul>
+        <li>70-100% fonds euros</li>
+        <li>0-30% UC obligataires</li>
+      </ul>
+
+      <h3>Profil équilibré (horizon 5-10 ans)</h3>
+      <ul>
+        <li>40-60% fonds euros</li>
+        <li>40-60% UC diversifiées</li>
+      </ul>
+
+      <h3>Profil dynamique (horizon > 10 ans)</h3>
+      <ul>
+        <li>20-40% fonds euros</li>
+        <li>60-80% UC actions/immobilier</li>
+      </ul>
+
+      <h2>Conseils pour optimiser votre contrat</h2>
+      <ol>
+        <li><strong>Ouvrez tôt</strong> : le compteur fiscal démarre à l'ouverture, même avec un petit versement</li>
+        <li><strong>Privilégiez les contrats en ligne</strong> : frais réduits, performances supérieures</li>
+        <li><strong>Diversifiez vos bénéficiaires</strong> : profitez de l'abattement de 152 500 € par personne</li>
+        <li><strong>Versez régulièrement</strong> : lissez le risque de marché (DCA - Dollar Cost Averaging)</li>
+        <li><strong>Rééquilibrez annuellement</strong> : revenez à votre allocation cible</li>
+      </ol>
+
+      <h2>Conclusion</h2>
+      <p>L'assurance-vie reste l'<strong>outil patrimonial le plus polyvalent</strong> : épargne, retraite, transmission. La clé du succès réside dans le choix d'un contrat à <strong>frais réduits</strong>, une allocation adaptée à votre horizon, et la patience pour laisser les intérêts composés faire leur effet.</p>
+
+      <p>Utilisez notre simulateur pour projeter l'évolution de votre contrat et comprendre l'impact des différents paramètres sur votre capital final.</p>
+    `
   }
 ];
 
