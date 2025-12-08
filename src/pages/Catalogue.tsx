@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target, Brain } from "lucide-react";
 
 const freeTools = [
   {
@@ -69,6 +69,15 @@ const freeTools = [
 ];
 
 const premiumTools = [
+  {
+    id: "bilan-patrimonial",
+    title: "Bilan Patrimonial Avancé",
+    description: "Analyse complète de votre patrimoine avec recommandations IA personnalisées",
+    icon: Brain,
+    iconColor: "text-indigo-500",
+    iconBg: "bg-indigo-500/10",
+    isPremium: true,
+  },
   {
     id: "droits-succession",
     title: "Droits de Succession",

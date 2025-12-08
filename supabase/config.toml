@@ -23,3 +23,6 @@ verify_jwt = true
 
 [functions.powens-disconnect]
 verify_jwt = true
+
+[functions.generate-bilan-ia]
+verify_jwt = true
