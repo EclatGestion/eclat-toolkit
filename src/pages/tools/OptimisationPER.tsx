@@ -21,6 +21,7 @@ export default function OptimisationPER() {
 
   // Bloc 2 - Versements PER
   const [montantVersement, setMontantVersement] = useState(5000);
+  const [versementMensuel, setVersementMensuel] = useState(200);
 
   // Bloc 3 - Projection
   const [horizon, setHorizon] = useState(20);
@@ -40,34 +41,52 @@ export default function OptimisationPER() {
     [revenuImposable]
   );
 
-  // Limiter le versement au plafond
-  const versementEffectif = Math.min(montantVersement, plafondPER);
+  // Limiter les versements au plafond
+  const versementAnnuelTotal = montantVersement + versementMensuel * 12;
+  const ratioPlafond = versementAnnuelTotal > plafondPER ? plafondPER / versementAnnuelTotal : 1;
+  const versementInitialEffectif = Math.round(montantVersement * ratioPlafond);
+  const versementMensuelEffectif = Math.round(versementMensuel * ratioPlafond);
+  const totalVersementsEffectifs = versementInitialEffectif + versementMensuelEffectif * 12;
 
   // Calculs des résultats
   const resultats = useMemo(() => {
-    const reductionIR = versementEffectif * (tmiEffectif / 100);
-    const effortReel = versementEffectif - reductionIR;
+    // Réduction IR sur le total annuel de la 1ère année
+    const reductionIRAnnee1 = totalVersementsEffectifs * (tmiEffectif / 100);
+    const effortReelAnnee1 = totalVersementsEffectifs - reductionIRAnnee1;
 
     const rendementNet = (rendementAnnuel - fraisGestion) / 100;
-    let capital = versementEffectif;
-    const evolutionData: Array<{ annee: number; capital: number }> = [];
+    let capital = versementInitialEffectif;
+    const evolutionData: Array<{ annee: number; capital: number; versementsCumules: number }> = [];
+    let versementsCumules = versementInitialEffectif;
 
     for (let annee = 1; annee <= horizon; annee++) {
+      // Ajout des versements mensuels de l'année
+      capital = capital + versementMensuelEffectif * 12;
+      versementsCumules += versementMensuelEffectif * 12;
+      // Rendement sur le capital
       capital = capital * (1 + rendementNet);
-      evolutionData.push({ annee, capital: Math.round(capital) });
+      evolutionData.push({ 
+        annee, 
+        capital: Math.round(capital),
+        versementsCumules: Math.round(versementsCumules)
+      });
     }
 
     const valeurFuture = Math.round(capital);
-    const gainTotal = valeurFuture - effortReel;
+    const totalVerse = versementInitialEffectif + versementMensuelEffectif * 12 * horizon;
+    const reductionIRTotale = totalVerse * (tmiEffectif / 100);
+    const effortReelTotal = totalVerse - reductionIRTotale;
+    const gainTotal = valeurFuture - effortReelTotal;
 
     return {
-      reductionIR,
-      effortReel,
+      reductionIR: reductionIRTotale,
+      effortReel: effortReelTotal,
       valeurFuture,
       gainTotal,
+      totalVerse,
       evolutionData,
     };
-  }, [versementEffectif, tmiEffectif, rendementAnnuel, fraisGestion, horizon]);
+  }, [versementInitialEffectif, versementMensuelEffectif, totalVersementsEffectifs, tmiEffectif, rendementAnnuel, fraisGestion, horizon]);
 
   return (
     <MainLayout title="Optimisation PER">
@@ -119,6 +138,8 @@ export default function OptimisationPER() {
           <VersementsPERCard
             montantVersement={montantVersement}
             setMontantVersement={setMontantVersement}
+            versementMensuel={versementMensuel}
+            setVersementMensuel={setVersementMensuel}
             plafondPER={plafondPER}
             revenuImposable={revenuImposable}
           />
@@ -144,6 +165,7 @@ export default function OptimisationPER() {
             effortReel={resultats.effortReel}
             valeurFuture={resultats.valeurFuture}
             gainTotal={resultats.gainTotal}
+            totalVerse={resultats.totalVerse}
             evolutionData={resultats.evolutionData}
           />
         </motion.div>

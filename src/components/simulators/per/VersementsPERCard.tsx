@@ -11,6 +11,8 @@ const PER_PLAFOND_MAX = Math.round(PASS_2025 * 8 * 0.10);
 interface VersementsPERCardProps {
   montantVersement: number;
   setMontantVersement: (value: number) => void;
+  versementMensuel: number;
+  setVersementMensuel: (value: number) => void;
   plafondPER: number;
   revenuImposable: number;
 }
@@ -18,10 +20,13 @@ interface VersementsPERCardProps {
 export function VersementsPERCard({
   montantVersement,
   setMontantVersement,
+  versementMensuel,
+  setVersementMensuel,
   plafondPER,
   revenuImposable,
 }: VersementsPERCardProps) {
-  const depassePlafond = montantVersement > plafondPER;
+  const versementAnnuelTotal = montantVersement + versementMensuel * 12;
+  const depassePlafond = versementAnnuelTotal > plafondPER;
 
   return (
     <Card className="bg-card border-0 shadow-card rounded-3xl">
@@ -35,20 +40,40 @@ export function VersementsPERCard({
       </CardHeader>
       <CardContent className="space-y-6">
         <InputSlider
-          label="Montant envisagé de versement"
+          label="Versement initial unique"
           value={montantVersement}
           onChange={setMontantVersement}
-          min={500}
+          min={0}
           max={Math.max(plafondPER, 40000)}
           step={100}
           unit="€"
         />
 
+        <InputSlider
+          label="Versements mensuels réguliers"
+          value={versementMensuel}
+          onChange={setVersementMensuel}
+          min={0}
+          max={Math.round(plafondPER / 12)}
+          step={25}
+          unit="€/mois"
+          formatValue={(v) => `${v.toLocaleString("fr-FR")} €/mois`}
+        />
+
+        <div className="p-3 bg-primary/5 rounded-xl">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Versement annuel total</span>
+            <span className="font-semibold text-foreground">
+              {versementAnnuelTotal.toLocaleString("fr-FR")} €
+            </span>
+          </div>
+        </div>
+
         {depassePlafond && (
           <div className="flex items-center gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl">
             <AlertTriangle className="h-4 w-4 text-amber-500 flex-shrink-0" />
             <span className="text-sm text-amber-700 dark:text-amber-400">
-              Montant limité au plafond de {plafondPER.toLocaleString("fr-FR")} €
+              Total annuel ({versementAnnuelTotal.toLocaleString("fr-FR")} €) limité au plafond de {plafondPER.toLocaleString("fr-FR")} €
             </span>
           </div>
         )}
