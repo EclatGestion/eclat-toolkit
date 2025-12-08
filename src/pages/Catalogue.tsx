@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield } from "lucide-react";
 
 const freeTools = [
   {
@@ -19,6 +19,15 @@ const freeTools = [
     icon: TrendingDown,
     iconColor: "text-orange-500",
     iconBg: "bg-orange-500/10",
+    isPremium: false,
+  },
+  {
+    id: "assurance-vie",
+    title: "Simulateur Assurance-Vie",
+    description: "Projetez l'évolution de votre contrat et comprenez l'impact des frais.",
+    icon: Shield,
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-500/10",
     isPremium: false,
   },
   {
