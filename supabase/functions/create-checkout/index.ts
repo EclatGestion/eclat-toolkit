@@ -7,12 +7,18 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const PRICES = {
+// Price IDs for all subscription tiers and billing cycles
+const PRICES: Record<string, string> = {
+  // Legacy keys for backwards compatibility
   monthly: "price_1SawI8CqNxHTprKBsizT359K",
   annual: "price_1SawIUCqNxHTprKByywy8Kw6",
+  // New tiered pricing
+  premium_monthly: "price_1SawI8CqNxHTprKBsizT359K",
+  premium_annual: "price_1SawIUCqNxHTprKByywy8Kw6",
+  expert_monthly: "price_1ScPt8CqNxHTprKBcSzg2cLY",
 };
 
-const logStep = (step: string, details?: any) => {
+const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
@@ -31,25 +37,32 @@ serve(async (req) => {
     logStep("Function started");
 
     const { priceType } = await req.json();
-    const priceId = priceType === "annual" ? PRICES.annual : PRICES.monthly;
-    logStep("Price selected", { priceType, priceId });
+    logStep("Received request", { priceType });
+
+    const priceId = PRICES[priceType];
+    if (!priceId) {
+      throw new Error(`Invalid price type: ${priceType}. Valid types: ${Object.keys(PRICES).join(", ")}`);
+    }
+    logStep("Price ID resolved", { priceType, priceId });
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
     const { data } = await supabaseClient.auth.getUser(token);
     const user = data.user;
     if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { email: user.email });
+    logStep("User authenticated", { userId: user.id, email: user.email });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId;
+    let customerId: string | undefined;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
+    } else {
+      logStep("No existing Stripe customer, will create during checkout");
     }
 
     const origin = req.headers.get("origin") || "https://eclat-toolkit.lovable.app";
@@ -64,8 +77,8 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
-      success_url: `${origin}/dashboard?upgrade=success`,
-      cancel_url: `${origin}/dashboard?upgrade=cancelled`,
+      success_url: `${origin}/settings?upgrade=success`,
+      cancel_url: `${origin}/settings?upgrade=cancelled`,
       metadata: {
         user_id: user.id,
       },
