@@ -29,6 +29,10 @@ export const STRIPE_PRODUCTS = {
       product_id: "prod_TZZ1CE1G03xadZ",
       price_id: "price_1ScPt8CqNxHTprKBcSzg2cLY", // Expert Mensuel 14.99€
     },
+    annual: {
+      product_id: "prod_TZZqIkF9Q92w4v",
+      price_id: "price_1ScQgmCqNxHTprKBMfxUKi0m", // Expert Annuel 149.99€ (-17%)
+    },
   },
 };
 

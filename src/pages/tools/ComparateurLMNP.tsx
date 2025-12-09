@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle, TrendingUp, Scale, CheckCircle } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
@@ -601,7 +601,7 @@ export default function ComparateurLMNP() {
   // ============================================================
   return (
     <MainLayout title="Comparateur LMNP vs Location Nue">
-      <PremiumToolLock featureName="Comparateur LMNP vs Location Nue" variant="section">
+      <TierLock requiredTier="expert" featureName="Comparateur LMNP vs Location Nue" variant="section">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* COLONNE GAUCHE: INPUTS */}
           <div className="space-y-6">
@@ -1337,7 +1337,7 @@ export default function ComparateurLMNP() {
         <div className="mt-8">
           <RecommendedProducts productIds={["scpi", "crowdfunding-immobilier"]} title="Diversifiez votre investissement immobilier" />
         </div>
-      </PremiumToolLock>
+      </TierLock>
     </MainLayout>
   );
 }

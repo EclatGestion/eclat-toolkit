@@ -11,7 +11,7 @@ import { DonutChart } from "@/components/simulators/immobilier/DonutChart";
 import { CapacityBar } from "@/components/simulators/immobilier/CapacityBar";
 import { Home, TrendingUp, ArrowRight, Lock, Crown } from "lucide-react";
 import { usePremium } from "@/hooks/usePremium";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 
 function calculateMensualite(montant: number, tauxAnnuel: number, dureeAnnees: number) {
   if (montant <= 0 || tauxAnnuel <= 0 || dureeAnnees <= 0) {
@@ -281,10 +281,10 @@ export default function SimulateurImmobilier() {
               {/* Premium CTA for Capacité */}
               {!isPremium && (
                 <div className="mt-6">
-                  <PremiumToolLock 
-                    variant="tab"
+                  <TierLock 
+                    requiredTier="premium"
                     featureName="Capacité d'emprunt"
-                    teaser="Découvrez le montant maximum que vous pouvez emprunter selon vos revenus"
+                    variant="tab"
                   >
                     <div className="p-6 bg-muted/30 rounded-2xl">
                       <div className="text-center">
@@ -292,7 +292,7 @@ export default function SimulateurImmobilier() {
                         <p className="text-sm text-muted-foreground">Capacité estimée</p>
                       </div>
                     </div>
-                  </PremiumToolLock>
+                  </TierLock>
                 </div>
               )}
             </TabsContent>

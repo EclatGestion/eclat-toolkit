@@ -10,7 +10,7 @@ import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { TMIGauge } from "@/components/simulators/ir/TMIGauge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 
 // ============= CONSTANTES FISCALES 2025 =============
 const TAX_BRACKETS = [
@@ -317,9 +317,9 @@ export default function SimulateurIR() {
               </div>
 
               {/* PER - Plan d'Épargne Retraite */}
-              <PremiumToolLock 
+              <TierLock 
+                requiredTier="premium"
                 featureName="Optimisation PER"
-                teaser={`Économisez potentiellement ${formatCurrency(Math.round(revenuNet * 0.1 * (resultatInitial.tmi / 100)))} avec le PER`}
               >
                 <div className="bg-card rounded-3xl p-6 shadow-card">
                   <div className="flex items-center justify-between mb-4">
@@ -386,12 +386,12 @@ export default function SimulateurIR() {
                     </div>
                   )}
                 </div>
-              </PremiumToolLock>
+              </TierLock>
 
               {/* Girardin - Investissement Outre-Mer */}
-              <PremiumToolLock 
+              <TierLock 
+                requiredTier="premium"
                 featureName="Optimisation Girardin"
-                teaser={`Crédit d'impôt jusqu'à ${formatCurrency(Math.min(resultatInitial.tax, 50000))} avec Girardin`}
               >
                 <div className="bg-card rounded-3xl p-6 shadow-card">
                   <div className="flex items-center justify-between mb-4">
@@ -475,7 +475,7 @@ export default function SimulateurIR() {
                     </div>
                   )}
                 </div>
-              </PremiumToolLock>
+              </TierLock>
             </div>
 
             {/* Colonne Droite - Résultats */}

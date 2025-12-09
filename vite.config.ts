@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
         "/auth", 
         "/simulateur-impot", 
         "/academie",
+        "/pricing",
         "/blog",
         "/blog/per-plan-epargne-retraite-guide-2025",
         "/blog/droits-succession-guide-complet",

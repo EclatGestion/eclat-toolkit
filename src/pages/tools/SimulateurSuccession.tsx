@@ -6,7 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputSlider } from "@/components/simulators/interets-composes/InputSlider";
 import { SuccessionDonutChart } from "@/components/simulators/succession/SuccessionDonutChart";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { ArrowLeft, Minus, Plus, AlertTriangle, Shield, Users, Landmark } from "lucide-react";
 import { Label } from "@/components/ui/label";
@@ -105,7 +105,7 @@ export default function SimulateurSuccession() {
 
   return (
     <MainLayout title="Simulateur de Succession">
-      <PremiumToolLock featureName="Simulateur de Droits de Succession" variant="tab">
+      <TierLock requiredTier="expert" featureName="Simulateur de Droits de Succession" variant="section">
         <div className="space-y-6">
           {/* Header */}
           <div className="flex items-center gap-4">
@@ -320,7 +320,7 @@ export default function SimulateurSuccession() {
             title="Produit recommandé pour optimiser votre transmission" 
           />
         </div>
-      </PremiumToolLock>
+      </TierLock>
     </MainLayout>
   );
 }

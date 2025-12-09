@@ -38,6 +38,7 @@ const SimulateurIRPublic = lazy(() => import("./pages/public/SimulateurIRPublic"
 const AcademiePublic = lazy(() => import("./pages/public/AcademiePublic"));
 const BlogIndex = lazy(() => import("./pages/public/BlogIndex"));
 const BlogArticle = lazy(() => import("./pages/public/BlogArticle"));
+const Pricing = lazy(() => import("./pages/public/Pricing"));
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
                 <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
                 <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
                 <Route path="/academie" element={<AcademiePublic />} />
+                <Route path="/pricing" element={<Pricing />} />
                 <Route path="/blog" element={<BlogIndex />} />
                 <Route path="/blog/:slug" element={<BlogArticle />} />
                 

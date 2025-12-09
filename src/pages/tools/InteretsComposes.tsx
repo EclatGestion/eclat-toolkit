@@ -12,7 +12,7 @@ import { KPIResults } from "@/components/simulators/interets-composes/KPIResults
 import { SimulationRetraite } from "@/components/simulators/interets-composes/SimulationRetraite";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { usePremium } from "@/hooks/usePremium";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 import { cn } from "@/lib/utils";
 
 interface ChartDataPoint {
@@ -270,16 +270,16 @@ export default function InteretsComposes() {
 
         {/* Simulation Retraite - Premium Feature */}
         <div className="mt-6">
-          <PremiumToolLock
+          <TierLock
+            requiredTier="premium"
             featureName="Simulation Retraite"
-            teaser="Calculez le capital nécessaire pour obtenir une rente mensuelle à la retraite"
           >
             <SimulationRetraite 
               rendementActuel={rendement} 
               epargneMensuelle={epargneMensuelle}
               capitalInitial={capitalInitial}
             />
-          </PremiumToolLock>
+          </TierLock>
         </div>
 
         {/* Recommended Products */}
@@ -290,15 +290,15 @@ export default function InteretsComposes() {
               title="Les véhicules pour booster votre rendement :"
             />
           ) : (
-            <PremiumToolLock 
+            <TierLock 
+              requiredTier="premium"
               featureName="Produits recommandés"
-              teaser="Découvrez les véhicules d'investissement adaptés à votre profil"
             >
               <RecommendedProducts
                 productIds={["private-equity", "scpi", "compte-titres"]}
                 title="Les véhicules pour booster votre rendement :"
               />
-            </PremiumToolLock>
+            </TierLock>
           )}
         </div>
       </div>
