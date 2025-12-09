@@ -51,7 +51,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function Dashboard() {
+export default function Dashboard() { 
   const navigate = useNavigate();
   const { 
     assets, 
