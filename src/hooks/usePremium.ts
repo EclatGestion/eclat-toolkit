@@ -2,21 +2,49 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 
+export type SubscriptionTier = "free" | "premium" | "expert";
+
 interface SubscriptionData {
   subscribed: boolean;
+  tier: SubscriptionTier;
   plan_type: "monthly" | "annual" | null;
   subscription_end: string | null;
+  product_id: string | null;
 }
+
+// Stripe product IDs for reference
+export const STRIPE_PRODUCTS = {
+  premium: {
+    monthly: {
+      product_id: "prod_TY2MOQ5r4jvvuO",
+      price_id: "price_1SYUhnCqNxHTprKBLJ7j1pBW", // Premium Mensuel 5.99€
+    },
+    annual: {
+      product_id: "prod_TY2NnrRNxrpsyC",
+      price_id: "price_1SYUiSCqNxHTprKBtHYqNYrH", // Premium Annuel 49.99€
+    },
+  },
+  expert: {
+    monthly: {
+      product_id: "prod_TZZ1CE1G03xadZ",
+      price_id: "price_1ScPt8CqNxHTprKBcSzg2cLY", // Expert Mensuel 14.99€
+    },
+  },
+};
 
 export function usePremium() {
   const { user } = useAuth();
-  const [isPremium, setIsPremium] = useState(false);
+  const [tier, setTier] = useState<SubscriptionTier>("free");
   const [isLoading, setIsLoading] = useState(true);
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
 
+  // Computed values for backward compatibility
+  const isPremium = tier === "premium" || tier === "expert";
+  const isExpert = tier === "expert";
+
   const checkSubscription = useCallback(async () => {
     if (!user) {
-      setIsPremium(false);
+      setTier("free");
       setSubscriptionData(null);
       setIsLoading(false);
       return;
@@ -31,23 +59,24 @@ export function usePremium() {
         .single();
 
       if (profile?.is_premium) {
-        setIsPremium(true);
+        // Temporary set, will be updated by Stripe check
+        setTier("premium");
       }
 
-      // Then verify with Stripe
+      // Then verify with Stripe for accurate tier
       const { data, error } = await supabase.functions.invoke("check-subscription");
       
       if (error) {
         console.error("Error checking subscription:", error);
         // Fallback to profile data
-        setIsPremium(profile?.is_premium ?? false);
+        setTier(profile?.is_premium ? "premium" : "free");
       } else if (data) {
-        setIsPremium(data.subscribed);
+        setTier(data.tier || "free");
         setSubscriptionData(data);
       }
     } catch (error) {
       console.error("Error checking premium status:", error);
-      setIsPremium(false);
+      setTier("free");
     } finally {
       setIsLoading(false);
     }
@@ -68,10 +97,21 @@ export function usePremium() {
     return () => clearInterval(interval);
   }, [user, checkSubscription]);
 
+  // Helper function to check if user has access to a specific tier
+  const hasAccess = useCallback((requiredTier: SubscriptionTier): boolean => {
+    if (requiredTier === "free") return true;
+    if (requiredTier === "premium") return isPremium;
+    if (requiredTier === "expert") return isExpert;
+    return false;
+  }, [isPremium, isExpert]);
+
   return { 
-    isPremium, 
+    tier,
+    isPremium, // Has premium OR expert
+    isExpert,  // Has expert only
     isLoading, 
     subscriptionData,
+    hasAccess,
     refreshSubscription: checkSubscription,
   };
 }

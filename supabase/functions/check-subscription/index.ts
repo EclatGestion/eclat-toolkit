@@ -7,9 +7,30 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Product IDs mapping to tiers
+const TIER_PRODUCTS = {
+  premium: [
+    "prod_TY2MOQ5r4jvvuO", // Premium Mensuel
+    "prod_TY2NnrRNxrpsyC", // Premium Annuel
+  ],
+  expert: [
+    "prod_TZZ1CE1G03xadZ", // Expert Mensuel
+  ],
+};
+
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
+};
+
+const getTierFromProductId = (productId: string): "free" | "premium" | "expert" => {
+  if (TIER_PRODUCTS.expert.includes(productId)) {
+    return "expert";
+  }
+  if (TIER_PRODUCTS.premium.includes(productId)) {
+    return "premium";
+  }
+  return "free";
 };
 
 serve(async (req) => {
@@ -45,13 +66,17 @@ serve(async (req) => {
     if (customers.data.length === 0) {
       logStep("No customer found");
       
-      // Update profile to not premium
       await supabaseClient
         .from("profiles")
         .update({ is_premium: false })
         .eq("id", user.id);
 
-      return new Response(JSON.stringify({ subscribed: false }), {
+      return new Response(JSON.stringify({ 
+        subscribed: false, 
+        tier: "free",
+        plan_type: null,
+        subscription_end: null,
+      }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -65,7 +90,7 @@ serve(async (req) => {
       limit: 10,
     });
 
-    // Accept both "active" and "trialing" subscriptions as valid premium
+    // Accept both "active" and "trialing" subscriptions as valid
     // deno-lint-ignore no-explicit-any
     const validSubscriptions = subscriptions.data.filter(
       (sub: any) => sub.status === "active" || sub.status === "trialing"
@@ -73,10 +98,11 @@ serve(async (req) => {
     const hasActiveSub = validSubscriptions.length > 0;
     let subscriptionEnd: string | null = null;
     let planType: string | null = null;
+    let tier: "free" | "premium" | "expert" = "free";
+    let productId: string | null = null;
 
     if (hasActiveSub) {
       const subscription = validSubscriptions[0];
-      // Use trial_end for trialing subscriptions, current_period_end for active
       const endTimestamp = subscription.status === "trialing" && subscription.trial_end 
         ? subscription.trial_end 
         : subscription.current_period_end;
@@ -84,27 +110,40 @@ serve(async (req) => {
         subscriptionEnd = new Date(endTimestamp * 1000).toISOString();
       }
       
+      // Get product ID and determine tier
+      productId = subscription.items.data[0]?.price?.product as string;
+      tier = getTierFromProductId(productId);
+      
       // Determine plan type based on interval
       const interval = subscription.items.data[0]?.price?.recurring?.interval;
       planType = interval === "year" ? "annual" : "monthly";
       
-      logStep("Active subscription found", { subscriptionId: subscription.id, planType, endDate: subscriptionEnd });
+      logStep("Active subscription found", { 
+        subscriptionId: subscription.id, 
+        productId,
+        tier,
+        planType, 
+        endDate: subscriptionEnd 
+      });
     } else {
       logStep("No active subscription found");
     }
 
-    // Update profile premium status
+    // Update profile premium status (expert also counts as premium)
+    const isPremium = tier === "premium" || tier === "expert";
     await supabaseClient
       .from("profiles")
-      .update({ is_premium: hasActiveSub })
+      .update({ is_premium: isPremium })
       .eq("id", user.id);
 
-    logStep("Profile updated", { is_premium: hasActiveSub });
+    logStep("Profile updated", { is_premium: isPremium, tier });
 
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
+      tier,
       plan_type: planType,
       subscription_end: subscriptionEnd,
+      product_id: productId,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
