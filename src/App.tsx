@@ -32,6 +32,7 @@ const Inflation = lazy(() => import("./pages/tools/Inflation"));
 const AssuranceVie = lazy(() => import("./pages/tools/AssuranceVie"));
 const OptimisationPER = lazy(() => import("./pages/tools/OptimisationPER"));
 const BilanPatrimonialAvance = lazy(() => import("./pages/tools/BilanPatrimonialAvance"));
+const GoalBasedInvestment = lazy(() => import("./pages/tools/GoalBasedInvestment"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Academie = lazy(() => import("./pages/Academie"));
 const SimulateurIRPublic = lazy(() => import("./pages/public/SimulateurIRPublic"));
@@ -78,6 +79,7 @@ const App = () => (
                 <Route path="/tools/assurance-vie" element={<ProtectedRoute><OnboardingGuard><AssuranceVie /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/optimisation-per" element={<ProtectedRoute><OnboardingGuard><OptimisationPER /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/bilan-patrimonial" element={<ProtectedRoute><OnboardingGuard><BilanPatrimonialAvance /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/tools/goal-based-investment" element={<ProtectedRoute><OnboardingGuard><GoalBasedInvestment /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
                 
                 <Route path="*" element={<NotFound />} />

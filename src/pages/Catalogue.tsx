@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target, Brain, Sparkles } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target, Brain, Sparkles, MessageSquare } from "lucide-react";
 
 const freeTools = [
   {
@@ -82,12 +82,22 @@ const premiumTools = [
 
 const expertTools = [
   {
+    id: "goal-based-investment",
+    title: "Conseiller IA Personnalisé",
+    description: "Décrivez votre objectif en langage naturel, l'IA construit votre stratégie.",
+    icon: MessageSquare,
+    iconColor: "text-indigo-500",
+    iconBg: "bg-indigo-500/10",
+    isPremium: true,
+    isExpert: true,
+  },
+  {
     id: "bilan-patrimonial",
     title: "Bilan Patrimonial IA",
     description: "Analyse complète de votre patrimoine avec recommandations personnalisées par IA.",
     icon: Brain,
-    iconColor: "text-indigo-500",
-    iconBg: "bg-indigo-500/10",
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-500/10",
     isPremium: true,
     isExpert: true,
   },

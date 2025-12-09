@@ -12,17 +12,8 @@ verify_jwt = true
 [functions.customer-portal]
 verify_jwt = true
 
-[functions.powens-init]
-verify_jwt = true
-
-[functions.powens-callback]
-verify_jwt = false
-
-[functions.powens-sync]
-verify_jwt = true
-
-[functions.powens-disconnect]
-verify_jwt = true
-
 [functions.generate-bilan-ia]
+verify_jwt = true
+
+[functions.analyze-investment-goal]
 verify_jwt = true
