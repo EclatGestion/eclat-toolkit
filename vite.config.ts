@@ -28,7 +28,10 @@ export default defineConfig(({ mode }) => ({
         "/blog",
         "/blog/per-plan-epargne-retraite-guide-2025",
         "/blog/droits-succession-guide-complet",
-        "/blog/girardin-industriel-defiscalisation-guide"
+        "/blog/girardin-industriel-defiscalisation-guide",
+        "/mentions-legales",
+        "/confidentialite",
+        "/cgu"
       ],
       exclude: ["/onboarding", "/dashboard", "/catalogue", "/simulations", "/settings", "/tools/*", "/academie-pro"],
       changefreq: "weekly",

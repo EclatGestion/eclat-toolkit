@@ -116,24 +116,24 @@ export function PublicPageLayout({ children, title, description, jsonLd }: Publi
               </div>
               <span className="text-sm text-gray-600">© 2025 Éclat Toolkit</span>
             </div>
-            <nav className="flex items-center gap-6 text-sm text-gray-500">
+            <nav className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-gray-500">
               <button onClick={() => navigate("/")} className="hover:text-gray-900 transition-colors">
                 Accueil
-              </button>
-              <button onClick={() => navigate("/simulateur-impot")} className="hover:text-gray-900 transition-colors">
-                Simulateur IR
               </button>
               <button onClick={() => navigate("/pricing")} className="hover:text-gray-900 transition-colors">
                 Tarifs
               </button>
-              <button onClick={() => navigate("/academie")} className="hover:text-gray-900 transition-colors">
-                Académie
-              </button>
               <button onClick={() => navigate("/blog")} className="hover:text-gray-900 transition-colors">
                 Blog
               </button>
-              <button onClick={() => navigate("/auth")} className="hover:text-gray-900 transition-colors">
-                Connexion
+              <button onClick={() => navigate("/mentions-legales")} className="hover:text-gray-900 transition-colors">
+                Mentions Légales
+              </button>
+              <button onClick={() => navigate("/confidentialite")} className="hover:text-gray-900 transition-colors">
+                Confidentialité
+              </button>
+              <button onClick={() => navigate("/cgu")} className="hover:text-gray-900 transition-colors">
+                CGU
               </button>
             </nav>
           </div>
