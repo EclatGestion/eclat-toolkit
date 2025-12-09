@@ -15,6 +15,7 @@ const TIER_PRODUCTS = {
   ],
   expert: [
     "prod_TZZ1CE1G03xadZ", // Expert Mensuel
+    "prod_TZZqIkF9Q92w4v", // Expert Annuel
   ],
 };
 
