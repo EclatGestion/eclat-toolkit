@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
-import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
+import { TierLock } from "@/components/premium/TierLock";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -200,7 +200,7 @@ export default function BilanPatrimonialAvance() {
 
   return (
     <MainLayout title="Bilan Patrimonial Avancé">
-      <PremiumToolLock featureName="Bilan Patrimonial Avancé" variant="tab">
+      <TierLock requiredTier="expert" featureName="Bilan Patrimonial Avancé" variant="section">
         <div className="space-y-8 pb-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -354,7 +354,7 @@ export default function BilanPatrimonialAvance() {
             planAction={recommandations?.planAction}
           />
         </div>
-      </PremiumToolLock>
+      </TierLock>
     </MainLayout>
   );
 }

@@ -123,6 +123,9 @@ export function PublicPageLayout({ children, title, description, jsonLd }: Publi
               <button onClick={() => navigate("/simulateur-impot")} className="hover:text-gray-900 transition-colors">
                 Simulateur IR
               </button>
+              <button onClick={() => navigate("/pricing")} className="hover:text-gray-900 transition-colors">
+                Tarifs
+              </button>
               <button onClick={() => navigate("/academie")} className="hover:text-gray-900 transition-colors">
                 Académie
               </button>

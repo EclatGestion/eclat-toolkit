@@ -138,6 +138,15 @@ export default function Landing() {
             <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="ghost" 
+                onClick={() => navigate("/pricing")}
+                className="text-gray-600 hover:text-gray-900 font-medium hidden sm:inline-flex"
+              >
+                Tarifs
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <Button 
+                variant="ghost" 
                 onClick={() => navigate("/blog")}
                 className="text-gray-600 hover:text-gray-900 font-medium hidden sm:inline-flex"
               >

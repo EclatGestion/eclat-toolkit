@@ -81,7 +81,8 @@ const plans = [
     name: "Expert",
     icon: Gem,
     monthlyPrice: 14.99,
-    annualPrice: 0, // No annual plan yet
+    annualPrice: 149.99,
+    annualSaving: 17,
     color: "violet",
     borderColor: "border-violet-500/50",
     bgColor: "bg-gradient-to-b from-violet-500/10 to-purple-500/10",
@@ -95,9 +96,12 @@ export function UpgradePremiumModal({ open, onOpenChange, targetTier }: UpgradeP
   const { tier: currentTier } = usePremium();
 
   const handleUpgrade = async (planId: "premium" | "expert") => {
-    const priceType = planId === "premium" 
-      ? (billingCycle === "annual" ? "premium_annual" : "premium_monthly")
-      : "expert_monthly";
+    let priceType: string;
+    if (planId === "premium") {
+      priceType = billingCycle === "annual" ? "premium_annual" : "premium_monthly";
+    } else {
+      priceType = billingCycle === "annual" ? "expert_annual" : "expert_monthly";
+    }
     
     setIsLoading(priceType);
     try {
@@ -227,8 +231,15 @@ export function UpgradePremiumModal({ open, onOpenChange, targetTier }: UpgradeP
                       </>
                     ) : (
                       <>
-                        <span className="text-3xl font-bold">14,99€</span>
-                        <span className="text-muted-foreground">/mois</span>
+                        <span className="text-3xl font-bold">
+                          {billingCycle === "monthly" ? "14,99€" : "149,99€"}
+                        </span>
+                        <span className="text-muted-foreground">
+                          /{billingCycle === "monthly" ? "mois" : "an"}
+                        </span>
+                        {billingCycle === "annual" && (
+                          <p className="text-xs text-green-600 mt-1">-17% soit 12,50€/mois</p>
+                        )}
                       </>
                     )}
                   </div>

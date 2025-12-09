@@ -16,6 +16,7 @@ const PRICES: Record<string, string> = {
   premium_monthly: "price_1SawI8CqNxHTprKBsizT359K",
   premium_annual: "price_1SawIUCqNxHTprKByywy8Kw6",
   expert_monthly: "price_1ScPt8CqNxHTprKBcSzg2cLY",
+  expert_annual: "price_1ScQgmCqNxHTprKBMfxUKi0m",
 };
 
 const logStep = (step: string, details?: Record<string, unknown>) => {
