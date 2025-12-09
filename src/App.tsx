@@ -10,6 +10,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import { PublicRoute } from "@/components/auth/PublicRoute";
 import { PageLoader } from "@/components/ui/PageLoader";
+import { CookieBanner } from "@/components/cookies/CookieBanner";
 
 // Eagerly load critical landing page
 import Landing from "./pages/Landing";
@@ -91,6 +92,7 @@ const App = () => (
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
+            <CookieBanner />
           </BrowserRouter>
         </TooltipProvider>
       </WealthProvider>
