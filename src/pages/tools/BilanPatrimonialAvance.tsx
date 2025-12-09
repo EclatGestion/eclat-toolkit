@@ -368,6 +368,18 @@ export default function BilanPatrimonialAvance() {
             </Card>
           </div>
 
+          {/* Bottom Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2" size="lg">
+              <Sparkles className="w-4 h-4" />
+              Générer le bilan IA
+            </Button>
+            <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations} className="gap-2" size="lg">
+              <FileDown className="w-4 h-4" />
+              Exporter PDF
+            </Button>
+          </div>
+
           {/* IA Recommendations */}
           <RecommandationsIA
             isLoading={isLoadingIA}
