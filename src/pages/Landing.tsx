@@ -578,9 +578,10 @@ export default function Landing() {
               <span className="text-lg font-bold text-gray-900">Éclat Toolkit</span>
             </div>
             <div className="flex items-center gap-8 text-sm text-gray-500">
-              <a href="#" className="hover:text-gray-900 transition-colors">Mentions Légales</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Confidentialité</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Contact</a>
+              <button onClick={() => navigate("/mentions-legales")} className="hover:text-gray-900 transition-colors">Mentions Légales</button>
+              <button onClick={() => navigate("/confidentialite")} className="hover:text-gray-900 transition-colors">Confidentialité</button>
+              <button onClick={() => navigate("/cgu")} className="hover:text-gray-900 transition-colors">CGU</button>
+              <a href="mailto:contact@eclat-gp.com" className="hover:text-gray-900 transition-colors">Contact</a>
             </div>
             <p className="text-sm text-gray-400">
               © 2025 Éclat Gestion Privée. Tous droits réservés.

@@ -40,6 +40,9 @@ const AcademiePublic = lazy(() => import("./pages/public/AcademiePublic"));
 const BlogIndex = lazy(() => import("./pages/public/BlogIndex"));
 const BlogArticle = lazy(() => import("./pages/public/BlogArticle"));
 const Pricing = lazy(() => import("./pages/public/Pricing"));
+const MentionsLegales = lazy(() => import("./pages/public/MentionsLegales"));
+const PolitiqueConfidentialite = lazy(() => import("./pages/public/PolitiqueConfidentialite"));
+const CGU = lazy(() => import("./pages/public/CGU"));
 
 const queryClient = new QueryClient();
 
@@ -61,6 +64,9 @@ const App = () => (
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/blog" element={<BlogIndex />} />
                 <Route path="/blog/:slug" element={<BlogArticle />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
+                <Route path="/cgu" element={<CGU />} />
                 
                 {/* Protected Pages */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
