@@ -274,7 +274,11 @@ export default function InteretsComposes() {
             featureName="Simulation Retraite"
             teaser="Calculez le capital nécessaire pour obtenir une rente mensuelle à la retraite"
           >
-            <SimulationRetraite rendementActuel={rendement} />
+            <SimulationRetraite 
+              rendementActuel={rendement} 
+              epargneMensuelle={epargneMensuelle}
+              capitalInitial={capitalInitial}
+            />
           </PremiumToolLock>
         </div>
 

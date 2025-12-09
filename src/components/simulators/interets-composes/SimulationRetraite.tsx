@@ -3,14 +3,55 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Target, TrendingDown, Infinity, Clock } from "lucide-react";
+import { Target, TrendingDown, Infinity, Clock, Calendar, Sparkles } from "lucide-react";
 import { DecapitalisationChart } from "./DecapitalisationChart";
 
 interface SimulationRetraiteProps {
   rendementActuel: number;
+  epargneMensuelle: number;
+  capitalInitial: number;
 }
 
-export function SimulationRetraite({ rendementActuel }: SimulationRetraiteProps) {
+// Calcul du temps nécessaire pour atteindre un objectif avec intérêts composés
+function calculateTimeToTarget(
+  capitalInitial: number,
+  epargneMensuelle: number,
+  capitalCible: number,
+  rendementAnnuel: number
+): { annees: number; mois: number } | null {
+  if (capitalInitial >= capitalCible) {
+    return { annees: 0, mois: 0 };
+  }
+  
+  if (epargneMensuelle <= 0 && rendementAnnuel <= 0) {
+    return null; // Impossible
+  }
+
+  const tauxMensuel = rendementAnnuel / 100 / 12;
+  let capital = capitalInitial;
+  let moisTotal = 0;
+  const maxMois = 600; // 50 ans max
+
+  while (capital < capitalCible && moisTotal < maxMois) {
+    capital = capital * (1 + tauxMensuel) + epargneMensuelle;
+    moisTotal++;
+  }
+
+  if (moisTotal >= maxMois) {
+    return null; // Trop long
+  }
+
+  return {
+    annees: Math.floor(moisTotal / 12),
+    mois: moisTotal % 12
+  };
+}
+
+export function SimulationRetraite({ 
+  rendementActuel, 
+  epargneMensuelle, 
+  capitalInitial 
+}: SimulationRetraiteProps) {
   const [renteMensuelle, setRenteMensuelle] = useState(2000);
   const [dureeRente, setDureeRente] = useState(25);
   const [rendementNet, setRendementNet] = useState(rendementActuel || 4);
@@ -57,6 +98,16 @@ export function SimulationRetraite({ rendementActuel }: SimulationRetraiteProps)
 
     return { capitalRequis: Math.round(capital), chartData: data };
   }, [renteMensuelle, dureeRente, rendementNet, mode]);
+
+  // Calcul du temps pour atteindre l'objectif
+  const tempsObjectif = useMemo(() => {
+    return calculateTimeToTarget(
+      capitalInitial,
+      epargneMensuelle,
+      capitalRequis,
+      rendementNet
+    );
+  }, [capitalInitial, epargneMensuelle, capitalRequis, rendementNet]);
 
   // Format montant
   const formatMontant = (value: number): string => {
@@ -211,6 +262,42 @@ export function SimulationRetraite({ rendementActuel }: SimulationRetraiteProps)
             }
           </p>
         </div>
+
+        {/* Temps pour atteindre l'objectif */}
+        {epargneMensuelle > 0 && (
+          <div className="bg-success/10 border border-success/20 rounded-2xl p-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-success/20 rounded-xl">
+                <Calendar className="w-5 h-5 text-success" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium text-foreground mb-1">
+                  Temps pour atteindre cet objectif
+                </p>
+                {tempsObjectif ? (
+                  <>
+                    <p className="text-2xl font-bold text-success">
+                      {tempsObjectif.annees > 0 && `${tempsObjectif.annees} an${tempsObjectif.annees > 1 ? 's' : ''}`}
+                      {tempsObjectif.annees > 0 && tempsObjectif.mois > 0 && ' et '}
+                      {tempsObjectif.mois > 0 && `${tempsObjectif.mois} mois`}
+                      {tempsObjectif.annees === 0 && tempsObjectif.mois === 0 && 'Objectif atteint !'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Avec {epargneMensuelle.toLocaleString("fr-FR")} €/mois d'épargne 
+                      {capitalInitial > 0 && ` + ${formatMontant(capitalInitial)} de capital initial`}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    <Sparkles className="w-4 h-4 inline mr-1" />
+                    Objectif difficile à atteindre avec cette épargne. 
+                    Augmentez votre épargne mensuelle ou votre capital initial.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Graphique de décapitalisation */}
         <DecapitalisationChart 
