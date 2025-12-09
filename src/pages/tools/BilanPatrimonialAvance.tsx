@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,9 @@ import { RecommandationsIA } from "@/components/simulators/bilan/Recommandations
 import { useWealth } from "@/contexts/WealthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Brain, FileDown, Sparkles } from "lucide-react";
+import { Brain, FileDown, Sparkles, Loader2 } from "lucide-react";
 import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface Recommandation {
   titre: string;
@@ -67,6 +68,11 @@ export default function BilanPatrimonialAvance() {
 
   // IA State
   const [isLoadingIA, setIsLoadingIA] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+
+  // Refs for chart capture
+  const radarChartRef = useRef<HTMLDivElement>(null);
+  const donutChartRef = useRef<HTMLDivElement>(null);
   const [recommandations, setRecommandations] = useState<RecommandationsData | null>(null);
 
   // Calculs dérivés
@@ -174,68 +180,341 @@ export default function BilanPatrimonialAvance() {
     }
   };
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
+  const handleExportPDF = async () => {
+    if (!recommandations) return;
     
-    // Page 1: Couverture
-    doc.setFontSize(24);
-    doc.setTextColor(45, 96, 255);
-    doc.text("Bilan Patrimonial Avancé", 20, 30);
-    
-    doc.setFontSize(12);
-    doc.setTextColor(100);
-    doc.text(`Date: ${new Date().toLocaleDateString('fr-FR')}`, 20, 45);
-    
-    doc.setFontSize(36);
-    doc.setTextColor(45, 96, 255);
-    doc.text(`${scoreGlobal}/100`, 85, 80);
-    doc.setFontSize(14);
-    doc.text("Score Global", 85, 90);
-    
-    // Scores
-    doc.setFontSize(12);
-    doc.setTextColor(50);
-    const scoresY = 110;
-    doc.text(`Finances: ${scores.finances}/100`, 20, scoresY);
-    doc.text(`Épargne: ${scores.epargne}/100`, 20, scoresY + 10);
-    doc.text(`Immobilier: ${scores.immobilier}/100`, 20, scoresY + 20);
-    doc.text(`Fiscalité: ${scores.fiscalite}/100`, 20, scoresY + 30);
-    doc.text(`Transmission: ${scores.transmission}/100`, 20, scoresY + 40);
+    setIsExportingPDF(true);
+    toast.loading("Génération du PDF en cours...", { id: "pdf-export" });
 
-    // Patrimoine
-    doc.setFontSize(14);
-    doc.text(`Patrimoine Total: ${patrimoineTotal.toLocaleString('fr-FR')} €`, 20, 170);
+    try {
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentWidth = pageWidth - margin * 2;
 
-    // Recommandations
-    if (recommandations) {
-      doc.addPage();
-      doc.setFontSize(18);
-      doc.setTextColor(45, 96, 255);
-      doc.text("Recommandations IA", 20, 20);
+      // Helper functions
+      const drawProgressBar = (x: number, y: number, width: number, percentage: number, color: [number, number, number]) => {
+        // Background
+        doc.setFillColor(230, 230, 230);
+        doc.roundedRect(x, y, width, 6, 3, 3, "F");
+        // Progress
+        doc.setFillColor(...color);
+        doc.roundedRect(x, y, width * (percentage / 100), 6, 3, 3, "F");
+      };
+
+      const getScoreColor = (score: number): [number, number, number] => {
+        if (score >= 70) return [16, 185, 129]; // Green
+        if (score >= 50) return [245, 158, 11]; // Orange
+        return [239, 68, 68]; // Red
+      };
+
+      const formatCurrency = (value: number) => 
+        new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value);
+
+      // ============ PAGE 1: COUVERTURE ============
+      // Header avec logo
+      doc.setFillColor(45, 96, 255);
+      doc.rect(0, 0, pageWidth, 50, "F");
       
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(28);
+      doc.setFont("helvetica", "bold");
+      doc.text("ÉCLAT", margin, 30);
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "normal");
+      doc.text("Bilan Patrimonial Avancé", margin, 40);
+
+      // Date
+      doc.setTextColor(200, 210, 255);
       doc.setFontSize(10);
-      doc.setTextColor(50);
-      let y = 35;
+      doc.text(`Généré le ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}`, pageWidth - margin - 60, 35);
+
+      // Score global centré
+      doc.setTextColor(45, 96, 255);
+      doc.setFontSize(72);
+      doc.setFont("helvetica", "bold");
+      const scoreText = `${scoreGlobal}`;
+      doc.text(scoreText, pageWidth / 2, 100, { align: "center" });
       
+      doc.setFontSize(24);
+      doc.setTextColor(100, 100, 100);
+      doc.text("/ 100", pageWidth / 2 + 30, 100);
+      
+      doc.setFontSize(16);
+      doc.setTextColor(60, 60, 60);
+      doc.text("Score Global Patrimonial", pageWidth / 2, 115, { align: "center" });
+
+      // Patrimoine total
+      doc.setFillColor(248, 250, 252);
+      doc.roundedRect(margin, 130, contentWidth, 30, 5, 5, "F");
+      doc.setFontSize(14);
+      doc.setTextColor(100, 100, 100);
+      doc.text("Patrimoine Total Estimé", margin + 10, 145);
+      doc.setFontSize(22);
+      doc.setTextColor(45, 96, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text(formatCurrency(patrimoineTotal), pageWidth - margin - 10, 150, { align: "right" });
+
+      // Synthèse IA
       if (recommandations.synthese) {
-        const lines = doc.splitTextToSize(recommandations.synthese, 170);
-        doc.text(lines, 20, y);
-        y += lines.length * 5 + 10;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(80, 80, 80);
+        const syntheseLines = doc.splitTextToSize(recommandations.synthese, contentWidth - 10);
+        doc.text(syntheseLines, margin + 5, 180);
       }
 
-      recommandations.haute?.forEach((r, i) => {
-        if (y > 270) { doc.addPage(); y = 20; }
-        doc.setTextColor(220, 50, 50);
-        doc.text(`🔥 ${r.titre}`, 20, y);
-        doc.setTextColor(50);
-        const desc = doc.splitTextToSize(r.description, 160);
-        doc.text(desc, 25, y + 6);
-        y += desc.length * 5 + 15;
-      });
-    }
+      // ============ PAGE 2: ANALYSE DES 5 PILIERS ============
+      doc.addPage();
+      
+      // Titre
+      doc.setFillColor(45, 96, 255);
+      doc.rect(0, 0, pageWidth, 25, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Analyse des 5 Piliers Patrimoniaux", margin, 17);
 
-    doc.save("bilan-patrimonial-eclat.pdf");
-    toast.success("PDF exporté avec succès !");
+      // Capture radar chart
+      let radarY = 35;
+      if (radarChartRef.current) {
+        try {
+          const radarCanvas = await html2canvas(radarChartRef.current, { scale: 2, backgroundColor: "#ffffff" });
+          const radarImg = radarCanvas.toDataURL("image/png");
+          const radarWidth = 90;
+          const radarHeight = (radarCanvas.height / radarCanvas.width) * radarWidth;
+          doc.addImage(radarImg, "PNG", margin, radarY, radarWidth, radarHeight);
+          radarY += radarHeight + 5;
+        } catch (e) {
+          console.error("Error capturing radar chart:", e);
+        }
+      }
+
+      // Capture donut chart
+      if (donutChartRef.current) {
+        try {
+          const donutCanvas = await html2canvas(donutChartRef.current, { scale: 2, backgroundColor: "#ffffff" });
+          const donutImg = donutCanvas.toDataURL("image/png");
+          const donutWidth = 80;
+          const donutHeight = (donutCanvas.height / donutCanvas.width) * donutWidth;
+          doc.addImage(donutImg, "PNG", pageWidth - margin - donutWidth, 35, donutWidth, donutHeight);
+        } catch (e) {
+          console.error("Error capturing donut chart:", e);
+        }
+      }
+
+      // Tableau des scores
+      const scoresStartY = Math.max(radarY + 10, 150);
+      doc.setFontSize(14);
+      doc.setTextColor(45, 96, 255);
+      doc.setFont("helvetica", "bold");
+      doc.text("Détail des Scores", margin, scoresStartY);
+
+      const scoreItems = [
+        { label: "Finances Personnelles", score: scores.finances },
+        { label: "Épargne & Investissements", score: scores.epargne },
+        { label: "Immobilier", score: scores.immobilier },
+        { label: "Fiscalité", score: scores.fiscalite },
+        { label: "Transmission", score: scores.transmission },
+      ];
+
+      let scoreY = scoresStartY + 15;
+      scoreItems.forEach(item => {
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+        doc.setTextColor(60, 60, 60);
+        doc.text(item.label, margin, scoreY);
+        
+        drawProgressBar(margin + 70, scoreY - 4, 80, item.score, getScoreColor(item.score));
+        
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(...getScoreColor(item.score));
+        doc.text(`${item.score}/100`, margin + 160, scoreY);
+        
+        scoreY += 15;
+      });
+
+      // ============ PAGE 3: RECOMMANDATIONS IA ============
+      doc.addPage();
+      
+      // Titre
+      doc.setFillColor(45, 96, 255);
+      doc.rect(0, 0, pageWidth, 25, "F");
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(16);
+      doc.setFont("helvetica", "bold");
+      doc.text("Recommandations IA Personnalisées", margin, 17);
+
+      let recoY = 35;
+
+      // Priorité Haute
+      if (recommandations.haute?.length > 0) {
+        doc.setFillColor(254, 242, 242);
+        doc.roundedRect(margin, recoY, contentWidth, 8, 2, 2, "F");
+        doc.setFontSize(12);
+        doc.setTextColor(220, 38, 38);
+        doc.setFont("helvetica", "bold");
+        doc.text("🔥 PRIORITÉ HAUTE", margin + 5, recoY + 6);
+        recoY += 15;
+
+        recommandations.haute.forEach(r => {
+          if (recoY > pageHeight - 40) { doc.addPage(); recoY = 20; }
+          doc.setFontSize(11);
+          doc.setTextColor(60, 60, 60);
+          doc.setFont("helvetica", "bold");
+          doc.text(`• ${r.titre}`, margin + 5, recoY);
+          recoY += 6;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.setTextColor(100, 100, 100);
+          const descLines = doc.splitTextToSize(r.description, contentWidth - 15);
+          doc.text(descLines, margin + 10, recoY);
+          recoY += descLines.length * 5;
+          if (r.impact) {
+            doc.setTextColor(16, 185, 129);
+            doc.text(`Impact: ${r.impact}`, margin + 10, recoY);
+            recoY += 5;
+          }
+          recoY += 5;
+        });
+      }
+
+      // Priorité Moyenne
+      if (recommandations.moyenne?.length > 0) {
+        recoY += 5;
+        if (recoY > pageHeight - 50) { doc.addPage(); recoY = 20; }
+        
+        doc.setFillColor(255, 251, 235);
+        doc.roundedRect(margin, recoY, contentWidth, 8, 2, 2, "F");
+        doc.setFontSize(12);
+        doc.setTextColor(217, 119, 6);
+        doc.setFont("helvetica", "bold");
+        doc.text("⚡ PRIORITÉ MOYENNE", margin + 5, recoY + 6);
+        recoY += 15;
+
+        recommandations.moyenne.forEach(r => {
+          if (recoY > pageHeight - 40) { doc.addPage(); recoY = 20; }
+          doc.setFontSize(11);
+          doc.setTextColor(60, 60, 60);
+          doc.setFont("helvetica", "bold");
+          doc.text(`• ${r.titre}`, margin + 5, recoY);
+          recoY += 6;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.setTextColor(100, 100, 100);
+          const descLines = doc.splitTextToSize(r.description, contentWidth - 15);
+          doc.text(descLines, margin + 10, recoY);
+          recoY += descLines.length * 5;
+          if (r.impact) {
+            doc.setTextColor(16, 185, 129);
+            doc.text(`Impact: ${r.impact}`, margin + 10, recoY);
+            recoY += 5;
+          }
+          recoY += 5;
+        });
+      }
+
+      // Long Terme
+      if (recommandations.longTerme?.length > 0) {
+        recoY += 5;
+        if (recoY > pageHeight - 50) { doc.addPage(); recoY = 20; }
+        
+        doc.setFillColor(236, 253, 245);
+        doc.roundedRect(margin, recoY, contentWidth, 8, 2, 2, "F");
+        doc.setFontSize(12);
+        doc.setTextColor(5, 150, 105);
+        doc.setFont("helvetica", "bold");
+        doc.text("🌱 OPTIMISATIONS LONG TERME", margin + 5, recoY + 6);
+        recoY += 15;
+
+        recommandations.longTerme.forEach(r => {
+          if (recoY > pageHeight - 40) { doc.addPage(); recoY = 20; }
+          doc.setFontSize(11);
+          doc.setTextColor(60, 60, 60);
+          doc.setFont("helvetica", "bold");
+          doc.text(`• ${r.titre}`, margin + 5, recoY);
+          recoY += 6;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(10);
+          doc.setTextColor(100, 100, 100);
+          const descLines = doc.splitTextToSize(r.description, contentWidth - 15);
+          doc.text(descLines, margin + 10, recoY);
+          recoY += descLines.length * 5;
+          if (r.impact) {
+            doc.setTextColor(16, 185, 129);
+            doc.text(`Impact: ${r.impact}`, margin + 10, recoY);
+            recoY += 5;
+          }
+          recoY += 5;
+        });
+      }
+
+      // ============ PAGE 4: PLAN D'ACTION ============
+      if (recommandations.planAction?.length > 0) {
+        doc.addPage();
+        
+        // Titre
+        doc.setFillColor(45, 96, 255);
+        doc.rect(0, 0, pageWidth, 25, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("Plan d'Action 12 Mois", margin, 17);
+
+        // Table header
+        let planY = 40;
+        doc.setFillColor(248, 250, 252);
+        doc.rect(margin, planY - 5, contentWidth, 12, "F");
+        doc.setFontSize(11);
+        doc.setTextColor(60, 60, 60);
+        doc.setFont("helvetica", "bold");
+        doc.text("Mois", margin + 5, planY + 3);
+        doc.text("Action", margin + 35, planY + 3);
+        planY += 15;
+
+        // Table rows
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(10);
+        recommandations.planAction.forEach((action, index) => {
+          if (planY > pageHeight - 30) { doc.addPage(); planY = 30; }
+          
+          // Alternating background
+          if (index % 2 === 0) {
+            doc.setFillColor(252, 252, 253);
+            doc.rect(margin, planY - 4, contentWidth, 10, "F");
+          }
+          
+          doc.setTextColor(45, 96, 255);
+          doc.setFont("helvetica", "bold");
+          doc.text(action.mois, margin + 5, planY + 2);
+          doc.setTextColor(60, 60, 60);
+          doc.setFont("helvetica", "normal");
+          const actionLines = doc.splitTextToSize(action.action, contentWidth - 45);
+          doc.text(actionLines, margin + 35, planY + 2);
+          planY += Math.max(12, actionLines.length * 6);
+        });
+
+        // Footer
+        planY += 20;
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(margin, planY, contentWidth, 25, 3, 3, "F");
+        doc.setFontSize(9);
+        doc.setTextColor(100, 100, 100);
+        doc.text("Ce bilan patrimonial a été généré par l'IA d'Éclat Toolkit.", margin + 5, planY + 10);
+        doc.text("Pour toute question, contactez-nous sur eclat-gp.com", margin + 5, planY + 18);
+      }
+
+      // Save
+      const dateStr = new Date().toISOString().split('T')[0];
+      doc.save(`bilan-patrimonial-eclat-${dateStr}.pdf`);
+      toast.success("PDF exporté avec succès !", { id: "pdf-export" });
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      toast.error("Erreur lors de l'export PDF", { id: "pdf-export" });
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
 
   return (
@@ -253,12 +532,12 @@ export default function BilanPatrimonialAvance() {
             </div>
             <div className="flex gap-3">
               <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2">
-                <Sparkles className="w-4 h-4" />
-                Générer le bilan
+                {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {isLoadingIA ? "Analyse..." : "Générer le bilan"}
               </Button>
-              <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations} className="gap-2">
-                <FileDown className="w-4 h-4" />
-                Exporter PDF
+              <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2">
+                {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                {isExportingPDF ? "Export..." : "Exporter PDF"}
               </Button>
             </div>
           </div>
@@ -344,13 +623,15 @@ export default function BilanPatrimonialAvance() {
                 <CardTitle>Scores par Pilier</CardTitle>
               </CardHeader>
               <CardContent>
-                <ScoreRadarChart
-                  financesScore={scores.finances}
-                  epargneScore={scores.epargne}
-                  immobilierScore={scores.immobilier}
-                  fiscaliteScore={scores.fiscalite}
-                  transmissionScore={scores.transmission}
-                />
+                <div ref={radarChartRef}>
+                  <ScoreRadarChart
+                    financesScore={scores.finances}
+                    epargneScore={scores.epargne}
+                    immobilierScore={scores.immobilier}
+                    fiscaliteScore={scores.fiscalite}
+                    transmissionScore={scores.transmission}
+                  />
+                </div>
               </CardContent>
             </Card>
 
@@ -359,11 +640,13 @@ export default function BilanPatrimonialAvance() {
                 <CardTitle>Répartition du Patrimoine</CardTitle>
               </CardHeader>
               <CardContent>
-                <PatrimoineDonutChart
-                  immobilier={residencePrincipale + immobilierLocatif - creditsImmo}
-                  financier={assuranceVie + per + peaCto}
-                  liquidites={liquidites}
-                />
+                <div ref={donutChartRef}>
+                  <PatrimoineDonutChart
+                    immobilier={residencePrincipale + immobilierLocatif - creditsImmo}
+                    financier={assuranceVie + per + peaCto}
+                    liquidites={liquidites}
+                  />
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -371,12 +654,12 @@ export default function BilanPatrimonialAvance() {
           {/* Bottom Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2" size="lg">
-              <Sparkles className="w-4 h-4" />
-              Générer le bilan IA
+              {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              {isLoadingIA ? "Analyse en cours..." : "Générer le bilan IA"}
             </Button>
-            <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations} className="gap-2" size="lg">
-              <FileDown className="w-4 h-4" />
-              Exporter PDF
+            <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2" size="lg">
+              {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+              {isExportingPDF ? "Export en cours..." : "Exporter PDF Premium"}
             </Button>
           </div>
 
