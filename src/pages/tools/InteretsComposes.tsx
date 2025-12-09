@@ -9,6 +9,7 @@ import { ArrowLeft, Lock, Crown } from "lucide-react";
 import { InputSlider } from "@/components/simulators/interets-composes/InputSlider";
 import { ComparisonChart } from "@/components/simulators/interets-composes/ComparisonChart";
 import { KPIResults } from "@/components/simulators/interets-composes/KPIResults";
+import { SimulationRetraite } from "@/components/simulators/interets-composes/SimulationRetraite";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { usePremium } from "@/hooks/usePremium";
 import { PremiumToolLock } from "@/components/premium/PremiumToolLock";
@@ -150,8 +151,8 @@ export default function InteretsComposes() {
                 value={capitalInitial}
                 onChange={setCapitalInitial}
                 min={0}
-                max={500000}
-                step={1000}
+                max={2000000}
+                step={5000}
                 unit="€"
               />
 
@@ -265,6 +266,16 @@ export default function InteretsComposes() {
               interetsGagnes={interetsGagnes}
             />
           </div>
+        </div>
+
+        {/* Simulation Retraite - Premium Feature */}
+        <div className="mt-6">
+          <PremiumToolLock
+            featureName="Simulation Retraite"
+            teaser="Calculez le capital nécessaire pour obtenir une rente mensuelle à la retraite"
+          >
+            <SimulationRetraite rendementActuel={rendement} />
+          </PremiumToolLock>
         </div>
 
         {/* Recommended Products */}
