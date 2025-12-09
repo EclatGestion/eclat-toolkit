@@ -5,17 +5,11 @@ import { AddIncomeModal } from "@/components/dashboard/AddIncomeModal";
 import { AddExpenseModal } from "@/components/dashboard/AddExpenseModal";
 import { GoalsModal } from "@/components/dashboard/GoalsModal";
 import { AssetsList } from "@/components/dashboard/AssetsList";
-import { ExpenseAnalysis } from "@/components/dashboard/ExpenseAnalysis";
-import { SafetyRunway } from "@/components/dashboard/SafetyRunway";
-import { SavingsRateBooster } from "@/components/dashboard/SavingsRateBooster";
-import { BudgetRuleAnalysis } from "@/components/dashboard/BudgetRuleAnalysis";
-import { PremiumLock } from "@/components/premium/PremiumLock";
-import { PremiumBanner } from "@/components/premium/PremiumBanner";
 import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
 import { useWealth, Asset } from "@/contexts/WealthContext";
 import { usePremium } from "@/hooks/usePremium";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings, Calculator, Home, ChartLine, ArrowRight } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings, Calculator, Home, ChartLine, ArrowRight, Percent } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import {
@@ -51,7 +45,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function Dashboard() { 
+export default function Dashboard() {
   const navigate = useNavigate();
   const { 
     assets, 
@@ -100,7 +94,21 @@ export default function Dashboard() {
     return grouped;
   }, [assets]);
 
+  // Calcul du taux d'épargne
+  const tauxEpargne = totalRevenus > 0 
+    ? Math.round((epargneMensuelle * 12 / totalRevenus) * 100) 
+    : 0;
+
+  const getTauxEpargneColor = () => {
+    if (tauxEpargne >= 20) return "text-emerald-500";
+    if (tauxEpargne >= 10) return "text-amber-500";
+    return "text-rose-500";
+  };
+
   const formatCurrency = (value: number) => {
+    if (value >= 1000000) {
+      return (value / 1000000).toFixed(2).replace('.', ',') + " M€";
+    }
     return value.toLocaleString("fr-FR") + " €";
   };
 
@@ -115,35 +123,24 @@ export default function Dashboard() {
   };
 
   return (
-    <MainLayout title="Dashboard">
+    <MainLayout title="Ma Boîte à Outils">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
+        className="space-y-6"
       >
-        {/* Premium Banner for Standard Users */}
-        <PremiumBanner />
-
-        {/* Header */}
-        <motion.div variants={itemVariants} className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-foreground">Vue d'ensemble</h2>
-          <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" />
-            Ajouter un actif
-          </Button>
-        </motion.div>
-
         {/* Quick Access Tools */}
-        <motion.div variants={itemVariants} className="mb-6">
+        <motion.div variants={itemVariants}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Outils Rapides</h3>
+            <h3 className="text-lg font-semibold text-foreground">🚀 Accès Rapide</h3>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => navigate("/catalogue")}
               className="text-primary hover:text-primary/80 gap-1"
             >
-              Voir tout
+              Voir tous les outils
               <ArrowRight className="w-4 h-4" />
             </Button>
           </div>
@@ -190,7 +187,7 @@ export default function Dashboard() {
         </motion.div>
 
         {/* KPI Cards */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Patrimoine Card */}
           <div className="bg-card rounded-3xl p-5 shadow-card">
             <div className="flex items-center gap-4">
@@ -263,40 +260,29 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Épargne Mensuelle */}
-          <KPICard
-            title="Épargne Mensuelle"
-            value={formatCurrency(epargneMensuelle)}
-            icon={PiggyBank}
-            iconColor="text-teal-500"
-            iconBg="bg-teal-500/10"
-          />
-        </motion.div>
-
-        {/* Premium Analytics Row */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-          <PremiumLock featureName="la jauge de sérénité">
-            <SafetyRunway />
-          </PremiumLock>
-          
-          <PremiumLock featureName="le coach épargne">
-            <SavingsRateBooster />
-          </PremiumLock>
-          
-          <PremiumLock featureName="l'analyse 50/30/20">
-            <BudgetRuleAnalysis />
-          </PremiumLock>
-        </motion.div>
-
-        {/* Expense Analysis - Full Width */}
-        <motion.div variants={itemVariants} className="mb-6">
-          <PremiumLock featureName="l'analyse IA des dépenses">
-            <ExpenseAnalysis />
-          </PremiumLock>
+          {/* Épargne Mensuelle + Taux */}
+          <div className="bg-card rounded-3xl p-5 shadow-card">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full flex items-center justify-center bg-teal-500/10">
+                <PiggyBank className="w-6 h-6 text-teal-500" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-muted-foreground">Épargne Mensuelle</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-xl font-semibold text-foreground">
+                    {formatCurrency(epargneMensuelle)}
+                  </p>
+                  <span className={`text-sm font-medium ${getTauxEpargneColor()}`}>
+                    {tauxEpargne}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </motion.div>
 
         {/* Assets & Patrimoine Distribution Row */}
-        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <AssetsList 
             onAddClick={() => setIsAddModalOpen(true)} 
             onEditClick={handleEditAsset} 
@@ -304,7 +290,7 @@ export default function Dashboard() {
           
           {/* Patrimoine Distribution Pie Chart */}
           <div className="bg-card rounded-3xl p-6 shadow-card">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Répartition Patrimoine</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">📊 Répartition Patrimoine</h3>
             {patrimoineData.length > 0 ? (
               <>
                 <ResponsiveContainer width="100%" height={220}>
@@ -324,7 +310,7 @@ export default function Dashboard() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number) => `${value.toLocaleString("fr-FR")} €`}
+                      formatter={(value: number) => formatCurrency(value)}
                       contentStyle={{
                         backgroundColor: "hsl(var(--card))",
                         border: "1px solid hsl(var(--border))",
@@ -336,25 +322,45 @@ export default function Dashboard() {
                 </ResponsiveContainer>
                 {/* Legend with values */}
                 <div className="space-y-2 mt-4">
-                  {patrimoineData.map((entry) => (
-                    <div key={entry.name} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: entry.color }}
-                        />
-                        <span className="text-sm text-muted-foreground">{entry.name}</span>
+                  {patrimoineData.map((entry) => {
+                    const percentage = totalPatrimoine > 0 
+                      ? Math.round((entry.value / totalPatrimoine) * 100) 
+                      : 0;
+                    return (
+                      <div key={entry.name} className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: entry.color }}
+                          />
+                          <span className="text-sm text-muted-foreground">{entry.name}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-foreground">
+                            {formatCurrency(entry.value)}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            ({percentage}%)
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-sm font-medium text-foreground">
-                        {formatCurrency(entry.value)}
-                      </span>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </>
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-muted-foreground">
-                Aucun actif enregistré
+              <div className="h-[280px] flex flex-col items-center justify-center text-muted-foreground">
+                <Wallet className="w-12 h-12 mb-4 opacity-30" />
+                <p>Aucun actif enregistré</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-4"
+                  onClick={() => setIsAddModalOpen(true)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Ajouter un actif
+                </Button>
               </div>
             )}
           </div>
@@ -364,7 +370,7 @@ export default function Dashboard() {
         <motion.div variants={itemVariants}>
           <div className="bg-card rounded-3xl p-6 shadow-card">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Objectifs FIRE</h3>
+              <h3 className="text-lg font-semibold text-foreground">🎯 Objectifs FIRE</h3>
               <button
                 onClick={() => setIsGoalsModalOpen(true)}
                 className="p-2 hover:bg-muted rounded-lg transition-colors"
@@ -397,7 +403,7 @@ export default function Dashboard() {
                         />
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {totalEpargne.toLocaleString("fr-FR")} € / {goal.target.toLocaleString("fr-FR")} €
+                        {formatCurrency(totalEpargne)} / {formatCurrency(goal.target)}
                       </p>
                     </div>
                   );
