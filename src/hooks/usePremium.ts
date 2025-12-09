@@ -41,6 +41,7 @@ export function usePremium() {
   const [tier, setTier] = useState<SubscriptionTier>("free");
   const [isLoading, setIsLoading] = useState(true);
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null);
+  const [hasCheckedOnce, setHasCheckedOnce] = useState(false);
 
   // Computed values for backward compatibility
   const isPremium = tier === "premium" || tier === "expert";
@@ -51,6 +52,7 @@ export function usePremium() {
       setTier("free");
       setSubscriptionData(null);
       setIsLoading(false);
+      setHasCheckedOnce(false);
       return;
     }
 
@@ -62,7 +64,7 @@ export function usePremium() {
         .eq("id", user.id)
         .single();
 
-      if (profile?.is_premium) {
+      if (profile?.is_premium && !hasCheckedOnce) {
         // Temporary set, will be updated by Stripe check
         setTier("premium");
       }
@@ -72,19 +74,27 @@ export function usePremium() {
       
       if (error) {
         console.error("Error checking subscription:", error);
-        // Fallback to profile data
-        setTier(profile?.is_premium ? "premium" : "free");
+        // Only fallback if we haven't successfully checked before
+        if (!hasCheckedOnce) {
+          setTier(profile?.is_premium ? "premium" : "free");
+          setHasCheckedOnce(true);
+        }
+        // Otherwise keep current tier to avoid jumps
       } else if (data) {
         setTier(data.tier || "free");
         setSubscriptionData(data);
+        setHasCheckedOnce(true);
       }
     } catch (error) {
       console.error("Error checking premium status:", error);
-      setTier("free");
+      // Only reset to free if we've never successfully checked
+      if (!hasCheckedOnce) {
+        setTier("free");
+      }
     } finally {
       setIsLoading(false);
     }
-  }, [user]);
+  }, [user, hasCheckedOnce]);
 
   useEffect(() => {
     checkSubscription();
