@@ -29,13 +29,17 @@ interface StockData {
   peers: { name: string; ticker: string; pe: number | null; growth: number | null }[];
 }
 
-async function fetchYahooChart(ticker: string): Promise<any> {
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y`;
+async function fetchStockData(ticker: string): Promise<StockData> {
+  // Use v8/finance/chart endpoint which doesn't require crumb authentication
+  // Include all modules we need in a single call
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y&includePrePost=false`;
   console.log('Fetching Yahoo chart:', url);
   
   const response = await fetch(url, {
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json',
+      'Accept-Language': 'en-US,en;q=0.9',
     }
   });
   
@@ -45,38 +49,9 @@ async function fetchYahooChart(ticker: string): Promise<any> {
     throw new Error(`Ticker not found: ${ticker}. Use suffixes for EU stocks (e.g., BNP.PA, SAP.DE)`);
   }
   
-  return await response.json();
-}
-
-async function fetchYahooQuoteSummary(ticker: string): Promise<any> {
-  const modules = 'price,summaryProfile,defaultKeyStatistics,financialData';
-  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
-  console.log('Fetching Yahoo quote summary:', url);
+  const data = await response.json();
+  const chart = data?.chart?.result?.[0];
   
-  const response = await fetch(url, {
-    headers: {
-      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-  });
-  
-  if (!response.ok) {
-    const text = await response.text();
-    console.error('Yahoo quote summary error:', response.status, text);
-    throw new Error(`Quote data not available for ${ticker}`);
-  }
-  
-  return await response.json();
-}
-
-async function fetchStockData(ticker: string): Promise<StockData> {
-  // Fetch chart and quote summary in parallel
-  const [chartData, summaryData] = await Promise.all([
-    fetchYahooChart(ticker),
-    fetchYahooQuoteSummary(ticker),
-  ]);
-
-  // Parse chart data
-  const chart = chartData?.chart?.result?.[0];
   if (!chart) {
     throw new Error(`Stock ${ticker} not found. For EU stocks use: BNP.PA (Paris), SAP.DE (Frankfurt), ASML.AS (Amsterdam)`);
   }
@@ -95,65 +70,66 @@ async function fetchStockData(ticker: string): Promise<StockData> {
     }
   }
 
-  // Parse quote summary
-  const result = summaryData?.quoteSummary?.result?.[0];
-  const price = result?.price || {};
-  const profile = result?.summaryProfile || {};
-  const keyStats = result?.defaultKeyStatistics || {};
-  const financialData = result?.financialData || {};
-
-  // Extract values safely
-  const getValue = (obj: any, key: string): number | null => {
-    const val = obj?.[key];
-    if (val?.raw !== undefined) return val.raw;
-    if (typeof val === 'number') return val;
-    return null;
-  };
-
-  const currentPrice = getValue(price, 'regularMarketPrice') || meta.regularMarketPrice || 0;
-  const previousClose = getValue(price, 'regularMarketPreviousClose') || meta.previousClose || currentPrice;
+  // Extract data from meta (available without authentication)
+  const currentPrice = meta.regularMarketPrice || 0;
+  const previousClose = meta.previousClose || meta.chartPreviousClose || currentPrice;
   const change = currentPrice - previousClose;
   const changePercent = previousClose ? (change / previousClose) * 100 : 0;
 
-  // Get financial metrics
-  const pe = getValue(price, 'trailingPE') || getValue(keyStats, 'trailingPE');
-  const forwardPe = getValue(keyStats, 'forwardPE');
-  const evEbitda = getValue(keyStats, 'enterpriseToEbitda');
-  const netMargin = getValue(financialData, 'profitMargins');
-  const roe = getValue(financialData, 'returnOnEquity');
-  const debtToEquity = getValue(financialData, 'debtToEquity');
-  const dividendYield = getValue(keyStats, 'dividendYield') || getValue(price, 'dividendYield');
-  const beta = getValue(keyStats, 'beta');
-  const eps = getValue(price, 'trailingEps');
-  const marketCap = getValue(price, 'marketCap') || meta.marketCap || 0;
+  // Try to get additional metrics from a secondary endpoint (optional, may fail)
+  let pe: number | null = null;
+  let eps: number | null = null;
+  let dividendYield: number | null = null;
+  let marketCap: number | null = null;
+  let beta: number | null = null;
 
-  // Build peers list (simplified)
-  const peers: StockData['peers'] = [];
+  // Try Yahoo Finance v6 quote endpoint (less strict auth)
+  try {
+    const quoteUrl = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${encodeURIComponent(ticker)}`;
+    const quoteRes = await fetch(quoteUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      }
+    });
+    if (quoteRes.ok) {
+      const quoteData = await quoteRes.json();
+      const quote = quoteData?.quoteResponse?.result?.[0];
+      if (quote) {
+        pe = quote.trailingPE || null;
+        eps = quote.epsTrailingTwelveMonths || null;
+        dividendYield = quote.dividendYield || null;
+        marketCap = quote.marketCap || null;
+        beta = quote.beta || null;
+      }
+    }
+  } catch (e) {
+    console.log('v6 quote endpoint failed, using defaults:', e);
+  }
 
   const stockData: StockData = {
     ticker: meta.symbol || ticker,
-    name: price.longName || price.shortName || meta.symbol || ticker,
-    sector: profile.sector || 'N/A',
-    industry: profile.industry || 'N/A',
+    name: meta.longName || meta.shortName || meta.symbol || ticker,
+    sector: 'N/A', // Not available without auth
+    industry: 'N/A',
     price: currentPrice,
     change,
     changePercent,
-    marketCap,
+    marketCap: marketCap || 0,
     pe,
-    peHistorical: forwardPe || pe,
-    evEbitda,
-    revenueGrowth: getValue(financialData, 'revenueGrowth'),
-    netMargin: netMargin ? netMargin * 100 : null,
-    roe: roe ? roe * 100 : null,
-    debtToEbitda: debtToEquity ? debtToEquity / 100 : null,
-    dividendYield: dividendYield ? dividendYield * 100 : null,
+    peHistorical: pe,
+    evEbitda: null,
+    revenueGrowth: null,
+    netMargin: null,
+    roe: null,
+    debtToEbitda: null,
+    dividendYield,
     eps,
     beta,
     priceHistory,
-    peers,
+    peers: [],
   };
 
-  console.log('Stock data fetched:', stockData.name, '| Price history:', priceHistory.length, 'points');
+  console.log('Stock data fetched:', stockData.name, '| Price:', currentPrice, '| History:', priceHistory.length, 'points');
   return stockData;
 }
 
@@ -167,20 +143,24 @@ Secteur: ${stockData.sector}
 Industrie: ${stockData.industry}
 Prix actuel: ${stockData.price.toFixed(2)}€
 Variation jour: ${stockData.changePercent?.toFixed(2)}%
-Capitalisation: ${(stockData.marketCap / 1e9).toFixed(2)} Mds€
+Capitalisation: ${stockData.marketCap ? (stockData.marketCap / 1e9).toFixed(2) + ' Mds€' : 'N/A'}
 
 ## MÉTRIQUES FONDAMENTALES
 - P/E actuel: ${stockData.pe?.toFixed(2) || 'N/A'}x
 - EV/EBITDA: ${stockData.evEbitda?.toFixed(2) || 'N/A'}x
 - Marge nette: ${stockData.netMargin?.toFixed(1) || 'N/A'}%
 - ROE: ${stockData.roe?.toFixed(1) || 'N/A'}%
-- Dette/Equity: ${stockData.debtToEbitda?.toFixed(2) || 'N/A'}x
 - Dividende yield: ${stockData.dividendYield?.toFixed(2) || '0'}%
 - EPS: ${stockData.eps?.toFixed(2) || 'N/A'}€
 - Beta: ${stockData.beta?.toFixed(2) || 'N/A'}
 
+## HISTORIQUE DES COURS (1 an)
+Prix début période: ${stockData.priceHistory[0]?.price.toFixed(2) || 'N/A'}€
+Prix actuel: ${stockData.price.toFixed(2)}€
+Performance 1 an: ${stockData.priceHistory.length > 0 ? (((stockData.price - stockData.priceHistory[0].price) / stockData.priceHistory[0].price) * 100).toFixed(2) : 'N/A'}%
+
 ## MISSION
-Génère une analyse d'investissement complète en JSON strict (pas de markdown, juste le JSON):
+En te basant sur ta connaissance du marché et de cette entreprise, génère une analyse d'investissement complète en JSON strict (pas de markdown, juste le JSON):
 
 {
   "profilInvestisseur": "Value|Growth|Dividende|GARP|Turnaround|Quality",
@@ -222,7 +202,7 @@ IMPORTANT: Réponds UNIQUEMENT avec le JSON, sans aucun texte avant ou après.`;
     body: JSON.stringify({
       model: 'google/gemini-2.5-flash',
       messages: [
-        { role: 'system', content: 'Tu es un analyste financier senior expert en Equity Research. Tu réponds uniquement en JSON valide.' },
+        { role: 'system', content: 'Tu es un analyste financier senior expert en Equity Research. Tu réponds uniquement en JSON valide. Tu as une excellente connaissance des entreprises cotées et de leurs fondamentaux.' },
         { role: 'user', content: prompt }
       ],
     }),
@@ -237,7 +217,7 @@ IMPORTANT: Réponds UNIQUEMENT avec le JSON, sans aucun texte avant ou après.`;
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content;
   
-  console.log('AI response:', content);
+  console.log('AI response received');
   
   // Parse JSON from response
   try {
@@ -275,7 +255,7 @@ serve(async (req) => {
 
     console.log(`Analyzing stock: ${ticker}`);
 
-    // Fetch stock data from Yahoo Finance (no API key needed)
+    // Fetch stock data from Yahoo Finance
     const stockData = await fetchStockData(ticker.toUpperCase());
     console.log('Stock data fetched:', stockData.name);
 
