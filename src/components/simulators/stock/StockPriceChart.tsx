@@ -30,14 +30,16 @@ export function StockPriceChart({ priceHistory, currentPrice, ticker }: StockPri
   ];
 
   const selectedPeriod = periods.find(p => p.key === period)!;
-  const filteredData = priceHistory.slice(-selectedPeriod.days);
+  const filteredData = priceHistory?.slice(-selectedPeriod.days) || [];
 
-  const startPrice = filteredData[0]?.price || currentPrice;
-  const performance = ((currentPrice - startPrice) / startPrice * 100);
+  const startPrice = filteredData[0]?.price ?? currentPrice ?? 0;
+  const safeCurrentPrice = currentPrice ?? 0;
+  const performance = startPrice > 0 ? ((safeCurrentPrice - startPrice) / startPrice * 100) : 0;
   const isPositive = performance >= 0;
 
-  const minPrice = Math.min(...filteredData.map(d => d.price)) * 0.98;
-  const maxPrice = Math.max(...filteredData.map(d => d.price)) * 1.02;
+  const prices = filteredData.map(d => d.price).filter(p => p !== undefined && p !== null);
+  const minPrice = prices.length > 0 ? Math.min(...prices) * 0.98 : 0;
+  const maxPrice = prices.length > 0 ? Math.max(...prices) * 1.02 : 100;
 
   return (
     <Card>
@@ -59,7 +61,7 @@ export function StockPriceChart({ priceHistory, currentPrice, ticker }: StockPri
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-3xl font-bold">${currentPrice.toFixed(2)}</span>
+          <span className="text-3xl font-bold">${safeCurrentPrice.toFixed(2)}</span>
           <span className={cn(
             'text-lg font-medium px-2 py-0.5 rounded',
             isPositive ? 'text-emerald-600 bg-emerald-100' : 'text-red-600 bg-red-100'
