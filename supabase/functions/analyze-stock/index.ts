@@ -76,52 +76,86 @@ async function fetchStockData(ticker: string): Promise<StockData> {
   const change = currentPrice - previousClose;
   const changePercent = previousClose ? (change / previousClose) * 100 : 0;
 
-  // Try to get additional metrics from a secondary endpoint (optional, may fail)
+  // Fetch additional metrics from v10/quoteSummary endpoint
   let pe: number | null = null;
   let eps: number | null = null;
   let dividendYield: number | null = null;
   let marketCap: number | null = null;
   let beta: number | null = null;
+  let evEbitda: number | null = null;
+  let netMargin: number | null = null;
+  let roe: number | null = null;
+  let debtToEquity: number | null = null;
+  let revenueGrowth: number | null = null;
+  let sector: string = 'N/A';
+  let industry: string = 'N/A';
 
-  // Try Yahoo Finance v6 quote endpoint (less strict auth)
   try {
-    const quoteUrl = `https://query1.finance.yahoo.com/v6/finance/quote?symbols=${encodeURIComponent(ticker)}`;
-    const quoteRes = await fetch(quoteUrl, {
+    const modules = 'summaryDetail,defaultKeyStatistics,financialData,assetProfile';
+    const summaryUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
+    console.log('Fetching quoteSummary:', summaryUrl);
+    
+    const summaryRes = await fetch(summaryUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
       }
     });
-    if (quoteRes.ok) {
-      const quoteData = await quoteRes.json();
-      const quote = quoteData?.quoteResponse?.result?.[0];
-      if (quote) {
-        pe = quote.trailingPE || null;
-        eps = quote.epsTrailingTwelveMonths || null;
-        dividendYield = quote.dividendYield || null;
-        marketCap = quote.marketCap || null;
-        beta = quote.beta || null;
+    
+    if (summaryRes.ok) {
+      const summaryData = await summaryRes.json();
+      const result = summaryData?.quoteSummary?.result?.[0];
+      
+      if (result) {
+        // summaryDetail: PE, dividendYield, marketCap, beta
+        const sd = result.summaryDetail || {};
+        pe = sd.trailingPE?.raw ?? null;
+        dividendYield = sd.dividendYield?.raw ? sd.dividendYield.raw * 100 : null;
+        marketCap = sd.marketCap?.raw ?? null;
+        beta = sd.beta?.raw ?? null;
+        
+        // defaultKeyStatistics: EV/EBITDA, EPS
+        const dks = result.defaultKeyStatistics || {};
+        evEbitda = dks.enterpriseToEbitda?.raw ?? null;
+        eps = dks.trailingEps?.raw ?? null;
+        
+        // financialData: ROE, profitMargins (netMargin), debtToEquity, revenueGrowth
+        const fd = result.financialData || {};
+        roe = fd.returnOnEquity?.raw ? fd.returnOnEquity.raw * 100 : null;
+        netMargin = fd.profitMargins?.raw ? fd.profitMargins.raw * 100 : null;
+        debtToEquity = fd.debtToEquity?.raw ?? null;
+        revenueGrowth = fd.revenueGrowth?.raw ? fd.revenueGrowth.raw * 100 : null;
+        
+        // assetProfile: sector, industry
+        const ap = result.assetProfile || {};
+        sector = ap.sector || 'N/A';
+        industry = ap.industry || 'N/A';
+        
+        console.log('quoteSummary data extracted - PE:', pe, 'MarketCap:', marketCap, 'Sector:', sector);
       }
+    } else {
+      console.log('quoteSummary failed with status:', summaryRes.status);
     }
   } catch (e) {
-    console.log('v6 quote endpoint failed, using defaults:', e);
+    console.log('quoteSummary endpoint failed:', e);
   }
 
   const stockData: StockData = {
     ticker: meta.symbol || ticker,
     name: meta.longName || meta.shortName || meta.symbol || ticker,
-    sector: 'N/A', // Not available without auth
-    industry: 'N/A',
+    sector,
+    industry,
     price: currentPrice,
     change,
     changePercent,
     marketCap: marketCap || 0,
     pe,
     peHistorical: pe,
-    evEbitda: null,
-    revenueGrowth: null,
-    netMargin: null,
-    roe: null,
-    debtToEbitda: null,
+    evEbitda,
+    revenueGrowth,
+    netMargin,
+    roe,
+    debtToEbitda: debtToEquity, // Map debtToEquity to debtToEbitda field
     dividendYield,
     eps,
     beta,
