@@ -15,7 +15,7 @@ interface StockPriceChartProps {
   ticker: string;
 }
 
-type Period = '1M' | '3M' | '6M' | '1Y';
+type Period = '1M' | '3M' | '6M' | '1Y' | '2Y' | '5Y';
 
 export function StockPriceChart({ priceHistory, currentPrice, ticker }: StockPriceChartProps) {
   const [period, setPeriod] = useState<Period>('1Y');
@@ -25,6 +25,8 @@ export function StockPriceChart({ priceHistory, currentPrice, ticker }: StockPri
     { key: '3M', label: '3M', days: 63 },
     { key: '6M', label: '6M', days: 126 },
     { key: '1Y', label: '1A', days: 252 },
+    { key: '2Y', label: '2A', days: 504 },
+    { key: '5Y', label: '5A', days: 1260 },
   ];
 
   const selectedPeriod = periods.find(p => p.key === period)!;
@@ -81,6 +83,9 @@ export function StockPriceChart({ priceHistory, currentPrice, ticker }: StockPri
                 tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
                 tickFormatter={(value) => {
                   const date = new Date(value);
+                  if (period === '5Y' || period === '2Y') {
+                    return date.toLocaleDateString('fr-FR', { month: 'short', year: '2-digit' });
+                  }
                   return date.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
                 }}
                 interval="preserveStartEnd"

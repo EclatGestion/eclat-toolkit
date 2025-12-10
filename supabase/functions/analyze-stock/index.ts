@@ -73,7 +73,7 @@ async function getYahooCredentials(): Promise<{ cookie: string; crumb: string } 
 
 async function fetchStockData(ticker: string): Promise<StockData> {
   // Use v8/finance/chart endpoint which doesn't require crumb authentication
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y&includePrePost=false`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=5y&includePrePost=false`;
   console.log('Fetching Yahoo chart:', url);
   
   const response = await fetch(url, {
