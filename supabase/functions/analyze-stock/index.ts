@@ -29,22 +29,39 @@ interface StockData {
   peers: { name: string; ticker: string; pe: number | null; growth: number | null }[];
 }
 
-async function fetchStockData(ticker: string, apiKey: string): Promise<StockData> {
-  const baseUrl = 'https://financialmodelingprep.com/stable';
+async function safeJsonParse(response: Response, endpoint: string): Promise<any> {
+  const text = await response.text();
   
-  // Fetch multiple endpoints in parallel using new stable API
+  // Check for premium/error messages (not JSON)
+  if (text.startsWith('Premium') || text.startsWith('Error') || text.startsWith('Invalid') || text.startsWith('Limit')) {
+    console.error(`FMP ${endpoint} error:`, text);
+    throw new Error(`FMP API: ${text.substring(0, 100)}`);
+  }
+  
+  try {
+    return JSON.parse(text);
+  } catch (e) {
+    console.error(`Failed to parse ${endpoint} response:`, text.substring(0, 200));
+    throw new Error(`Invalid response from FMP ${endpoint}`);
+  }
+}
+
+async function fetchStockData(ticker: string, apiKey: string): Promise<StockData> {
+  const baseUrl = 'https://financialmodelingprep.com/api/v3';
+  
+  // Fetch multiple endpoints in parallel using v3 API (free tier compatible)
   const [profileRes, quoteRes, ratiosRes, historyRes] = await Promise.all([
-    fetch(`${baseUrl}/profile?symbol=${ticker}&apikey=${apiKey}`),
-    fetch(`${baseUrl}/quote?symbol=${ticker}&apikey=${apiKey}`),
-    fetch(`${baseUrl}/ratios-ttm?symbol=${ticker}&apikey=${apiKey}`),
-    fetch(`${baseUrl}/historical-price-eod/light?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/profile/${ticker}?apikey=${apiKey}`),
+    fetch(`${baseUrl}/quote/${ticker}?apikey=${apiKey}`),
+    fetch(`${baseUrl}/ratios-ttm/${ticker}?apikey=${apiKey}`),
+    fetch(`${baseUrl}/historical-price-full/${ticker}?serietype=line&apikey=${apiKey}`),
   ]);
 
   const [profile, quote, ratios, history] = await Promise.all([
-    profileRes.json(),
-    quoteRes.json(),
-    ratiosRes.json(),
-    historyRes.json(),
+    safeJsonParse(profileRes, 'profile'),
+    safeJsonParse(quoteRes, 'quote'),
+    safeJsonParse(ratiosRes, 'ratios').catch(() => []),
+    safeJsonParse(historyRes, 'history').catch(() => ({ historical: [] })),
   ]);
 
   console.log('Profile response:', JSON.stringify(profile));
@@ -62,11 +79,12 @@ async function fetchStockData(ticker: string, apiKey: string): Promise<StockData
   const ratiosData = Array.isArray(ratios) ? ratios[0] : ratios;
   
   if (!profileData || !quoteData) {
-    throw new Error(`Stock ${ticker} not found or API limit reached`);
+    throw new Error(`Stock ${ticker} not found. Try US stocks like AAPL, MSFT, GOOGL`);
   }
 
   // Get 1 year of price history
-  const priceHistory = (Array.isArray(history) ? history : [])
+  const historicalData = history?.historical || [];
+  const priceHistory = historicalData
     .slice(0, 252)
     .reverse()
     .map((h: any) => ({ date: h.date, price: h.close }));
