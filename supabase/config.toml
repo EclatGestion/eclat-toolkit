@@ -17,3 +17,6 @@ verify_jwt = true
 
 [functions.analyze-investment-goal]
 verify_jwt = true
+
+[functions.analyze-stock]
+verify_jwt = true
