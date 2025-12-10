@@ -29,88 +29,132 @@ interface StockData {
   peers: { name: string; ticker: string; pe: number | null; growth: number | null }[];
 }
 
-async function safeJsonParse(response: Response, endpoint: string): Promise<any> {
-  const text = await response.text();
+async function fetchYahooChart(ticker: string): Promise<any> {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y`;
+  console.log('Fetching Yahoo chart:', url);
   
-  // Check for premium/error messages (not JSON)
-  if (text.startsWith('Premium') || text.startsWith('Error') || text.startsWith('Invalid') || text.startsWith('Limit')) {
-    console.error(`FMP ${endpoint} error:`, text);
-    throw new Error(`FMP API: ${text.substring(0, 100)}`);
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+  });
+  
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('Yahoo chart error:', response.status, text);
+    throw new Error(`Ticker not found: ${ticker}. Use suffixes for EU stocks (e.g., BNP.PA, SAP.DE)`);
   }
   
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    console.error(`Failed to parse ${endpoint} response:`, text.substring(0, 200));
-    throw new Error(`Invalid response from FMP ${endpoint}`);
-  }
+  return await response.json();
 }
 
-async function fetchStockData(ticker: string, apiKey: string): Promise<StockData> {
-  const baseUrl = 'https://financialmodelingprep.com/stable';
+async function fetchYahooQuoteSummary(ticker: string): Promise<any> {
+  const modules = 'price,summaryProfile,defaultKeyStatistics,financialData';
+  const url = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
+  console.log('Fetching Yahoo quote summary:', url);
   
-  // Fetch multiple endpoints in parallel using stable API
-  const [profileRes, quoteRes, ratiosRes, keyMetricsRes] = await Promise.all([
-    fetch(`${baseUrl}/profile?symbol=${ticker}&apikey=${apiKey}`),
-    fetch(`${baseUrl}/quote?symbol=${ticker}&apikey=${apiKey}`),
-    fetch(`${baseUrl}/ratios?symbol=${ticker}&limit=1&apikey=${apiKey}`),
-    fetch(`${baseUrl}/key-metrics?symbol=${ticker}&limit=1&apikey=${apiKey}`),
+  const response = await fetch(url, {
+    headers: {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+  });
+  
+  if (!response.ok) {
+    const text = await response.text();
+    console.error('Yahoo quote summary error:', response.status, text);
+    throw new Error(`Quote data not available for ${ticker}`);
+  }
+  
+  return await response.json();
+}
+
+async function fetchStockData(ticker: string): Promise<StockData> {
+  // Fetch chart and quote summary in parallel
+  const [chartData, summaryData] = await Promise.all([
+    fetchYahooChart(ticker),
+    fetchYahooQuoteSummary(ticker),
   ]);
 
-  const [profile, quote, ratios, keyMetrics] = await Promise.all([
-    safeJsonParse(profileRes, 'profile'),
-    safeJsonParse(quoteRes, 'quote'),
-    safeJsonParse(ratiosRes, 'ratios').catch(() => []),
-    safeJsonParse(keyMetricsRes, 'key-metrics').catch(() => []),
-  ]);
-
-  console.log('Profile response:', JSON.stringify(profile));
-  console.log('Quote response:', JSON.stringify(quote));
-
-  // Handle API errors
-  if (profile?.['Error Message'] || quote?.['Error Message']) {
-    const errorMsg = profile?.['Error Message'] || quote?.['Error Message'];
-    console.error('FMP API Error:', errorMsg);
-    throw new Error(`API Error: ${errorMsg}`);
+  // Parse chart data
+  const chart = chartData?.chart?.result?.[0];
+  if (!chart) {
+    throw new Error(`Stock ${ticker} not found. For EU stocks use: BNP.PA (Paris), SAP.DE (Frankfurt), ASML.AS (Amsterdam)`);
   }
 
-  const profileData = Array.isArray(profile) ? profile[0] : profile;
-  const quoteData = Array.isArray(quote) ? quote[0] : quote;
-  const ratiosData = Array.isArray(ratios) ? ratios[0] : ratios;
-  const keyMetricsData = Array.isArray(keyMetrics) ? keyMetrics[0] : keyMetrics;
-  
-  if (!profileData || !quoteData) {
-    throw new Error(`Stock ${ticker} not found. Try US stocks like AAPL, MSFT, GOOGL`);
-  }
+  const meta = chart.meta || {};
+  const timestamps = chart.timestamp || [];
+  const quotes = chart.indicators?.quote?.[0] || {};
+  const closes = quotes.close || [];
 
-  // Build price history from quote data (simplified - full history requires premium)
+  // Build price history
   const priceHistory: { date: string; price: number }[] = [];
+  for (let i = 0; i < timestamps.length; i++) {
+    if (closes[i] !== null && closes[i] !== undefined) {
+      const date = new Date(timestamps[i] * 1000).toISOString().split('T')[0];
+      priceHistory.push({ date, price: closes[i] });
+    }
+  }
 
-  // Build peers list from sector (simplified)
+  // Parse quote summary
+  const result = summaryData?.quoteSummary?.result?.[0];
+  const price = result?.price || {};
+  const profile = result?.summaryProfile || {};
+  const keyStats = result?.defaultKeyStatistics || {};
+  const financialData = result?.financialData || {};
+
+  // Extract values safely
+  const getValue = (obj: any, key: string): number | null => {
+    const val = obj?.[key];
+    if (val?.raw !== undefined) return val.raw;
+    if (typeof val === 'number') return val;
+    return null;
+  };
+
+  const currentPrice = getValue(price, 'regularMarketPrice') || meta.regularMarketPrice || 0;
+  const previousClose = getValue(price, 'regularMarketPreviousClose') || meta.previousClose || currentPrice;
+  const change = currentPrice - previousClose;
+  const changePercent = previousClose ? (change / previousClose) * 100 : 0;
+
+  // Get financial metrics
+  const pe = getValue(price, 'trailingPE') || getValue(keyStats, 'trailingPE');
+  const forwardPe = getValue(keyStats, 'forwardPE');
+  const evEbitda = getValue(keyStats, 'enterpriseToEbitda');
+  const netMargin = getValue(financialData, 'profitMargins');
+  const roe = getValue(financialData, 'returnOnEquity');
+  const debtToEquity = getValue(financialData, 'debtToEquity');
+  const dividendYield = getValue(keyStats, 'dividendYield') || getValue(price, 'dividendYield');
+  const beta = getValue(keyStats, 'beta');
+  const eps = getValue(price, 'trailingEps');
+  const marketCap = getValue(price, 'marketCap') || meta.marketCap || 0;
+
+  // Build peers list (simplified)
   const peers: StockData['peers'] = [];
 
-  return {
-    ticker: profileData.symbol || ticker,
-    name: profileData.companyName || ticker,
-    sector: profileData.sector || 'Unknown',
-    industry: profileData.industry || 'Unknown',
-    price: quoteData.price || 0,
-    change: quoteData.change || 0,
-    changePercent: quoteData.changesPercentage || 0,
-    marketCap: quoteData.marketCap || 0,
-    pe: quoteData.pe || null,
-    peHistorical: ratiosData?.priceEarningsRatio || quoteData.pe || null,
-    evEbitda: keyMetricsData?.evToEBITDA || null,
-    revenueGrowth: null,
-    netMargin: ratiosData?.netProfitMargin ? ratiosData.netProfitMargin * 100 : null,
-    roe: ratiosData?.returnOnEquity ? ratiosData.returnOnEquity * 100 : null,
-    debtToEbitda: keyMetricsData?.netDebtToEBITDA || null,
-    dividendYield: ratiosData?.dividendYield ? ratiosData.dividendYield * 100 : null,
-    eps: quoteData.eps || null,
-    beta: profileData.beta || null,
+  const stockData: StockData = {
+    ticker: meta.symbol || ticker,
+    name: price.longName || price.shortName || meta.symbol || ticker,
+    sector: profile.sector || 'N/A',
+    industry: profile.industry || 'N/A',
+    price: currentPrice,
+    change,
+    changePercent,
+    marketCap,
+    pe,
+    peHistorical: forwardPe || pe,
+    evEbitda,
+    revenueGrowth: getValue(financialData, 'revenueGrowth'),
+    netMargin: netMargin ? netMargin * 100 : null,
+    roe: roe ? roe * 100 : null,
+    debtToEbitda: debtToEquity ? debtToEquity / 100 : null,
+    dividendYield: dividendYield ? dividendYield * 100 : null,
+    eps,
+    beta,
     priceHistory,
     peers,
   };
+
+  console.log('Stock data fetched:', stockData.name, '| Price history:', priceHistory.length, 'points');
+  return stockData;
 }
 
 async function analyzeWithAI(stockData: StockData, apiKey: string): Promise<any> {
@@ -121,7 +165,7 @@ Ticker: ${stockData.ticker}
 Nom: ${stockData.name}
 Secteur: ${stockData.sector}
 Industrie: ${stockData.industry}
-Prix actuel: ${stockData.price}€
+Prix actuel: ${stockData.price.toFixed(2)}€
 Variation jour: ${stockData.changePercent?.toFixed(2)}%
 Capitalisation: ${(stockData.marketCap / 1e9).toFixed(2)} Mds€
 
@@ -134,9 +178,6 @@ Capitalisation: ${(stockData.marketCap / 1e9).toFixed(2)} Mds€
 - Dividende yield: ${stockData.dividendYield?.toFixed(2) || '0'}%
 - EPS: ${stockData.eps?.toFixed(2) || 'N/A'}€
 - Beta: ${stockData.beta?.toFixed(2) || 'N/A'}
-
-## COMPARABLES
-${stockData.peers.map(p => `- ${p.name} (${p.ticker}): P/E ${p.pe?.toFixed(2) || 'N/A'}x`).join('\n')}
 
 ## MISSION
 Génère une analyse d'investissement complète en JSON strict (pas de markdown, juste le JSON):
@@ -200,7 +241,6 @@ IMPORTANT: Réponds UNIQUEMENT avec le JSON, sans aucun texte avant ou après.`;
   
   // Parse JSON from response
   try {
-    // Remove potential markdown code blocks
     const jsonStr = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     return JSON.parse(jsonStr);
   } catch (e) {
@@ -224,15 +264,7 @@ serve(async (req) => {
       );
     }
 
-    const FMP_API_KEY = Deno.env.get('FMP_API_KEY');
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-
-    if (!FMP_API_KEY) {
-      return new Response(
-        JSON.stringify({ error: 'FMP_API_KEY not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
     if (!LOVABLE_API_KEY) {
       return new Response(
@@ -243,8 +275,8 @@ serve(async (req) => {
 
     console.log(`Analyzing stock: ${ticker}`);
 
-    // Fetch stock data
-    const stockData = await fetchStockData(ticker.toUpperCase(), FMP_API_KEY);
+    // Fetch stock data from Yahoo Finance (no API key needed)
+    const stockData = await fetchStockData(ticker.toUpperCase());
     console.log('Stock data fetched:', stockData.name);
 
     // Analyze with AI
