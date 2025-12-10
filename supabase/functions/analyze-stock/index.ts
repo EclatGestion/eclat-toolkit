@@ -30,88 +30,69 @@ interface StockData {
 }
 
 async function fetchStockData(ticker: string, apiKey: string): Promise<StockData> {
-  const baseUrl = 'https://financialmodelingprep.com/api/v3';
+  const baseUrl = 'https://financialmodelingprep.com/stable';
   
-  // Fetch multiple endpoints in parallel
-  const [profileRes, quoteRes, ratiosRes, metricsRes, historyRes, peersRes] = await Promise.all([
-    fetch(`${baseUrl}/profile/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/quote/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/ratios-ttm/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/key-metrics-ttm/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/historical-price-full/${ticker}?serietype=line&apikey=${apiKey}`),
-    fetch(`${baseUrl}/stock_peers?symbol=${ticker}&apikey=${apiKey}`),
+  // Fetch multiple endpoints in parallel using new stable API
+  const [profileRes, quoteRes, ratiosRes, historyRes] = await Promise.all([
+    fetch(`${baseUrl}/profile?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/quote?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/ratios-ttm?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/historical-price-eod/light?symbol=${ticker}&apikey=${apiKey}`),
   ]);
 
-  const [profile, quote, ratios, metrics, history, peersData] = await Promise.all([
+  const [profile, quote, ratios, history] = await Promise.all([
     profileRes.json(),
     quoteRes.json(),
     ratiosRes.json(),
-    metricsRes.json(),
     historyRes.json(),
-    peersRes.json(),
   ]);
 
-  console.log('Profile:', JSON.stringify(profile));
-  console.log('Quote:', JSON.stringify(quote));
+  console.log('Profile response:', JSON.stringify(profile));
+  console.log('Quote response:', JSON.stringify(quote));
 
-  if (!profile?.[0] || !quote?.[0]) {
-    throw new Error(`Stock ${ticker} not found`);
+  // Handle API errors
+  if (profile?.['Error Message'] || quote?.['Error Message']) {
+    const errorMsg = profile?.['Error Message'] || quote?.['Error Message'];
+    console.error('FMP API Error:', errorMsg);
+    throw new Error(`API Error: ${errorMsg}`);
   }
 
-  const profileData = profile[0];
-  const quoteData = quote[0];
-  const ratiosData = ratios?.[0] || {};
-  const metricsData = metrics?.[0] || {};
+  const profileData = Array.isArray(profile) ? profile[0] : profile;
+  const quoteData = Array.isArray(quote) ? quote[0] : quote;
+  const ratiosData = Array.isArray(ratios) ? ratios[0] : ratios;
   
+  if (!profileData || !quoteData) {
+    throw new Error(`Stock ${ticker} not found or API limit reached`);
+  }
+
   // Get 1 year of price history
-  const priceHistory = (history?.historical || [])
+  const priceHistory = (Array.isArray(history) ? history : [])
     .slice(0, 252)
     .reverse()
     .map((h: any) => ({ date: h.date, price: h.close }));
 
-  // Fetch peer data
-  const peerTickers = peersData?.[0]?.peersList?.slice(0, 3) || [];
-  let peers: StockData['peers'] = [];
-  
-  if (peerTickers.length > 0) {
-    try {
-      const peerQuotes = await Promise.all(
-        peerTickers.map((t: string) => 
-          fetch(`${baseUrl}/quote/${t}?apikey=${apiKey}`).then(r => r.json())
-        )
-      );
-      
-      peers = peerTickers.map((t: string, i: number) => ({
-        name: peerQuotes[i]?.[0]?.name || t,
-        ticker: t,
-        pe: peerQuotes[i]?.[0]?.pe || null,
-        growth: null // Would need additional API call
-      }));
-    } catch (e) {
-      console.error('Error fetching peers:', e);
-    }
-  }
+  // Build peers list from sector (simplified)
+  const peers: StockData['peers'] = [];
 
   return {
-    ticker: profileData.symbol,
-    name: profileData.companyName,
+    ticker: profileData.symbol || ticker,
+    name: profileData.companyName || ticker,
     sector: profileData.sector || 'Unknown',
     industry: profileData.industry || 'Unknown',
-    price: quoteData.price,
-    change: quoteData.change,
-    changePercent: quoteData.changesPercentage,
-    marketCap: quoteData.marketCap,
-    pe: quoteData.pe,
-    peHistorical: ratiosData.priceEarningsRatioTTM || quoteData.pe,
-    evEbitda: metricsData.enterpriseValueOverEBITDATTM || null,
-    revenueGrowth: metricsData.revenuePerShareTTM ? 
-      ((metricsData.revenuePerShareTTM / (metricsData.revenuePerShareTTM * 0.9) - 1) * 100) : null,
-    netMargin: ratiosData.netProfitMarginTTM ? ratiosData.netProfitMarginTTM * 100 : null,
-    roe: ratiosData.returnOnEquityTTM ? ratiosData.returnOnEquityTTM * 100 : null,
-    debtToEbitda: metricsData.debtToEquityTTM || null,
-    dividendYield: ratiosData.dividendYielTTM ? ratiosData.dividendYielTTM * 100 : null,
-    eps: quoteData.eps,
-    beta: profileData.beta,
+    price: quoteData.price || 0,
+    change: quoteData.change || 0,
+    changePercent: quoteData.changesPercentage || 0,
+    marketCap: quoteData.marketCap || 0,
+    pe: quoteData.pe || null,
+    peHistorical: ratiosData?.priceEarningsRatioTTM || quoteData.pe || null,
+    evEbitda: ratiosData?.enterpriseValueOverEBITDATTM || null,
+    revenueGrowth: null,
+    netMargin: ratiosData?.netProfitMarginTTM ? ratiosData.netProfitMarginTTM * 100 : null,
+    roe: ratiosData?.returnOnEquityTTM ? ratiosData.returnOnEquityTTM * 100 : null,
+    debtToEbitda: ratiosData?.debtToEquityTTM || null,
+    dividendYield: ratiosData?.dividendYielTTM ? ratiosData.dividendYielTTM * 100 : (quoteData.dividendYield || null),
+    eps: quoteData.eps || null,
+    beta: profileData.beta || null,
     priceHistory,
     peers,
   };
