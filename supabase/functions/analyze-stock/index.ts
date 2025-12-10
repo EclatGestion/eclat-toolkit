@@ -47,21 +47,21 @@ async function safeJsonParse(response: Response, endpoint: string): Promise<any>
 }
 
 async function fetchStockData(ticker: string, apiKey: string): Promise<StockData> {
-  const baseUrl = 'https://financialmodelingprep.com/api/v3';
+  const baseUrl = 'https://financialmodelingprep.com/stable';
   
-  // Fetch multiple endpoints in parallel using v3 API (free tier compatible)
-  const [profileRes, quoteRes, ratiosRes, historyRes] = await Promise.all([
-    fetch(`${baseUrl}/profile/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/quote/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/ratios-ttm/${ticker}?apikey=${apiKey}`),
-    fetch(`${baseUrl}/historical-price-full/${ticker}?serietype=line&apikey=${apiKey}`),
+  // Fetch multiple endpoints in parallel using stable API
+  const [profileRes, quoteRes, ratiosRes, keyMetricsRes] = await Promise.all([
+    fetch(`${baseUrl}/profile?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/quote?symbol=${ticker}&apikey=${apiKey}`),
+    fetch(`${baseUrl}/ratios?symbol=${ticker}&limit=1&apikey=${apiKey}`),
+    fetch(`${baseUrl}/key-metrics?symbol=${ticker}&limit=1&apikey=${apiKey}`),
   ]);
 
-  const [profile, quote, ratios, history] = await Promise.all([
+  const [profile, quote, ratios, keyMetrics] = await Promise.all([
     safeJsonParse(profileRes, 'profile'),
     safeJsonParse(quoteRes, 'quote'),
     safeJsonParse(ratiosRes, 'ratios').catch(() => []),
-    safeJsonParse(historyRes, 'history').catch(() => ({ historical: [] })),
+    safeJsonParse(keyMetricsRes, 'key-metrics').catch(() => []),
   ]);
 
   console.log('Profile response:', JSON.stringify(profile));
@@ -77,17 +77,14 @@ async function fetchStockData(ticker: string, apiKey: string): Promise<StockData
   const profileData = Array.isArray(profile) ? profile[0] : profile;
   const quoteData = Array.isArray(quote) ? quote[0] : quote;
   const ratiosData = Array.isArray(ratios) ? ratios[0] : ratios;
+  const keyMetricsData = Array.isArray(keyMetrics) ? keyMetrics[0] : keyMetrics;
   
   if (!profileData || !quoteData) {
     throw new Error(`Stock ${ticker} not found. Try US stocks like AAPL, MSFT, GOOGL`);
   }
 
-  // Get 1 year of price history
-  const historicalData = history?.historical || [];
-  const priceHistory = historicalData
-    .slice(0, 252)
-    .reverse()
-    .map((h: any) => ({ date: h.date, price: h.close }));
+  // Build price history from quote data (simplified - full history requires premium)
+  const priceHistory: { date: string; price: number }[] = [];
 
   // Build peers list from sector (simplified)
   const peers: StockData['peers'] = [];
@@ -102,13 +99,13 @@ async function fetchStockData(ticker: string, apiKey: string): Promise<StockData
     changePercent: quoteData.changesPercentage || 0,
     marketCap: quoteData.marketCap || 0,
     pe: quoteData.pe || null,
-    peHistorical: ratiosData?.priceEarningsRatioTTM || quoteData.pe || null,
-    evEbitda: ratiosData?.enterpriseValueOverEBITDATTM || null,
+    peHistorical: ratiosData?.priceEarningsRatio || quoteData.pe || null,
+    evEbitda: keyMetricsData?.evToEBITDA || null,
     revenueGrowth: null,
-    netMargin: ratiosData?.netProfitMarginTTM ? ratiosData.netProfitMarginTTM * 100 : null,
-    roe: ratiosData?.returnOnEquityTTM ? ratiosData.returnOnEquityTTM * 100 : null,
-    debtToEbitda: ratiosData?.debtToEquityTTM || null,
-    dividendYield: ratiosData?.dividendYielTTM ? ratiosData.dividendYielTTM * 100 : (quoteData.dividendYield || null),
+    netMargin: ratiosData?.netProfitMargin ? ratiosData.netProfitMargin * 100 : null,
+    roe: ratiosData?.returnOnEquity ? ratiosData.returnOnEquity * 100 : null,
+    debtToEbitda: keyMetricsData?.netDebtToEBITDA || null,
+    dividendYield: ratiosData?.dividendYield ? ratiosData.dividendYield * 100 : null,
     eps: quoteData.eps || null,
     beta: profileData.beta || null,
     priceHistory,
