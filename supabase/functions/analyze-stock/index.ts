@@ -29,9 +29,50 @@ interface StockData {
   peers: { name: string; ticker: string; pe: number | null; growth: number | null }[];
 }
 
+// Get Yahoo Finance credentials (cookie + crumb) for authenticated endpoints
+async function getYahooCredentials(): Promise<{ cookie: string; crumb: string } | null> {
+  try {
+    // Step 1: Fetch fc.yahoo.com to get cookies
+    const fcResponse = await fetch('https://fc.yahoo.com', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+      redirect: 'manual'
+    });
+    
+    const setCookieHeader = fcResponse.headers.get('set-cookie');
+    if (!setCookieHeader) {
+      console.log('No cookies received from fc.yahoo.com');
+      return null;
+    }
+    
+    console.log('Got cookies from fc.yahoo.com');
+    
+    // Step 2: Use cookies to get crumb
+    const crumbResponse = await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Cookie': setCookieHeader,
+      }
+    });
+    
+    if (!crumbResponse.ok) {
+      console.log('Failed to get crumb, status:', crumbResponse.status);
+      return null;
+    }
+    
+    const crumb = await crumbResponse.text();
+    console.log('Got crumb from Yahoo Finance:', crumb.substring(0, 10) + '...');
+    
+    return { cookie: setCookieHeader, crumb };
+  } catch (error) {
+    console.log('Failed to get Yahoo credentials:', error);
+    return null;
+  }
+}
+
 async function fetchStockData(ticker: string): Promise<StockData> {
   // Use v8/finance/chart endpoint which doesn't require crumb authentication
-  // Include all modules we need in a single call
   const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1y&includePrePost=false`;
   console.log('Fetching Yahoo chart:', url);
   
@@ -76,7 +117,7 @@ async function fetchStockData(ticker: string): Promise<StockData> {
   const change = currentPrice - previousClose;
   const changePercent = previousClose ? (change / previousClose) * 100 : 0;
 
-  // Fetch additional metrics from v10/quoteSummary endpoint
+  // Initialize metrics
   let pe: number | null = null;
   let eps: number | null = null;
   let dividendYield: number | null = null;
@@ -90,54 +131,64 @@ async function fetchStockData(ticker: string): Promise<StockData> {
   let sector: string = 'N/A';
   let industry: string = 'N/A';
 
-  try {
-    const modules = 'summaryDetail,defaultKeyStatistics,financialData,assetProfile';
-    const summaryUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}`;
-    console.log('Fetching quoteSummary:', summaryUrl);
-    
-    const summaryRes = await fetch(summaryUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-      }
-    });
-    
-    if (summaryRes.ok) {
-      const summaryData = await summaryRes.json();
-      const result = summaryData?.quoteSummary?.result?.[0];
+  // Get Yahoo credentials for authenticated endpoints
+  const credentials = await getYahooCredentials();
+  
+  if (credentials) {
+    try {
+      const modules = 'summaryDetail,defaultKeyStatistics,financialData,assetProfile';
+      const summaryUrl = `https://query1.finance.yahoo.com/v10/finance/quoteSummary/${encodeURIComponent(ticker)}?modules=${modules}&crumb=${encodeURIComponent(credentials.crumb)}`;
+      console.log('Fetching quoteSummary with crumb authentication');
       
-      if (result) {
-        // summaryDetail: PE, dividendYield, marketCap, beta
-        const sd = result.summaryDetail || {};
-        pe = sd.trailingPE?.raw ?? null;
-        dividendYield = sd.dividendYield?.raw ? sd.dividendYield.raw * 100 : null;
-        marketCap = sd.marketCap?.raw ?? null;
-        beta = sd.beta?.raw ?? null;
+      const summaryRes = await fetch(summaryUrl, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Accept': 'application/json',
+          'Cookie': credentials.cookie,
+        }
+      });
+      
+      if (summaryRes.ok) {
+        const summaryData = await summaryRes.json();
+        const result = summaryData?.quoteSummary?.result?.[0];
         
-        // defaultKeyStatistics: EV/EBITDA, EPS
-        const dks = result.defaultKeyStatistics || {};
-        evEbitda = dks.enterpriseToEbitda?.raw ?? null;
-        eps = dks.trailingEps?.raw ?? null;
-        
-        // financialData: ROE, profitMargins (netMargin), debtToEquity, revenueGrowth
-        const fd = result.financialData || {};
-        roe = fd.returnOnEquity?.raw ? fd.returnOnEquity.raw * 100 : null;
-        netMargin = fd.profitMargins?.raw ? fd.profitMargins.raw * 100 : null;
-        debtToEquity = fd.debtToEquity?.raw ?? null;
-        revenueGrowth = fd.revenueGrowth?.raw ? fd.revenueGrowth.raw * 100 : null;
-        
-        // assetProfile: sector, industry
-        const ap = result.assetProfile || {};
-        sector = ap.sector || 'N/A';
-        industry = ap.industry || 'N/A';
-        
-        console.log('quoteSummary data extracted - PE:', pe, 'MarketCap:', marketCap, 'Sector:', sector);
+        if (result) {
+          // summaryDetail: PE, dividendYield, marketCap, beta
+          const sd = result.summaryDetail || {};
+          pe = sd.trailingPE?.raw ?? null;
+          dividendYield = sd.dividendYield?.raw ? sd.dividendYield.raw * 100 : null;
+          marketCap = sd.marketCap?.raw ?? null;
+          beta = sd.beta?.raw ?? null;
+          
+          // defaultKeyStatistics: EV/EBITDA, EPS
+          const dks = result.defaultKeyStatistics || {};
+          evEbitda = dks.enterpriseToEbitda?.raw ?? null;
+          eps = dks.trailingEps?.raw ?? null;
+          
+          // financialData: ROE, profitMargins (netMargin), debtToEquity, revenueGrowth
+          const fd = result.financialData || {};
+          roe = fd.returnOnEquity?.raw ? fd.returnOnEquity.raw * 100 : null;
+          netMargin = fd.profitMargins?.raw ? fd.profitMargins.raw * 100 : null;
+          debtToEquity = fd.debtToEquity?.raw ?? null;
+          revenueGrowth = fd.revenueGrowth?.raw ? fd.revenueGrowth.raw * 100 : null;
+          
+          // assetProfile: sector, industry
+          const ap = result.assetProfile || {};
+          sector = ap.sector || 'N/A';
+          industry = ap.industry || 'N/A';
+          
+          console.log('quoteSummary SUCCESS - PE:', pe, 'MarketCap:', marketCap, 'Sector:', sector, 'ROE:', roe);
+        }
+      } else {
+        console.log('quoteSummary failed with status:', summaryRes.status);
+        const errorText = await summaryRes.text();
+        console.log('quoteSummary error response:', errorText.substring(0, 200));
       }
-    } else {
-      console.log('quoteSummary failed with status:', summaryRes.status);
+    } catch (e) {
+      console.log('quoteSummary endpoint failed:', e);
     }
-  } catch (e) {
-    console.log('quoteSummary endpoint failed:', e);
+  } else {
+    console.log('Skipping quoteSummary - no credentials available');
   }
 
   const stockData: StockData = {
@@ -155,7 +206,7 @@ async function fetchStockData(ticker: string): Promise<StockData> {
     revenueGrowth,
     netMargin,
     roe,
-    debtToEbitda: debtToEquity, // Map debtToEquity to debtToEbitda field
+    debtToEbitda: debtToEquity,
     dividendYield,
     eps,
     beta,
@@ -163,7 +214,7 @@ async function fetchStockData(ticker: string): Promise<StockData> {
     peers: [],
   };
 
-  console.log('Stock data fetched:', stockData.name, '| Price:', currentPrice, '| History:', priceHistory.length, 'points');
+  console.log('Stock data fetched:', stockData.name, '| Price:', currentPrice, '| PE:', pe, '| Sector:', sector);
   return stockData;
 }
 
