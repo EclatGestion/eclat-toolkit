@@ -1,6 +1,6 @@
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ToolCard } from "@/components/catalogue/ToolCard";
-import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target, Brain, Sparkles, MessageSquare } from "lucide-react";
+import { Calculator, Scale, Home, Key, TrendingUp, Crown, PiggyBank, TrendingDown, Shield, Target, Brain, Sparkles, MessageSquare, LineChart } from "lucide-react";
 
 const freeTools = [
   {
@@ -81,6 +81,16 @@ const premiumTools = [
 ];
 
 const expertTools = [
+  {
+    id: "analyse-action",
+    title: "Analyse Action IA",
+    description: "Analyse fondamentale complète avec recommandation style Equity Research.",
+    icon: LineChart,
+    iconColor: "text-indigo-500",
+    iconBg: "bg-indigo-500/10",
+    isPremium: true,
+    isExpert: true,
+  },
   {
     id: "goal-based-investment",
     title: "Conseiller IA Personnalisé",
