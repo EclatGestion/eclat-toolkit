@@ -80,7 +80,8 @@ const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "HowTo",
   "name": "Calculer son impôt sur le revenu 2025",
-  "description": "Guide pour calculer votre impôt sur le revenu en France avec le barème 2025",
+  "description": "Guide pour calculer votre impôt sur le revenu en France avec le barème 2025. Découvrez votre TMI et simulez vos économies fiscales.",
+  "totalTime": "PT2M",
   "step": [
     {
       "@type": "HowToStep",
@@ -123,9 +124,10 @@ export default function SimulateurIRPublic() {
 
   return (
     <PublicPageLayout 
-      title="Simulateur Impôt sur le Revenu 2025 Gratuit | Calcul TMI"
-      description="Calculez gratuitement votre impôt sur le revenu 2025 et découvrez votre Tranche Marginale d'Imposition (TMI)."
+      title="Simulateur Impôt sur le Revenu 2025 - Calcul TMI Gratuit"
+      description="Calculez gratuitement votre impôt 2025 et découvrez votre TMI. Barème officiel, quotient familial, simulation instantanée. Résultat immédiat et détaillé."
       jsonLd={jsonLdSchema}
+      canonical="/simulateur-impot"
     >
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Colonne Gauche - Inputs */}

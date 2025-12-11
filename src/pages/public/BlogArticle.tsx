@@ -77,12 +77,12 @@ export default function BlogArticle() {
       "name": "Éclat Toolkit",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://eclat-toolkit.lovable.app/favicon.ico"
+        "url": "https://app.eclat-toolkit.fr/favicon.ico"
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://eclat-toolkit.lovable.app/blog/${post.slug}`
+      "@id": `https://app.eclat-toolkit.fr/blog/${post.slug}`
     }
   };
 
@@ -91,6 +91,7 @@ export default function BlogArticle() {
       title={post.metaTitle}
       description={post.metaDescription}
       jsonLd={jsonLdSchema}
+      canonical={`/blog/${post.slug}`}
     >
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main Content */}

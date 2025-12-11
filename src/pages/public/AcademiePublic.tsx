@@ -46,9 +46,10 @@ export default function AcademiePublic() {
 
   return (
     <PublicPageLayout 
-      title="Académie Financière | Guides Investissement & Défiscalisation"
-      description="Découvrez nos solutions d'investissement et de défiscalisation : Assurance-Vie, PER, PEA, Girardin, SCPI, Private Equity, GFI et plus encore."
+      title="Académie Financière : Guides & Fiches Pratiques"
+      description="Apprenez à investir : PER, Assurance-Vie, SCPI, Girardin, Private Equity. 13 fiches produits pour maîtriser votre patrimoine."
       jsonLd={jsonLdSchema}
+      canonical="/academie"
     >
       {/* Intro Section */}
       <div className="mb-8">
