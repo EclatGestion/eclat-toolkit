@@ -47,42 +47,6 @@ export type Database = {
         }
         Relationships: []
       }
-      bank_connections: {
-        Row: {
-          bank_logo_url: string | null
-          bank_name: string | null
-          created_at: string | null
-          id: string
-          last_sync_at: string | null
-          powens_connection_id: number
-          status: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          bank_logo_url?: string | null
-          bank_name?: string | null
-          created_at?: string | null
-          id?: string
-          last_sync_at?: string | null
-          powens_connection_id: number
-          status?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          bank_logo_url?: string | null
-          bank_name?: string | null
-          created_at?: string | null
-          id?: string
-          last_sync_at?: string | null
-          powens_connection_id?: number
-          status?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       expense_analyses: {
         Row: {
           analysis_date: string | null
@@ -191,39 +155,6 @@ export type Database = {
         }
         Relationships: []
       }
-      powens_users: {
-        Row: {
-          access_token: string | null
-          created_at: string | null
-          id: string
-          powens_user_id: string | null
-          refresh_token: string | null
-          token_expires_at: string | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          access_token?: string | null
-          created_at?: string | null
-          id?: string
-          powens_user_id?: string | null
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          access_token?: string | null
-          created_at?: string | null
-          id?: string
-          powens_user_id?: string | null
-          refresh_token?: string | null
-          token_expires_at?: string | null
-          updated_at?: string | null
-          user_id?: string
-        }
-        Relationships: []
-      }
       profiles: {
         Row: {
           created_at: string | null
@@ -265,19 +196,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_powens_user_safe: {
-        Args: { p_user_id: string }
-        Returns: {
-          created_at: string
-          has_valid_token: boolean
-          id: string
-          powens_user_id: string
-          token_expires_at: string
-          updated_at: string
-          user_id: string
-        }[]
-      }
-      has_powens_connection: { Args: { p_user_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never

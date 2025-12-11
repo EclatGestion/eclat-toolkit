@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { motion } from "framer-motion";
+import DOMPurify from "dompurify";
 import { ArrowLeft, Clock, User, Calculator, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
@@ -157,7 +158,7 @@ export default function BlogArticle() {
               prose-td:border prose-td:border-gray-200 prose-td:p-3
               prose-strong:text-gray-900
               prose-a:text-[#2D60FF] prose-a:no-underline hover:prose-a:underline"
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
           />
 
           {/* Mobile CTA */}
