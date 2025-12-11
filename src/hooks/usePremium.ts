@@ -82,7 +82,16 @@ export function usePremium() {
       const { data, error } = await supabase.functions.invoke("check-subscription");
       
       if (error) {
-        console.error("Error checking subscription:", error);
+        // Check if it's an auth error (401) - handle silently
+        const errorMessage = error.message || "";
+        const isAuthError = errorMessage.includes("401") || 
+                           errorMessage.includes("Auth session missing") ||
+                           errorMessage.includes("unauthorized");
+        
+        if (!isAuthError) {
+          console.error("Error checking subscription:", error);
+        }
+        
         // Only fallback if we haven't successfully checked before
         if (!hasCheckedOnce) {
           setTier(profile?.is_premium ? "premium" : "free");
@@ -95,7 +104,15 @@ export function usePremium() {
         setHasCheckedOnce(true);
       }
     } catch (error) {
-      console.error("Error checking premium status:", error);
+      // Only log non-auth errors
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isAuthError = errorMessage.includes("401") || 
+                         errorMessage.includes("Auth session missing");
+      
+      if (!isAuthError) {
+        console.error("Error checking premium status:", error);
+      }
+      
       // Only reset to free if we've never successfully checked
       if (!hasCheckedOnce) {
         setTier("free");
