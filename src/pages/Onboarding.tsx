@@ -31,7 +31,7 @@ const steps = [
   { id: 4, title: "Confirmation", icon: CheckCircle },
 ];
 
-export default function Onboarding() {
+function Onboarding() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { setUserProfile, addAsset } = useWealth();
@@ -387,3 +387,5 @@ export default function Onboarding() {
     </div>
   );
 }
+
+export default Onboarding;
