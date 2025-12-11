@@ -57,6 +57,15 @@ export function usePremium() {
     }
 
     try {
+      // Verify we have a valid session before making API calls
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        setTier("free");
+        setSubscriptionData(null);
+        setIsLoading(false);
+        return;
+      }
+
       // First check local profile for quick response
       const { data: profile } = await supabase
         .from("profiles")
