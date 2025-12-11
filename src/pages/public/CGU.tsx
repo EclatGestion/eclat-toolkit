@@ -5,15 +5,16 @@ export default function CGU() {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Conditions Générales d'Utilisation - Éclat Toolkit",
-    "description": "Conditions générales d'utilisation de l'application Éclat Toolkit",
-    "url": "https://eclat-toolkit.lovable.app/cgu"
+    "description": "CGU du service Éclat Toolkit - Gestion de patrimoine intelligente",
+    "url": "https://app.eclat-toolkit.fr/cgu"
   };
 
   return (
     <PublicPageLayout
-      title="Conditions Générales d'Utilisation | Éclat Toolkit"
-      description="CGU du service Éclat Toolkit"
+      title="Conditions Générales d'Utilisation"
+      description="CGU du service Éclat Toolkit - Gestion de patrimoine. Modalités d'utilisation, abonnements, droits et responsabilités."
       jsonLd={jsonLd}
+      canonical="/cgu"
     >
       <div className="prose prose-gray max-w-4xl">
         <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 9 décembre 2025</p>

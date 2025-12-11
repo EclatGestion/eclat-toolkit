@@ -119,9 +119,10 @@ export default function Pricing() {
 
   return (
     <PublicPageLayout
-      title="Tarifs | Éclat Toolkit - Gestion de Patrimoine"
-      description="Choisissez la formule adaptée à vos besoins : Gratuit, Premium ou Expert. Simulateurs fiscaux, immobiliers et patrimoniaux."
+      title="Tarifs Éclat Toolkit - Gratuit, Premium & Expert"
+      description="Choisissez la formule adaptée : outils gratuits, Premium à 5,99€/mois ou Expert à 14,99€/mois. Sans engagement, données sécurisées."
       jsonLd={jsonLdSchema}
+      canonical="/pricing"
     >
       <div className="space-y-12">
         {/* Billing Toggle */}

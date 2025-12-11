@@ -5,15 +5,16 @@ export default function MentionsLegales() {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Mentions Légales - Éclat Toolkit",
-    "description": "Mentions légales et informations juridiques de l'application Éclat Toolkit",
-    "url": "https://eclat-toolkit.lovable.app/mentions-legales"
+    "description": "Informations légales et éditeur de l'application Éclat Toolkit",
+    "url": "https://app.eclat-toolkit.fr/mentions-legales"
   };
 
   return (
     <PublicPageLayout
-      title="Mentions Légales | Éclat Toolkit"
-      description="Informations légales conformément à la loi LCEN"
+      title="Mentions Légales"
+      description="Informations légales conformément à la loi LCEN. Éditeur, hébergement, propriété intellectuelle et responsabilités."
       jsonLd={jsonLd}
+      canonical="/mentions-legales"
     >
       <div className="prose prose-gray max-w-4xl">
         <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 9 décembre 2025</p>

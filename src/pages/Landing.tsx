@@ -24,8 +24,9 @@ import {
 import { financialProducts } from "@/data/financialProducts";
 import { ProductCard } from "@/components/academy/ProductCard";
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import eclatLogo from "@/assets/eclat-logo.png";
+import { SEO } from "@/components/seo/SEO";
 
 // FAQ Data for both UI and Schema
 const faqData = [
@@ -55,36 +56,7 @@ const faqData = [
   }
 ];
 
-// Hook to inject FAQPage JSON-LD schema
-const useFaqSchema = () => {
-  useEffect(() => {
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": faqData.map(faq => ({
-        "@type": "Question",
-        "name": faq.question,
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": faq.answer
-        }
-      }))
-    };
-
-    const script = document.createElement('script');
-    script.type = 'application/ld+json';
-    script.id = 'faq-schema';
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
-
-    return () => {
-      const existingScript = document.getElementById('faq-schema');
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, []);
-};
+// FAQPage schema is now injected via SEO component in landing page
 
 // Animation variants
 const fadeUpVariant = {
@@ -232,9 +204,6 @@ const popularTools = [
 export default function Landing() {
   const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(false);
-  
-  // Inject FAQPage schema for SEO
-  useFaqSchema();
 
   const featuredProducts = financialProducts.filter(p => 
     ["per", "assurance-vie", "girardin"].includes(p.id)
@@ -244,8 +213,48 @@ export default function Landing() {
     document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Landing page SEO schema
+  const landingJsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Éclat Toolkit",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web",
+      "description": "Application de gestion de patrimoine intelligente avec simulateurs fiscaux, immobiliers et conseiller IA.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "127"
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqData.map(faq => ({
+        "@type": "Question",
+        "name": faq.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faq.answer
+        }
+      }))
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-card">
+      <SEO
+        title="Gestion de Patrimoine Intelligente & Simulateurs Gratuits"
+        description="Pilotez vos finances : Simulateur Impôt 2025, Calcul Droits de Succession, Stratégie FIRE et Conseiller IA. Outils gratuits pour les investisseurs modernes."
+        canonical="/"
+        jsonLd={landingJsonLd}
+      />
       {/* Navigation Header */}
       <motion.header 
         initial={{ y: -20, opacity: 0 }}

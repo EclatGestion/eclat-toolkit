@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === "development" && componentTagger(),
     Sitemap({
-      hostname: "https://eclat-toolkit.lovable.app",
+      hostname: "https://app.eclat-toolkit.fr",
       dynamicRoutes: [
         "/", 
         "/auth", 
@@ -29,6 +29,9 @@ export default defineConfig(({ mode }) => ({
         "/blog/per-plan-epargne-retraite-guide-2025",
         "/blog/droits-succession-guide-complet",
         "/blog/girardin-industriel-defiscalisation-guide",
+        "/blog/assurance-vie-guide-complet",
+        "/blog/scpi-investissement-pierre-papier",
+        "/blog/fire-independance-financiere-guide",
         "/mentions-legales",
         "/confidentialite",
         "/cgu"

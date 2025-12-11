@@ -1,43 +1,37 @@
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/seo/SEO";
 
 interface PublicPageLayoutProps {
   children: ReactNode;
   title: string;
   description?: string;
-  jsonLd?: object;
+  jsonLd?: object | object[];
+  canonical?: string;
+  image?: string;
 }
 
-export function PublicPageLayout({ children, title, description, jsonLd }: PublicPageLayoutProps) {
+export function PublicPageLayout({ 
+  children, 
+  title, 
+  description, 
+  jsonLd,
+  canonical,
+  image 
+}: PublicPageLayoutProps) {
   const navigate = useNavigate();
-
-  // Inject JSON-LD schema
-  useEffect(() => {
-    if (jsonLd) {
-      const script = document.createElement('script');
-      script.type = 'application/ld+json';
-      script.id = 'page-schema';
-      script.textContent = JSON.stringify(jsonLd);
-      document.head.appendChild(script);
-
-      return () => {
-        const existingScript = document.getElementById('page-schema');
-        if (existingScript) {
-          existingScript.remove();
-        }
-      };
-    }
-  }, [jsonLd]);
-
-  // Update document title
-  useEffect(() => {
-    document.title = title;
-  }, [title]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col">
+      <SEO 
+        title={title} 
+        description={description || ""} 
+        jsonLd={jsonLd}
+        canonical={canonical}
+        image={image}
+      />
       {/* Header */}
       <motion.header 
         initial={{ y: -20, opacity: 0 }}

@@ -5,15 +5,16 @@ export default function PolitiqueConfidentialite() {
     "@context": "https://schema.org",
     "@type": "WebPage",
     "name": "Politique de Confidentialité - Éclat Toolkit",
-    "description": "Politique de confidentialité et protection des données personnelles conformément au RGPD",
-    "url": "https://eclat-toolkit.lovable.app/confidentialite"
+    "description": "Protection de vos données personnelles conformément au RGPD",
+    "url": "https://app.eclat-toolkit.fr/confidentialite"
   };
 
   return (
     <PublicPageLayout
-      title="Politique de Confidentialité | Éclat Toolkit"
-      description="Protection de vos données personnelles conformément au RGPD"
+      title="Politique de Confidentialité RGPD"
+      description="Protection de vos données personnelles conformément au RGPD. Données collectées, finalités, durée de conservation, vos droits."
       jsonLd={jsonLd}
+      canonical="/confidentialite"
     >
       <div className="prose prose-gray max-w-4xl">
         <p className="text-sm text-gray-500 mb-8">Dernière mise à jour : 9 décembre 2025</p>

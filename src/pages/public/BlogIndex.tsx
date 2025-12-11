@@ -32,8 +32,8 @@ const categoryGradients: Record<string, string> = {
 const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "ItemList",
-  "name": "Guides Fiscalité & Patrimoine",
-  "description": "Articles et guides pratiques sur la fiscalité française, la succession et l'investissement.",
+  "name": "Guides Patrimoine & Fiscalité - Éclat Toolkit",
+  "description": "Articles et guides pratiques sur l'optimisation fiscale, la succession et l'investissement en France.",
   "itemListElement": blogPosts.map((post, index) => ({
     "@type": "ListItem",
     "position": index + 1,
@@ -41,7 +41,7 @@ const jsonLdSchema = {
       "@type": "Article",
       "name": post.title,
       "description": post.excerpt,
-      "url": `https://eclat-toolkit.lovable.app/blog/${post.slug}`,
+      "url": `https://app.eclat-toolkit.fr/blog/${post.slug}`,
       "datePublished": post.date,
       "author": {
         "@type": "Person",
@@ -56,9 +56,10 @@ export default function BlogIndex() {
 
   return (
     <PublicPageLayout
-      title="Blog | Guides Fiscalité & Patrimoine | Éclat Toolkit"
-      description="Découvrez nos guides pratiques sur l'optimisation fiscale, la succession et la gestion de patrimoine."
+      title="Blog Patrimoine & Fiscalité - Guides Pratiques"
+      description="Guides complets sur l'optimisation fiscale, la succession et l'investissement en France. PER, Girardin, Assurance-Vie et plus."
       jsonLd={jsonLdSchema}
+      canonical="/blog"
     >
       {/* Grid of Blog Cards */}
       <motion.div
