@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+
 // Compound interest simulator with premium features
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
