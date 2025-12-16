@@ -851,7 +851,7 @@ export default function Landing() {
               <p className="text-muted-foreground">
                 Découvrez nos guides complets sur le{" "}
                 <Link to="/blog/per-plan-epargne-retraite-guide-2025" className="text-primary hover:underline font-medium">Plan d'Épargne Retraite (PER)</Link>,{" "}
-                l'<Link to="/blog/assurance-vie-guide-complet" className="text-primary hover:underline font-medium">Assurance-Vie</Link>,{" "}
+                l'<Link to="/blog/guide-assurance-vie-2025" className="text-primary hover:underline font-medium">Assurance-Vie</Link>,{" "}
                 le <Link to="/blog/girardin-industriel-defiscalisation-guide" className="text-primary hover:underline font-medium">Girardin Industriel</Link>{" "}
                 et la <Link to="/blog/droits-succession-guide-complet" className="text-primary hover:underline font-medium">transmission de patrimoine</Link>.
               </p>
