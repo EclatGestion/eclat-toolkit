@@ -516,37 +516,13 @@ export default function Landing() {
                       </div>
                     </div>
                     {/* Screen Content */}
-                    <div className="bg-background rounded-xl overflow-hidden aspect-[16/10]">
-                      <div className="p-6 space-y-4">
-                        {/* Mock KPIs */}
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="bg-card rounded-xl p-4 shadow-sm">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Patrimoine Total</p>
-                            <p className="text-lg font-bold text-foreground">247 500 €</p>
-                            <p className="text-[10px] text-emerald-600">+12.4%</p>
-                          </div>
-                          <div className="bg-card rounded-xl p-4 shadow-sm">
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Économies fiscales</p>
-                            <p className="text-lg font-bold text-primary">4 820 €</p>
-                            <p className="text-[10px] text-muted-foreground">Cette année</p>
-                          </div>
-                        </div>
-                        {/* Mock Chart */}
-                        <div className="bg-card rounded-xl p-4 shadow-sm">
-                          <p className="text-[10px] text-muted-foreground mb-3">Évolution du patrimoine</p>
-                          <div className="h-20 flex items-end gap-1">
-                            {[40, 55, 45, 60, 52, 70, 65, 80, 75, 90, 85, 100].map((h, i) => (
-                              <motion.div 
-                                key={i} 
-                                initial={{ height: 0 }}
-                                animate={{ height: `${h}%` }}
-                                transition={{ duration: 0.5, delay: 0.8 + i * 0.05, ease: "easeOut" }}
-                                className="flex-1 bg-gradient-to-t from-primary to-emerald-400 rounded-t-sm"
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
+                    <div className="bg-background rounded-xl overflow-hidden">
+                      <img 
+                        src="/dashboard-preview.webp"
+                        alt="Tableau de bord Éclat Toolkit - Gestion de patrimoine avec KPIs, graphiques et simulateurs fiscaux"
+                        className="w-full h-auto"
+                        loading="eager"
+                      />
                     </div>
                   </motion.div>
                   {/* Floating Badge */}

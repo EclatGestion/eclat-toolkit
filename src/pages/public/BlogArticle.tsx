@@ -66,6 +66,7 @@ export default function BlogArticle() {
     "@type": "Article",
     "headline": post.title,
     "description": post.excerpt,
+    "image": `https://app.eclat-toolkit.fr${post.image}`,
     "datePublished": post.date,
     "author": {
       "@type": "Person",
@@ -120,7 +121,7 @@ export default function BlogArticle() {
             <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
               {post.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 mb-6">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
                 <span>{post.author}</span>
@@ -139,6 +140,15 @@ export default function BlogArticle() {
                 })}
               </time>
             </div>
+            
+            {/* Hero Image */}
+            {post.image && (
+              <img 
+                src={post.image}
+                alt={post.imageAlt}
+                className="w-full h-64 object-cover rounded-2xl"
+              />
+            )}
           </motion.header>
 
           {/* Article Content */}

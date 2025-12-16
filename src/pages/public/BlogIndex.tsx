@@ -20,12 +20,13 @@ const fadeUpVariant = {
   visible: { opacity: 1, y: 0 }
 };
 
-// Category gradient backgrounds for cards
+// Category gradient backgrounds for cards (fallback if no image)
 const categoryGradients: Record<string, string> = {
   fiscalite: "from-emerald-400 to-emerald-600",
   succession: "from-purple-400 to-purple-600",
   investissement: "from-blue-400 to-blue-600",
-  retraite: "from-amber-400 to-amber-600"
+  retraite: "from-amber-400 to-amber-600",
+  epargne: "from-teal-400 to-teal-600"
 };
 
 // JSON-LD ItemList schema for SEO
@@ -43,6 +44,7 @@ const jsonLdSchema = {
       "description": post.excerpt,
       "url": `https://app.eclat-toolkit.fr/blog/${post.slug}`,
       "datePublished": post.date,
+      "image": `https://app.eclat-toolkit.fr${post.image}`,
       "author": {
         "@type": "Person",
         "name": post.author
@@ -77,16 +79,26 @@ export default function BlogIndex() {
             onClick={() => navigate(`/blog/${post.slug}`)}
             className="bg-white rounded-2xl border border-gray-100 overflow-hidden cursor-pointer shadow-sm hover:shadow-xl transition-shadow"
           >
-            {/* Card Image/Gradient Header */}
-            <div className={`h-40 bg-gradient-to-br ${categoryGradients[post.category]} relative`}>
-              {/* Abstract Pattern */}
-              <div className="absolute inset-0 opacity-20">
-                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                  <circle cx="80" cy="20" r="30" fill="white" />
-                  <circle cx="20" cy="80" r="20" fill="white" />
-                  <circle cx="60" cy="60" r="15" fill="white" />
-                </svg>
-              </div>
+            {/* Card Image Header */}
+            <div className="h-40 relative overflow-hidden">
+              {post.image ? (
+                <img 
+                  src={post.image} 
+                  alt={post.imageAlt}
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className={`w-full h-full bg-gradient-to-br ${categoryGradients[post.category]}`}>
+                  <div className="absolute inset-0 opacity-20">
+                    <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                      <circle cx="80" cy="20" r="30" fill="white" />
+                      <circle cx="20" cy="80" r="20" fill="white" />
+                      <circle cx="60" cy="60" r="15" fill="white" />
+                    </svg>
+                  </div>
+                </div>
+              )}
               {/* Category Badge */}
               <div className="absolute top-4 left-4">
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(post.category)}`}>
