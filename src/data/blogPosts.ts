@@ -12,6 +12,8 @@ export interface BlogPost {
   relatedTool: string;
   metaTitle: string;
   metaDescription: string;
+  image: string;
+  imageAlt: string;
 }
 
 export const blogPosts: BlogPost[] = [
@@ -28,6 +30,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "capacite-epargne",
     metaTitle: "Améliorer sa Capacité d'Épargne : 10 Conseils Pratiques | Éclat Toolkit",
     metaDescription: "Apprenez à optimiser votre budget et augmenter votre taux d'épargne grâce à des méthodes éprouvées : règle 50/30/20, automatisation, réduction des dépenses.",
+    image: "/blog/capacite-epargne-cover.webp",
+    imageAlt: "Guide capacité d'épargne - Augmenter son taux d'épargne mensuel avec la règle 50/30/20",
     content: `
       <h2>Pourquoi la capacité d'épargne est-elle cruciale ?</h2>
       <p>Votre capacité d'épargne mensuelle représente la différence entre vos revenus et vos dépenses. C'est le <strong>moteur de votre enrichissement</strong> : plus elle est élevée, plus vite vous atteignez vos objectifs financiers, qu'il s'agisse de constituer un fonds d'urgence, préparer un achat immobilier ou anticiper votre retraite.</p>
@@ -115,6 +119,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "optimisation-per",
     metaTitle: "Guide PER 2025 : Comment Réduire vos Impôts jusqu'à 45% | Éclat Toolkit",
     metaDescription: "Découvrez comment le Plan d'Épargne Retraite (PER) peut réduire votre impôt sur le revenu de plusieurs milliers d'euros. Guide complet avec calculs et exemples.",
+    image: "/blog/per-2025-cover.webp",
+    imageAlt: "Guide PER 2025 - Plan d'Épargne Retraite pour réduire ses impôts et préparer sa retraite",
     content: `
       <h2>Qu'est-ce que le Plan d'Épargne Retraite (PER) ?</h2>
       <p>Le Plan d'Épargne Retraite, créé par la loi PACTE de 2019, est un produit d'épargne à long terme qui permet de se constituer un capital pour la retraite tout en bénéficiant d'avantages fiscaux significatifs. Il remplace les anciens dispositifs (PERP, Madelin, PERCO) et offre une flexibilité accrue.</p>
@@ -221,6 +227,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "droits-succession",
     metaTitle: "Guide Droits de Succession 2025 : Abattements, Barèmes et Optimisation | Éclat Toolkit",
     metaDescription: "Tout savoir sur les droits de succession en France : abattements par héritier, barèmes d'imposition, stratégies avec l'assurance-vie. Guide complet et actualisé.",
+    image: "/blog/succession-cover.webp",
+    imageAlt: "Guide droits de succession France - Abattements, barèmes et optimisation avec assurance-vie",
     content: `
       <h2>Comprendre les droits de succession en France</h2>
       <p>Les droits de succession sont des impôts prélevés par l'État sur la transmission du patrimoine d'une personne décédée à ses héritiers. Leur calcul peut sembler complexe, mais une bonne compréhension permet d'anticiper et d'optimiser la transmission de son patrimoine.</p>
@@ -359,6 +367,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "simulateur-ir",
     metaTitle: "Girardin Industriel 2025 : Réduction d'Impôt de 110% à 120% | Guide Complet",
     metaDescription: "Découvrez le Girardin Industriel : investissez 10 000€, récupérez jusqu'à 12 000€ de réduction d'impôt. Fonctionnement, risques et conditions expliqués.",
+    image: "/blog/girardin-cover.webp",
+    imageAlt: "Girardin Industriel - Défiscalisation outre-mer avec réduction d'impôt supérieure à l'investissement",
     content: `
       <h2>Le Girardin Industriel : qu'est-ce que c'est ?</h2>
       <p>Le Girardin Industriel est un dispositif de défiscalisation créé pour favoriser le développement économique des départements et territoires d'outre-mer (DOM-TOM). Il permet aux contribuables métropolitains de financer des équipements industriels utilisés par des entreprises ultramarines, en échange d'une <strong>réduction d'impôt supérieure à leur investissement</strong>.</p>
@@ -483,6 +493,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "inflation",
     metaTitle: "Inflation et Épargne : Comment Protéger Votre Pouvoir d'Achat | Éclat Toolkit",
     metaDescription: "Découvrez l'impact réel de l'inflation sur votre épargne et les stratégies pour préserver votre pouvoir d'achat. Guide pratique avec calculs et solutions.",
+    image: "/blog/inflation-cover.webp",
+    imageAlt: "Impact de l'inflation sur l'épargne - Perte de pouvoir d'achat et stratégies de protection",
     content: `
       <h2>L'inflation : ce voleur silencieux de votre épargne</h2>
       <p>L'inflation représente la hausse générale des prix sur une période donnée. Quand on parle d'une inflation de 3%, cela signifie que ce qui coûtait 100€ l'année dernière en coûte maintenant 103€. Mais surtout, cela veut dire que <strong>vos 100€ d'épargne ne peuvent plus acheter la même chose</strong>.</p>
@@ -534,6 +546,8 @@ export const blogPosts: BlogPost[] = [
     relatedTool: "assurance-vie",
     metaTitle: "Guide Assurance-Vie 2025 : Fonds Euros, UC et Optimisation | Éclat Toolkit",
     metaDescription: "Tout comprendre sur l'assurance-vie : rendement des fonds euros, unités de compte, fiscalité après 8 ans, frais et stratégies d'investissement. Guide complet.",
+    image: "/blog/assurance-vie-cover.webp",
+    imageAlt: "Guide assurance-vie 2025 - Fonds euros, unités de compte et fiscalité avantageuse",
     content: `
       <h2>Qu'est-ce que l'assurance-vie ?</h2>
       <p>L'assurance-vie est le <strong>placement préféré des Français</strong>, avec plus de 1 900 milliards d'euros d'encours. Ce n'est pas une assurance décès, mais un <strong>contrat d'épargne</strong> polyvalent qui permet de constituer un capital, préparer sa retraite et transmettre son patrimoine dans des conditions fiscales avantageuses.</p>
