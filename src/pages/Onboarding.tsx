@@ -60,7 +60,7 @@ function Onboarding() {
         .maybeSingle();
 
       if (data?.onboarding_completed) {
-        navigate("/dashboard");
+        navigate("/toolbox");
         return;
       }
 
@@ -134,7 +134,7 @@ function Onboarding() {
         description: "Bienvenue sur Éclat Patrimoine !",
       });
 
-      navigate("/dashboard");
+      navigate("/toolbox");
     } catch (error) {
       toast({
         title: "Erreur",

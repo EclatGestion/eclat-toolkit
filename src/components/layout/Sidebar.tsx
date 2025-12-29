@@ -1,14 +1,14 @@
-import { LayoutDashboard, Grid3X3, Save, Settings, GraduationCap } from "lucide-react";
+import { Wrench, Wallet, Save, Settings, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import eclatLogo from "@/assets/eclat-logo.png";
 
 const navItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, badge: null },
-  { title: "Catalogue d'Outils", url: "/catalogue", icon: Grid3X3, badge: "5" },
-  { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null },
-  { title: "Mes Simulations", url: "/simulations", icon: Save, badge: null },
-  { title: "Profil & Paramètres", url: "/settings", icon: Settings, badge: null },
+  { title: "Boîte à Outils", url: "/toolbox", icon: Wrench, badge: null, primary: true },
+  { title: "Mon Patrimoine", url: "/patrimoine", icon: Wallet, badge: null, primary: false },
+  { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null, primary: false },
+  { title: "Mes Simulations", url: "/simulations", icon: Save, badge: null, primary: false },
+  { title: "Paramètres", url: "/settings", icon: Settings, badge: null, primary: false },
 ];
 
 export function Sidebar() {
@@ -26,14 +26,15 @@ export function Sidebar() {
           <NavLink
             key={item.url}
             to={item.url}
-            end={item.url === "/dashboard"}
+            end={item.url === "/toolbox"}
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-2xl text-sidebar-foreground transition-all duration-200",
-              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+              item.primary && "font-medium"
             )}
             activeClassName="bg-sidebar-accent text-sidebar-primary font-medium border-l-4 border-sidebar-primary"
           >
-            <item.icon className="w-5 h-5" />
+            <item.icon className={cn("w-5 h-5", item.primary && "text-primary")} />
             <span className="flex-1">{item.title}</span>
             {item.badge && (
               <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
