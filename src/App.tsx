@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WealthProvider } from "@/contexts/WealthContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -18,8 +18,8 @@ import Landing from "./pages/Landing";
 // Lazy load all other pages for code splitting
 const Auth = lazy(() => import("./pages/Auth"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
-const Catalogue = lazy(() => import("./pages/Catalogue"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Toolbox = lazy(() => import("./pages/Toolbox"));
+const Patrimoine = lazy(() => import("./pages/Patrimoine"));
 const Simulations = lazy(() => import("./pages/Simulations"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ToolPage = lazy(() => import("./pages/ToolPage"));
@@ -70,10 +70,14 @@ const App = () => (
                 <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/cgu" element={<CGU />} />
                 
+                {/* Redirects for old routes */}
+                <Route path="/dashboard" element={<Navigate to="/toolbox" replace />} />
+                <Route path="/catalogue" element={<Navigate to="/toolbox" replace />} />
+                
                 {/* Protected Pages */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                <Route path="/dashboard" element={<ProtectedRoute><OnboardingGuard><Dashboard /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/catalogue" element={<ProtectedRoute><OnboardingGuard><Catalogue /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/toolbox" element={<ProtectedRoute><OnboardingGuard><Toolbox /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/patrimoine" element={<ProtectedRoute><OnboardingGuard><Patrimoine /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />

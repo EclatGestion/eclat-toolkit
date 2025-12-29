@@ -1,17 +1,13 @@
 import { MainLayout } from "@/components/layout/MainLayout";
-import { KPICard } from "@/components/dashboard/KPICard";
 import { AddAssetModal } from "@/components/dashboard/AddAssetModal";
 import { AddIncomeModal } from "@/components/dashboard/AddIncomeModal";
 import { AddExpenseModal } from "@/components/dashboard/AddExpenseModal";
 import { GoalsModal } from "@/components/dashboard/GoalsModal";
 import { AssetsList } from "@/components/dashboard/AssetsList";
-import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
 import { useWealth, Asset } from "@/contexts/WealthContext";
-import { usePremium } from "@/hooks/usePremium";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
-import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings, Calculator, Home, ChartLine, ArrowRight, Percent } from "lucide-react";
+import { Wallet, TrendingUp, TrendingDown, PiggyBank, Plus, Pencil, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import {
   ResponsiveContainer,
   PieChart,
@@ -19,9 +15,8 @@ import {
   Cell,
   Tooltip,
 } from "recharts";
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import { useSearchParams } from "react-router-dom";
 
 const ASSET_COLORS: Record<string, string> = {
   Immobilier: "#2D60FF",
@@ -45,8 +40,7 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function Dashboard() {
-  const navigate = useNavigate();
+export default function Patrimoine() {
   const { 
     assets, 
     totalPatrimoine, 
@@ -56,24 +50,12 @@ export default function Dashboard() {
     epargneMensuelle, 
     fireGoals 
   } = useWealth();
-  const { refreshSubscription } = usePremium();
-  const [searchParams, setSearchParams] = useSearchParams();
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [isGoalsModalOpen, setIsGoalsModalOpen] = useState(false);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<Asset | null>(null);
-
-  // Check for upgrade success from Stripe
-  useEffect(() => {
-    if (searchParams.get("upgrade") === "success") {
-      setIsSuccessModalOpen(true);
-      refreshSubscription();
-      setSearchParams({});
-    }
-  }, [searchParams, setSearchParams, refreshSubscription]);
   
   const animatedPatrimoine = useAnimatedCounter(totalPatrimoine);
 
@@ -123,69 +105,13 @@ export default function Dashboard() {
   };
 
   return (
-    <MainLayout title="Ma Boîte à Outils">
+    <MainLayout title="Mon Patrimoine">
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="space-y-6"
       >
-        {/* Quick Access Tools */}
-        <motion.div variants={itemVariants}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">🚀 Accès Rapide</h3>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate("/catalogue")}
-              className="text-primary hover:text-primary/80 gap-1"
-            >
-              Voir tous les outils
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <button
-              onClick={() => navigate("/tools/simulateur-ir")}
-              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
-            >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                <Calculator className="w-6 h-6 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">Simulateur IR</p>
-                <p className="text-xs text-muted-foreground">Calculez votre impôt</p>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => navigate("/tools/simulateur-immobilier")}
-              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
-            >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
-                <Home className="w-6 h-6 text-emerald-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">Immobilier</p>
-                <p className="text-xs text-muted-foreground">Mensualité & Capacité</p>
-              </div>
-            </button>
-            
-            <button
-              onClick={() => navigate("/tools/interets-composes")}
-              className="flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left"
-            >
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-rose-500/10 group-hover:bg-rose-500/20 transition-colors">
-                <ChartLine className="w-6 h-6 text-rose-500" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-medium text-foreground truncate">Intérêts Composés</p>
-                <p className="text-xs text-muted-foreground">Projetez vos placements</p>
-              </div>
-            </button>
-          </div>
-        </motion.div>
-
         {/* KPI Cards */}
         <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Patrimoine Card */}
@@ -435,7 +361,6 @@ export default function Dashboard() {
       <AddIncomeModal open={isIncomeModalOpen} onOpenChange={setIsIncomeModalOpen} />
       <AddExpenseModal open={isExpenseModalOpen} onOpenChange={setIsExpenseModalOpen} />
       <GoalsModal open={isGoalsModalOpen} onOpenChange={setIsGoalsModalOpen} />
-      <UpgradeSuccessModal open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen} />
     </MainLayout>
   );
 }
