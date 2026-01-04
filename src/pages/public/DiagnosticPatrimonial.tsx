@@ -2,22 +2,28 @@ import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublicPageLayout } from "@/components/layout/PublicPageLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Card, CardContent } from "@/components/ui/card";
 import { FinancesPersonnellesCard } from "@/components/simulators/bilan/FinancesPersonnellesCard";
 import { EpargneInvestissementsCard } from "@/components/simulators/bilan/EpargneInvestissementsCard";
 import { ImmobilierCard } from "@/components/simulators/bilan/ImmobilierCard";
 import { FiscaliteCard } from "@/components/simulators/bilan/FiscaliteCard";
 import { TransmissionCard } from "@/components/simulators/bilan/TransmissionCard";
-import { Brain, Lock, ArrowRight, Sparkles } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
-import { motion } from "framer-motion";
+import { Brain, Lock, ArrowRight, ArrowLeft, Check } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const STORAGE_KEY = "eclat_diagnostic_data";
 
+const STEPS = [
+  { id: 1, label: "Finances Personnelles", shortLabel: "Finances" },
+  { id: 2, label: "Épargne & Investissements", shortLabel: "Épargne" },
+  { id: 3, label: "Immobilier", shortLabel: "Immo" },
+  { id: 4, label: "Fiscalité", shortLabel: "Fiscal" },
+  { id: 5, label: "Transmission", shortLabel: "Transm." },
+];
+
 export default function DiagnosticPatrimonial() {
   const navigate = useNavigate();
-
+  const [currentStep, setCurrentStep] = useState(1);
   // Finances personnelles
   const [revenus, setRevenus] = useState(4000);
   const [depenses, setDepenses] = useState(2500);
@@ -134,32 +140,30 @@ export default function DiagnosticPatrimonial() {
     return hasChangedDefaults || hasAddedValues;
   }, [revenus, depenses, epargne, liquidites, situationFamiliale, nombreEnfants, assuranceVie, per, peaCto, residencePrincipale, immobilierLocatif, loyersPercus, creditsImmo, creditsRestants, donationsRealisees, perUtilise, lmnpUtilise, assuranceVieBeneficiaire]);
 
-  // Calcul du pourcentage de complétion
+  // Calcul du pourcentage de complétion basé sur l'étape actuelle
   const completionPercentage = useMemo(() => {
-    let completed = 0;
-    
-    // Pilier 1: Finances Personnelles (20%) - revenus > 0
-    if (revenus > 0) completed += 20;
-    
-    // Pilier 2: Épargne & Investissements (20%) - au moins 1 valeur renseignée
-    if (liquidites > 0 || assuranceVie > 0 || per > 0 || peaCto > 0) completed += 20;
-    
-    // Pilier 3: Immobilier (20%) - considéré comme rempli par défaut (0 = pas d'immo)
-    completed += 20;
-    
-    // Pilier 4: Fiscalité (20%) - revenus imposables > 0
-    if (revenusImposables > 0) completed += 20;
-    
-    // Pilier 5: Transmission (20%) - situation familiale renseignée
-    if (situationFamiliale) completed += 20;
-    
-    return completed;
-  }, [revenus, liquidites, assuranceVie, per, peaCto, revenusImposables, situationFamiliale]);
+    return currentStep * 20;
+  }, [currentStep]);
 
-  const getProgressMessage = () => {
-    if (completionPercentage < 50) return "Complétez les sections pour un diagnostic précis";
-    if (completionPercentage < 100) return "Encore quelques informations pour un diagnostic complet";
-    return "Formulaire complet ! Débloquez vos résultats";
+  const handleNext = () => {
+    if (currentStep < 5) {
+      setCurrentStep(currentStep + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(currentStep - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleStepClick = (stepId: number) => {
+    if (stepId <= currentStep) {
+      setCurrentStep(stepId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   // Sauvegarder les données dans localStorage à chaque changement
@@ -204,21 +208,22 @@ export default function DiagnosticPatrimonial() {
           </p>
         </motion.div>
 
-        {/* Dynamic Progress Bar */}
+        {/* Step Progress Indicator */}
         <motion.div 
           className="sticky top-4 z-20 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-sm border"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="flex items-center justify-between mb-2">
+          {/* Progress bar */}
+          <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-medium text-gray-700">
-              Progression du diagnostic
+              Étape {currentStep} sur 5
             </span>
             <span className="text-sm font-bold text-primary">
               {completionPercentage}%
             </span>
           </div>
-          <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+          <div className="relative h-2 bg-muted rounded-full overflow-hidden mb-4">
             <motion.div
               className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-violet-500 rounded-full"
               initial={{ width: 0 }}
@@ -226,84 +231,145 @@ export default function DiagnosticPatrimonial() {
               transition={{ duration: 0.5, ease: "easeOut" }}
             />
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            {getProgressMessage()}
-          </p>
+          
+          {/* Step indicators */}
+          <div className="flex items-center justify-between">
+            {STEPS.map((step, index) => {
+              const isCompleted = currentStep > step.id;
+              const isCurrent = currentStep === step.id;
+              const isClickable = step.id <= currentStep;
+              
+              return (
+                <div key={step.id} className="flex flex-col items-center flex-1">
+                  <button
+                    onClick={() => handleStepClick(step.id)}
+                    disabled={!isClickable}
+                    className={`
+                      w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all
+                      ${isCompleted 
+                        ? "bg-primary text-white cursor-pointer hover:bg-primary/90" 
+                        : isCurrent 
+                          ? "bg-primary text-white ring-4 ring-primary/20" 
+                          : "bg-muted text-muted-foreground cursor-not-allowed"
+                      }
+                    `}
+                  >
+                    {isCompleted ? <Check className="w-4 h-4" /> : step.id}
+                  </button>
+                  <span className={`text-[10px] sm:text-xs mt-1 ${isCurrent ? "text-primary font-medium" : "text-muted-foreground"}`}>
+                    <span className="hidden sm:inline">{step.label}</span>
+                    <span className="sm:hidden">{step.shortLabel}</span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </motion.div>
 
-        {/* Inputs Section */}
-        <Accordion type="multiple" defaultValue={["finances"]} className="space-y-4">
-          <AccordionItem value="finances" className="border-0">
-            <AccordionTrigger className="bg-white rounded-xl px-4 py-3 hover:no-underline shadow-sm border">
-              1. Finances Personnelles
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <FinancesPersonnellesCard
-                revenus={revenus} setRevenus={setRevenus}
-                depenses={depenses} setDepenses={setDepenses}
-                epargneMensuelle={epargne} setEpargneMensuelle={setEpargne}
-                creditsRestants={creditsRestants} setCreditsRestants={setCreditsRestants}
-              />
-            </AccordionContent>
-          </AccordionItem>
+        {/* Step Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentStep}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4"
+          >
+            {currentStep === 1 && (
+              <Card className="border shadow-sm">
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-4">1. Finances Personnelles</h2>
+                  <FinancesPersonnellesCard
+                    revenus={revenus} setRevenus={setRevenus}
+                    depenses={depenses} setDepenses={setDepenses}
+                    epargneMensuelle={epargne} setEpargneMensuelle={setEpargne}
+                    creditsRestants={creditsRestants} setCreditsRestants={setCreditsRestants}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
+            {currentStep === 2 && (
+              <Card className="border shadow-sm">
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-4">2. Épargne & Investissements</h2>
+                  <EpargneInvestissementsCard
+                    liquidites={liquidites} setLiquidites={setLiquidites}
+                    assuranceVie={assuranceVie} setAssuranceVie={setAssuranceVie}
+                    per={per} setPer={setPer}
+                    peaCto={peaCto} setPeaCto={setPeaCto}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
+            {currentStep === 3 && (
+              <Card className="border shadow-sm">
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-4">3. Immobilier</h2>
+                  <ImmobilierCard
+                    residencePrincipale={residencePrincipale} setResidencePrincipale={setResidencePrincipale}
+                    immobilierLocatif={immobilierLocatif} setImmobilierLocatif={setImmobilierLocatif}
+                    loyersPercus={loyersPercus} setLoyersPercus={setLoyersPercus}
+                    creditsImmo={creditsImmo} setCreditsImmo={setCreditsImmo}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
+            {currentStep === 4 && (
+              <Card className="border shadow-sm">
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-4">4. Fiscalité</h2>
+                  <FiscaliteCard
+                    revenusImposables={revenusImposables} setRevenusImposables={setRevenusImposables}
+                    tmi={tmi} setTmi={setTmi}
+                    perUtilise={perUtilise} setPerUtilise={setPerUtilise}
+                    lmnpUtilise={lmnpUtilise} setLmnpUtilise={setLmnpUtilise}
+                  />
+                </CardContent>
+              </Card>
+            )}
+            
+            {currentStep === 5 && (
+              <Card className="border shadow-sm">
+                <CardContent className="pt-6">
+                  <h2 className="text-lg font-semibold mb-4">5. Transmission & Protection</h2>
+                  <TransmissionCard
+                    situationFamiliale={situationFamiliale} setSituationFamiliale={setSituationFamiliale}
+                    nombreEnfants={nombreEnfants} setNombreEnfants={setNombreEnfants}
+                    donationsRealisees={donationsRealisees} setDonationsRealisees={setDonationsRealisees}
+                    assuranceVieBeneficiaire={assuranceVieBeneficiaire} setAssuranceVieBeneficiaire={setAssuranceVieBeneficiaire}
+                    patrimoineTotal={patrimoineTotal}
+                  />
+                </CardContent>
+              </Card>
+            )}
 
-          <AccordionItem value="epargne" className="border-0">
-            <AccordionTrigger className="bg-white rounded-xl px-4 py-3 hover:no-underline shadow-sm border">
-              2. Épargne & Investissements
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <EpargneInvestissementsCard
-                liquidites={liquidites} setLiquidites={setLiquidites}
-                assuranceVie={assuranceVie} setAssuranceVie={setAssuranceVie}
-                per={per} setPer={setPer}
-                peaCto={peaCto} setPeaCto={setPeaCto}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="immobilier" className="border-0">
-            <AccordionTrigger className="bg-white rounded-xl px-4 py-3 hover:no-underline shadow-sm border">
-              3. Immobilier
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <ImmobilierCard
-                residencePrincipale={residencePrincipale} setResidencePrincipale={setResidencePrincipale}
-                immobilierLocatif={immobilierLocatif} setImmobilierLocatif={setImmobilierLocatif}
-                loyersPercus={loyersPercus} setLoyersPercus={setLoyersPercus}
-                creditsImmo={creditsImmo} setCreditsImmo={setCreditsImmo}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="fiscalite" className="border-0">
-            <AccordionTrigger className="bg-white rounded-xl px-4 py-3 hover:no-underline shadow-sm border">
-              4. Fiscalité
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <FiscaliteCard
-                revenusImposables={revenusImposables} setRevenusImposables={setRevenusImposables}
-                tmi={tmi} setTmi={setTmi}
-                perUtilise={perUtilise} setPerUtilise={setPerUtilise}
-                lmnpUtilise={lmnpUtilise} setLmnpUtilise={setLmnpUtilise}
-              />
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value="transmission" className="border-0">
-            <AccordionTrigger className="bg-white rounded-xl px-4 py-3 hover:no-underline shadow-sm border">
-              5. Transmission & Protection
-            </AccordionTrigger>
-            <AccordionContent className="pt-4">
-              <TransmissionCard
-                situationFamiliale={situationFamiliale} setSituationFamiliale={setSituationFamiliale}
-                nombreEnfants={nombreEnfants} setNombreEnfants={setNombreEnfants}
-                donationsRealisees={donationsRealisees} setDonationsRealisees={setDonationsRealisees}
-                assuranceVieBeneficiaire={assuranceVieBeneficiaire} setAssuranceVieBeneficiaire={setAssuranceVieBeneficiaire}
-                patrimoineTotal={patrimoineTotal}
-              />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+            {/* Navigation Buttons */}
+            <div className="flex items-center justify-between pt-4">
+              <Button
+                variant="outline"
+                onClick={handlePrevious}
+                disabled={currentStep === 1}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Précédent
+              </Button>
+              
+              {currentStep < 5 ? (
+                <Button onClick={handleNext} className="gap-2">
+                  Suivant
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              ) : (
+                <div /> // Empty div for spacing on last step
+              )}
+            </div>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Results Section - Conditional display based on data entry */}
         <motion.div
