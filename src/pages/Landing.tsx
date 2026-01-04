@@ -396,8 +396,8 @@ export default function Landing() {
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className="text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] tracking-tight"
                 >
-                  Simulateur Impôt 2025 & Gestion de Patrimoine{" "}
-                  <span className="text-primary">Intelligente</span>
+                  Faites le point sur votre situation financière{" "}
+                  <span className="text-primary">en 5 minutes</span>
                 </motion.h1>
                 <motion.p 
                   initial={{ opacity: 0, y: 20 }}
@@ -405,10 +405,8 @@ export default function Landing() {
                   transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
                   className="text-xl text-muted-foreground leading-relaxed max-w-lg font-normal"
                 >
-                  Découvrez Éclat Toolkit, la <strong className="text-foreground">plateforme de gestion de patrimoine en ligne</strong> qui simplifie vos{" "}
-                  <strong className="text-foreground">calculs d'impôts 2025</strong>, optimise votre{" "}
-                  <strong className="text-foreground">épargne retraite PER</strong> et vous accompagne vers l'
-                  <strong className="text-foreground">indépendance financière FIRE</strong> — sans jargon.
+                  Sans jargon. Sans produit à vendre. <strong className="text-foreground">Juste pour y voir clair.</strong>{" "}
+                  Recevez un diagnostic personnalisé et des recommandations adaptées à votre situation.
                 </motion.p>
                 
                 {/* Benefit Badges */}
@@ -450,7 +448,7 @@ export default function Landing() {
                       onClick={() => navigate("/auth")}
                       className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-lg"
                     >
-                      Essayer gratuitement
+                      Commencer mon diagnostic gratuit
                       <ChevronRight className="ml-2 w-5 h-5" aria-hidden="true" />
                     </Button>
                   </motion.div>
@@ -478,11 +476,15 @@ export default function Landing() {
                 >
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                    <span>Données chiffrées RGPD</span>
+                    <span>Aucun engagement</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-500" aria-hidden="true" />
-                    <span>4 outils 100% gratuits</span>
+                    <span>Données confidentielles</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Calculator className="w-4 h-4 text-primary" aria-hidden="true" />
+                    <span>Gratuit</span>
                   </div>
                 </motion.div>
               </article>

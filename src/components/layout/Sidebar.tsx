@@ -1,13 +1,13 @@
-import { Wrench, Wallet, Save, Settings, GraduationCap } from "lucide-react";
+import { Compass, Wrench, Wallet, Settings, GraduationCap } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import eclatLogo from "@/assets/eclat-logo.png";
 
 const navItems = [
-  { title: "Boîte à Outils", url: "/toolbox", icon: Wrench, badge: null, primary: true },
+  { title: "Mon Parcours", url: "/mon-parcours", icon: Compass, badge: null, primary: true },
   { title: "Mon Patrimoine", url: "/patrimoine", icon: Wallet, badge: null, primary: false },
+  { title: "Outils", url: "/toolbox", icon: Wrench, badge: null, primary: false },
   { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null, primary: false },
-  { title: "Mes Simulations", url: "/simulations", icon: Save, badge: null, primary: false },
   { title: "Paramètres", url: "/settings", icon: Settings, badge: null, primary: false },
 ];
 
@@ -26,7 +26,7 @@ export function Sidebar() {
           <NavLink
             key={item.url}
             to={item.url}
-            end={item.url === "/toolbox"}
+            end={item.url === "/mon-parcours"}
             className={cn(
               "flex items-center gap-3 px-4 py-3 rounded-2xl text-sidebar-foreground transition-all duration-200",
               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",

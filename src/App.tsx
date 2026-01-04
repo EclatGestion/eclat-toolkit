@@ -18,11 +18,14 @@ import Landing from "./pages/Landing";
 // Lazy load all other pages for code splitting
 const Auth = lazy(() => import("./pages/Auth"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const MonParcours = lazy(() => import("./pages/MonParcours"));
 const Toolbox = lazy(() => import("./pages/Toolbox"));
 const Patrimoine = lazy(() => import("./pages/Patrimoine"));
 const Simulations = lazy(() => import("./pages/Simulations"));
 const Settings = lazy(() => import("./pages/Settings"));
 const ToolPage = lazy(() => import("./pages/ToolPage"));
+const PartenaireAssuranceVie = lazy(() => import("./pages/PartenaireAssuranceVie"));
+const ContactEclat = lazy(() => import("./pages/ContactEclat"));
 const InteretsComposes = lazy(() => import("./pages/tools/InteretsComposes"));
 const SimulateurImmobilier = lazy(() => import("./pages/tools/SimulateurImmobilier"));
 const SimulateurIR = lazy(() => import("./pages/tools/SimulateurIR"));
@@ -70,13 +73,18 @@ const App = () => (
                 <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/cgu" element={<CGU />} />
                 
+                {/* Partner Pages */}
+                <Route path="/partenaire/assurance-vie" element={<PartenaireAssuranceVie />} />
+                
                 {/* Redirects for old routes */}
-                <Route path="/dashboard" element={<Navigate to="/toolbox" replace />} />
+                <Route path="/dashboard" element={<Navigate to="/mon-parcours" replace />} />
                 <Route path="/catalogue" element={<Navigate to="/toolbox" replace />} />
                 
                 {/* Protected Pages */}
                 <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                <Route path="/mon-parcours" element={<ProtectedRoute><OnboardingGuard><MonParcours /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/toolbox" element={<ProtectedRoute><OnboardingGuard><Toolbox /></OnboardingGuard></ProtectedRoute>} />
+                <Route path="/contact-eclat" element={<ProtectedRoute><OnboardingGuard><ContactEclat /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/patrimoine" element={<ProtectedRoute><OnboardingGuard><Patrimoine /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
                 <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />

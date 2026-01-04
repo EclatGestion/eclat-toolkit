@@ -157,36 +157,60 @@ export type Database = {
       }
       profiles: {
         Row: {
+          age_range: string | null
           created_at: string | null
           email: string | null
           first_name: string | null
           id: string
+          investment_capacity: string | null
+          investment_goal: string | null
+          investment_horizon: string | null
           is_premium: boolean | null
           last_name: string | null
           onboarding_completed: boolean | null
+          patrimoine_estime: number | null
           phone: string | null
+          professional_status: string | null
+          revenus_annuels: number | null
+          segment: string | null
           updated_at: string | null
         }
         Insert: {
+          age_range?: string | null
           created_at?: string | null
           email?: string | null
           first_name?: string | null
           id: string
+          investment_capacity?: string | null
+          investment_goal?: string | null
+          investment_horizon?: string | null
           is_premium?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
+          patrimoine_estime?: number | null
           phone?: string | null
+          professional_status?: string | null
+          revenus_annuels?: number | null
+          segment?: string | null
           updated_at?: string | null
         }
         Update: {
+          age_range?: string | null
           created_at?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
+          investment_capacity?: string | null
+          investment_goal?: string | null
+          investment_horizon?: string | null
           is_premium?: boolean | null
           last_name?: string | null
           onboarding_completed?: boolean | null
+          patrimoine_estime?: number | null
           phone?: string | null
+          professional_status?: string | null
+          revenus_annuels?: number | null
+          segment?: string | null
           updated_at?: string | null
         }
         Relationships: []
