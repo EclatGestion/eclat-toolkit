@@ -76,7 +76,7 @@ const allTools = [
   { id: "capacite-epargne", title: "Capacité d'Épargne", icon: PiggyBank, tier: "free", path: "/tools/capacite-epargne" },
   { id: "assurance-vie", title: "Assurance-Vie", icon: Shield, tier: "premium", path: "/tools/assurance-vie" },
   { id: "optimisation-per", title: "Optimisation PER", icon: Target, tier: "premium", path: "/tools/optimisation-per" },
-  { id: "bilan-patrimonial", title: "Bilan Patrimonial IA", icon: Brain, tier: "expert", path: "/tools/bilan-patrimonial" },
+  { id: "bilan-patrimonial", title: "Bilan Patrimonial", icon: Brain, tier: "free", path: "/tools/bilan-patrimonial" },
   { id: "droits-succession", title: "Droits de Succession", icon: Users, tier: "expert", path: "/tools/droits-succession" },
   { id: "goal-based-investment", title: "Conseiller IA", icon: Sparkles, tier: "expert", path: "/tools/goal-based-investment" },
   { id: "comparateur-lmnp", title: "Comparateur LMNP", icon: Building2, tier: "expert", path: "/tools/comparateur-lmnp" },

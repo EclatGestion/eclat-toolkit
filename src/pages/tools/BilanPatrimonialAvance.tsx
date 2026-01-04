@@ -1,4 +1,5 @@
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { TierLock } from "@/components/premium/TierLock";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ import { toast } from "sonner";
 import { Brain, FileDown, Sparkles, Loader2 } from "lucide-react";
 import { exportBilanPdf } from "@/utils/bilanPdfExport";
 
+const STORAGE_KEY = "eclat_diagnostic_data";
+
 interface Recommandation {
   titre: string;
   description: string;
@@ -34,6 +37,8 @@ interface RecommandationsData {
 
 export default function BilanPatrimonialAvance() {
   const { totalRevenus, totalDepenses, epargneMensuelle } = useWealth();
+  const [searchParams] = useSearchParams();
+  const shouldRestore = searchParams.get("restore") === "true";
 
   // Finances personnelles
   const [revenus, setRevenus] = useState(Math.round(totalRevenus / 12) || 4000);
@@ -69,6 +74,43 @@ export default function BilanPatrimonialAvance() {
   const [isLoadingIA, setIsLoadingIA] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [recommandations, setRecommandations] = useState<RecommandationsData | null>(null);
+
+  // Restore data from localStorage if coming from /diagnostic
+  useEffect(() => {
+    if (shouldRestore) {
+      try {
+        const savedData = localStorage.getItem(STORAGE_KEY);
+        if (savedData) {
+          const data = JSON.parse(savedData);
+          setRevenus(data.revenus ?? revenus);
+          setDepenses(data.depenses ?? depenses);
+          setEpargne(data.epargne ?? epargne);
+          setCreditsRestants(data.creditsRestants ?? creditsRestants);
+          setLiquidites(data.liquidites ?? liquidites);
+          setAssuranceVie(data.assuranceVie ?? assuranceVie);
+          setPer(data.per ?? per);
+          setPeaCto(data.peaCto ?? peaCto);
+          setResidencePrincipale(data.residencePrincipale ?? residencePrincipale);
+          setImmobilierLocatif(data.immobilierLocatif ?? immobilierLocatif);
+          setLoyersPercus(data.loyersPercus ?? loyersPercus);
+          setCreditsImmo(data.creditsImmo ?? creditsImmo);
+          setRevenusImposables(data.revenusImposables ?? revenusImposables);
+          setTmi(data.tmi ?? tmi);
+          setPerUtilise(data.perUtilise ?? perUtilise);
+          setLmnpUtilise(data.lmnpUtilise ?? lmnpUtilise);
+          setSituationFamiliale(data.situationFamiliale ?? situationFamiliale);
+          setNombreEnfants(data.nombreEnfants ?? nombreEnfants);
+          setDonationsRealisees(data.donationsRealisees ?? donationsRealisees);
+          setAssuranceVieBeneficiaire(data.assuranceVieBeneficiaire ?? assuranceVieBeneficiaire);
+          toast.success("Vos données ont été restaurées !");
+          // Clear the localStorage after restoring
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch (e) {
+        console.error("Error restoring diagnostic data:", e);
+      }
+    }
+  }, [shouldRestore]);
 
   // Refs for chart capture
   const radarChartRef = useRef<HTMLDivElement>(null);
@@ -200,161 +242,158 @@ export default function BilanPatrimonialAvance() {
 
   return (
     <MainLayout title="Bilan Patrimonial Avancé">
-      <TierLock requiredTier="expert" featureName="Bilan Patrimonial Avancé" variant="section">
-        <div className="space-y-8 pb-8">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Brain className="w-7 h-7 text-primary" />
-                Bilan Patrimonial Avancé
-              </h1>
-              <p className="text-muted-foreground">Analyse complète avec recommandations IA personnalisées</p>
-            </div>
-            <div className="flex gap-3">
-              <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2">
-                {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {isLoadingIA ? "Analyse..." : "Générer le bilan"}
-              </Button>
-              <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2">
-                {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-                {isExportingPDF ? "Export..." : "Exporter PDF"}
-              </Button>
-            </div>
+      <div className="space-y-8 pb-8">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <Brain className="w-7 h-7 text-primary" />
+              Bilan Patrimonial Avancé
+            </h1>
+            <p className="text-muted-foreground">Analyse complète avec recommandations IA personnalisées</p>
           </div>
-
-          {/* Inputs Section */}
-          <Accordion type="multiple" defaultValue={["finances"]} className="space-y-4">
-            <AccordionItem value="finances" className="border-0">
-              <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
-                1. Finances Personnelles
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                <FinancesPersonnellesCard
-                  revenus={revenus} setRevenus={setRevenus}
-                  depenses={depenses} setDepenses={setDepenses}
-                  epargneMensuelle={epargne} setEpargneMensuelle={setEpargne}
-                  creditsRestants={creditsRestants} setCreditsRestants={setCreditsRestants}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="epargne" className="border-0">
-              <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
-                2. Épargne & Investissements
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                <EpargneInvestissementsCard
-                  liquidites={liquidites} setLiquidites={setLiquidites}
-                  assuranceVie={assuranceVie} setAssuranceVie={setAssuranceVie}
-                  per={per} setPer={setPer}
-                  peaCto={peaCto} setPeaCto={setPeaCto}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="immobilier" className="border-0">
-              <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
-                3. Immobilier
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                <ImmobilierCard
-                  residencePrincipale={residencePrincipale} setResidencePrincipale={setResidencePrincipale}
-                  immobilierLocatif={immobilierLocatif} setImmobilierLocatif={setImmobilierLocatif}
-                  loyersPercus={loyersPercus} setLoyersPercus={setLoyersPercus}
-                  creditsImmo={creditsImmo} setCreditsImmo={setCreditsImmo}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="fiscalite" className="border-0">
-              <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
-                4. Fiscalité
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                <FiscaliteCard
-                  revenusImposables={revenusImposables} setRevenusImposables={setRevenusImposables}
-                  tmi={tmi} setTmi={setTmi}
-                  perUtilise={perUtilise} setPerUtilise={setPerUtilise}
-                  lmnpUtilise={lmnpUtilise} setLmnpUtilise={setLmnpUtilise}
-                />
-              </AccordionContent>
-            </AccordionItem>
-
-            <AccordionItem value="transmission" className="border-0">
-              <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
-                5. Transmission & Protection
-              </AccordionTrigger>
-              <AccordionContent className="pt-4">
-                <TransmissionCard
-                  situationFamiliale={situationFamiliale} setSituationFamiliale={setSituationFamiliale}
-                  nombreEnfants={nombreEnfants} setNombreEnfants={setNombreEnfants}
-                  donationsRealisees={donationsRealisees} setDonationsRealisees={setDonationsRealisees}
-                  assuranceVieBeneficiaire={assuranceVieBeneficiaire} setAssuranceVieBeneficiaire={setAssuranceVieBeneficiaire}
-                  patrimoineTotal={patrimoineTotal}
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-
-          {/* Results Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Scores par Pilier</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div ref={radarChartRef}>
-                  <ScoreRadarChart
-                    financesScore={scores.finances}
-                    epargneScore={scores.epargne}
-                    immobilierScore={scores.immobilier}
-                    fiscaliteScore={scores.fiscalite}
-                    transmissionScore={scores.transmission}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-lg">
-              <CardHeader>
-                <CardTitle>Répartition du Patrimoine</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div ref={donutChartRef}>
-                  <PatrimoineDonutChart
-                    immobilier={residencePrincipale + immobilierLocatif - creditsImmo}
-                    financier={assuranceVie + per + peaCto}
-                    liquidites={liquidites}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Bottom Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2" size="lg">
-              {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-              {isLoadingIA ? "Analyse en cours..." : "Générer le bilan IA"}
-            </Button>
-            <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2" size="lg">
-              {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
-              {isExportingPDF ? "Export en cours..." : "Exporter PDF Premium"}
-            </Button>
-          </div>
-
-          {/* IA Recommendations */}
-          <RecommandationsIA
-            isLoading={isLoadingIA}
-            synthese={recommandations?.synthese}
-            haute={recommandations?.haute}
-            moyenne={recommandations?.moyenne}
-            longTerme={recommandations?.longTerme}
-            planAction={recommandations?.planAction}
-          />
         </div>
-      </TierLock>
+
+        {/* Inputs Section */}
+        <Accordion type="multiple" defaultValue={["finances"]} className="space-y-4">
+          <AccordionItem value="finances" className="border-0">
+            <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
+              1. Finances Personnelles
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <FinancesPersonnellesCard
+                revenus={revenus} setRevenus={setRevenus}
+                depenses={depenses} setDepenses={setDepenses}
+                epargneMensuelle={epargne} setEpargneMensuelle={setEpargne}
+                creditsRestants={creditsRestants} setCreditsRestants={setCreditsRestants}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="epargne" className="border-0">
+            <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
+              2. Épargne & Investissements
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <EpargneInvestissementsCard
+                liquidites={liquidites} setLiquidites={setLiquidites}
+                assuranceVie={assuranceVie} setAssuranceVie={setAssuranceVie}
+                per={per} setPer={setPer}
+                peaCto={peaCto} setPeaCto={setPeaCto}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="immobilier" className="border-0">
+            <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
+              3. Immobilier
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <ImmobilierCard
+                residencePrincipale={residencePrincipale} setResidencePrincipale={setResidencePrincipale}
+                immobilierLocatif={immobilierLocatif} setImmobilierLocatif={setImmobilierLocatif}
+                loyersPercus={loyersPercus} setLoyersPercus={setLoyersPercus}
+                creditsImmo={creditsImmo} setCreditsImmo={setCreditsImmo}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="fiscalite" className="border-0">
+            <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
+              4. Fiscalité
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <FiscaliteCard
+                revenusImposables={revenusImposables} setRevenusImposables={setRevenusImposables}
+                tmi={tmi} setTmi={setTmi}
+                perUtilise={perUtilise} setPerUtilise={setPerUtilise}
+                lmnpUtilise={lmnpUtilise} setLmnpUtilise={setLmnpUtilise}
+              />
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value="transmission" className="border-0">
+            <AccordionTrigger className="bg-card rounded-xl px-4 py-3 hover:no-underline">
+              5. Transmission & Protection
+            </AccordionTrigger>
+            <AccordionContent className="pt-4">
+              <TransmissionCard
+                situationFamiliale={situationFamiliale} setSituationFamiliale={setSituationFamiliale}
+                nombreEnfants={nombreEnfants} setNombreEnfants={setNombreEnfants}
+                donationsRealisees={donationsRealisees} setDonationsRealisees={setDonationsRealisees}
+                assuranceVieBeneficiaire={assuranceVieBeneficiaire} setAssuranceVieBeneficiaire={setAssuranceVieBeneficiaire}
+                patrimoineTotal={patrimoineTotal}
+              />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        {/* Results Section - FREE for all users */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Scores par Pilier</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div ref={radarChartRef}>
+                <ScoreRadarChart
+                  financesScore={scores.finances}
+                  epargneScore={scores.epargne}
+                  immobilierScore={scores.immobilier}
+                  fiscaliteScore={scores.fiscalite}
+                  transmissionScore={scores.transmission}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-0 shadow-lg">
+            <CardHeader>
+              <CardTitle>Répartition du Patrimoine</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div ref={donutChartRef}>
+                <PatrimoineDonutChart
+                  immobilier={residencePrincipale + immobilierLocatif - creditsImmo}
+                  financier={assuranceVie + per + peaCto}
+                  liquidites={liquidites}
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* AI Recommendations - PREMIUM LOCKED */}
+        <TierLock requiredTier="premium" featureName="Recommandations IA" variant="section">
+          <div className="space-y-6">
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2" size="lg">
+                {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {isLoadingIA ? "Analyse en cours..." : "Générer le bilan IA"}
+              </Button>
+              
+              {/* PDF Export - EXPERT LOCKED */}
+              <TierLock requiredTier="expert" featureName="Export PDF Premium" variant="inline">
+                <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2" size="lg">
+                  {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
+                  {isExportingPDF ? "Export en cours..." : "Exporter PDF Premium"}
+                </Button>
+              </TierLock>
+            </div>
+
+            {/* IA Recommendations */}
+            <RecommandationsIA
+              isLoading={isLoadingIA}
+              synthese={recommandations?.synthese}
+              haute={recommandations?.haute}
+              moyenne={recommandations?.moyenne}
+              longTerme={recommandations?.longTerme}
+              planAction={recommandations?.planAction}
+            />
+          </div>
+        </TierLock>
+      </div>
     </MainLayout>
   );
 }

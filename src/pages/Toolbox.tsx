@@ -152,15 +152,6 @@ const expertTools = [
     path: "/tools/goal-based-investment",
   },
   {
-    id: "bilan-patrimonial",
-    title: "Bilan Patrimonial IA",
-    description: "Analyse complète de votre patrimoine avec recommandations personnalisées par IA.",
-    icon: Brain,
-    iconColor: "text-violet-500",
-    iconBg: "bg-violet-500/10",
-    path: "/tools/bilan-patrimonial",
-  },
-  {
     id: "droits-succession",
     title: "Droits de Succession",
     description: "Estimez les droits à payer et optimisez la transmission de votre patrimoine.",
@@ -177,6 +168,19 @@ const expertTools = [
     iconColor: "text-amber-500",
     iconBg: "bg-amber-500/10",
     path: "/tools/comparateur-lmnp",
+  },
+];
+
+// Bilan Patrimonial is now FREE (separate section)
+const freePremiumTools = [
+  {
+    id: "bilan-patrimonial",
+    title: "Bilan Patrimonial",
+    description: "Analyse complète de votre patrimoine avec scores par pilier et recommandations.",
+    icon: Brain,
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-500/10",
+    path: "/tools/bilan-patrimonial",
   },
 ];
 
@@ -297,6 +301,29 @@ export default function Toolbox() {
                   <p className="text-sm text-muted-foreground">{tool.description}</p>
                 </div>
               </button>
+            ))}
+          </div>
+        </motion.section>
+
+        {/* Bilan Patrimonial - Featured Free Tool */}
+        <motion.section variants={itemVariants}>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-violet-500" />
+              <h3 className="text-lg font-semibold text-foreground">
+                Outil Phare
+              </h3>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600 text-xs font-medium">
+              Gratuit
+            </span>
+          </div>
+          <p className="text-sm text-muted-foreground mb-4">
+            Commencez par analyser votre situation patrimoniale complète
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {freePremiumTools.map((tool) => (
+              <ToolCard key={tool.id} {...tool} />
             ))}
           </div>
         </motion.section>

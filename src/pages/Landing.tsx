@@ -445,7 +445,7 @@ export default function Landing() {
                   >
                     <Button 
                       size="lg"
-                      onClick={() => navigate("/auth")}
+                      onClick={() => navigate("/diagnostic")}
                       className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-lg"
                     >
                       Commencer mon diagnostic gratuit

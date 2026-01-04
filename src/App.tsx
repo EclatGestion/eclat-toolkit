@@ -48,6 +48,7 @@ const Pricing = lazy(() => import("./pages/public/Pricing"));
 const MentionsLegales = lazy(() => import("./pages/public/MentionsLegales"));
 const PolitiqueConfidentialite = lazy(() => import("./pages/public/PolitiqueConfidentialite"));
 const CGU = lazy(() => import("./pages/public/CGU"));
+const DiagnosticPatrimonial = lazy(() => import("./pages/public/DiagnosticPatrimonial"));
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,7 @@ const App = () => (
                 <Route path="/mentions-legales" element={<MentionsLegales />} />
                 <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/cgu" element={<CGU />} />
+                <Route path="/diagnostic" element={<DiagnosticPatrimonial />} />
                 
                 {/* Partner Pages */}
                 <Route path="/partenaire/assurance-vie" element={<PartenaireAssuranceVie />} />
