@@ -313,11 +313,18 @@ export default function DiagnosticPatrimonial() {
                 Précédent
               </Button>
               
-              {currentStep < 5 ? <Button onClick={handleNext} className="gap-2">
+              {currentStep < 5 ? (
+                <Button onClick={handleNext} className="gap-2">
                   Suivant
                   <ArrowRight className="w-4 h-4" />
-                </Button> : <div /> // Empty div for spacing on last step
-            }
+                </Button>
+              ) : (
+                <Button onClick={handleViewResults} className="gap-2 bg-gradient-to-r from-primary to-violet-600 hover:from-primary/90 hover:to-violet-600/90">
+                  <Lock className="w-4 h-4" />
+                  Voir mes résultats
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
