@@ -1,11 +1,11 @@
-import { Wrench, Wallet, Settings, GraduationCap } from "lucide-react";
+import { Compass, Wrench, Wallet, Settings } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
 const navItems = [
-  { title: "Outils", url: "/toolbox", icon: Wrench, badge: null },
+  { title: "Parcours", url: "/mon-parcours", icon: Compass, badge: null },
   { title: "Patrimoine", url: "/patrimoine", icon: Wallet, badge: null },
-  { title: "Académie", url: "/academie-pro", icon: GraduationCap, badge: null },
+  { title: "Outils", url: "/toolbox", icon: Wrench, badge: null },
   { title: "Profil", url: "/settings", icon: Settings, badge: null },
 ];
 
@@ -17,7 +17,7 @@ export function BottomNav() {
           <NavLink
             key={item.url}
             to={item.url}
-            end={item.url === "/toolbox"}
+            end={item.url === "/mon-parcours"}
             className={cn(
               "flex flex-col items-center gap-1 px-4 py-2 rounded-2xl text-muted-foreground transition-all duration-200 relative",
               "hover:text-primary"
