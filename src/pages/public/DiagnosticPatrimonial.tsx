@@ -9,7 +9,8 @@ import { EpargneInvestissementsCard } from "@/components/simulators/bilan/Epargn
 import { ImmobilierCard } from "@/components/simulators/bilan/ImmobilierCard";
 import { FiscaliteCard } from "@/components/simulators/bilan/FiscaliteCard";
 import { TransmissionCard } from "@/components/simulators/bilan/TransmissionCard";
-import { Brain, Lock, ArrowRight, Sparkles, ChevronRight } from "lucide-react";
+import { Brain, Lock, ArrowRight, Sparkles } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 
 const STORAGE_KEY = "eclat_diagnostic_data";
@@ -101,7 +102,6 @@ export default function DiagnosticPatrimonial() {
 
   // Déterminer si l'utilisateur a saisi des données significatives
   const hasFilledData = useMemo(() => {
-    // Les valeurs par défaut dans le formulaire
     const defaultRevenus = 4000;
     const defaultDepenses = 2500;
     const defaultEpargne = 500;
@@ -109,9 +109,6 @@ export default function DiagnosticPatrimonial() {
     const defaultSituationFamiliale = "marie";
     const defaultNombreEnfants = 2;
     
-    // On considère que l'utilisateur a modifié ses données si :
-    // - Il a changé les valeurs par défaut
-    // - Ou il a ajouté des valeurs sur des champs initialement à 0
     const hasChangedDefaults = 
       revenus !== defaultRevenus ||
       depenses !== defaultDepenses ||
@@ -136,6 +133,34 @@ export default function DiagnosticPatrimonial() {
     
     return hasChangedDefaults || hasAddedValues;
   }, [revenus, depenses, epargne, liquidites, situationFamiliale, nombreEnfants, assuranceVie, per, peaCto, residencePrincipale, immobilierLocatif, loyersPercus, creditsImmo, creditsRestants, donationsRealisees, perUtilise, lmnpUtilise, assuranceVieBeneficiaire]);
+
+  // Calcul du pourcentage de complétion
+  const completionPercentage = useMemo(() => {
+    let completed = 0;
+    
+    // Pilier 1: Finances Personnelles (20%) - revenus > 0
+    if (revenus > 0) completed += 20;
+    
+    // Pilier 2: Épargne & Investissements (20%) - au moins 1 valeur renseignée
+    if (liquidites > 0 || assuranceVie > 0 || per > 0 || peaCto > 0) completed += 20;
+    
+    // Pilier 3: Immobilier (20%) - considéré comme rempli par défaut (0 = pas d'immo)
+    completed += 20;
+    
+    // Pilier 4: Fiscalité (20%) - revenus imposables > 0
+    if (revenusImposables > 0) completed += 20;
+    
+    // Pilier 5: Transmission (20%) - situation familiale renseignée
+    if (situationFamiliale) completed += 20;
+    
+    return completed;
+  }, [revenus, liquidites, assuranceVie, per, peaCto, revenusImposables, situationFamiliale]);
+
+  const getProgressMessage = () => {
+    if (completionPercentage < 50) return "Complétez les sections pour un diagnostic précis";
+    if (completionPercentage < 100) return "Encore quelques informations pour un diagnostic complet";
+    return "Formulaire complet ! Débloquez vos résultats";
+  };
 
   // Sauvegarder les données dans localStorage à chaque changement
   useEffect(() => {
@@ -179,17 +204,32 @@ export default function DiagnosticPatrimonial() {
           </p>
         </motion.div>
 
-        {/* Progress indicator */}
-        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-          <span className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-medium">1</span>
-          <span className="text-primary font-medium">Remplir le formulaire</span>
-          <ChevronRight className="w-4 h-4" />
-          <span className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-medium">2</span>
-          <span>Créer un compte</span>
-          <ChevronRight className="w-4 h-4" />
-          <span className="w-8 h-8 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center font-medium">3</span>
-          <span>Voir mes résultats</span>
-        </div>
+        {/* Dynamic Progress Bar */}
+        <motion.div 
+          className="sticky top-4 z-20 bg-white/95 backdrop-blur-sm rounded-xl p-4 shadow-sm border"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-medium text-gray-700">
+              Progression du diagnostic
+            </span>
+            <span className="text-sm font-bold text-primary">
+              {completionPercentage}%
+            </span>
+          </div>
+          <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+            <motion.div
+              className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-violet-500 rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: `${completionPercentage}%` }}
+              transition={{ duration: 0.5, ease: "easeOut" }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            {getProgressMessage()}
+          </p>
+        </motion.div>
 
         {/* Inputs Section */}
         <Accordion type="multiple" defaultValue={["finances"]} className="space-y-4">
