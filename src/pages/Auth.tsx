@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +11,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Mail, Lock, User } from "lucide-react";
-import { useEffect } from "react";
 
 const loginSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -36,12 +35,20 @@ export default function Auth() {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get("redirect");
+  const restoreParam = searchParams.get("restore");
+  const fullRedirectPath = redirectTo 
+    ? `${redirectTo}${restoreParam ? `?restore=${restoreParam}` : ""}`
+    : "/mon-parcours";
 
   useEffect(() => {
     if (user) {
-      navigate("/dashboard");
+      navigate(fullRedirectPath);
     }
-  }, [user, navigate]);
+  }, [user, navigate, fullRedirectPath]);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -86,7 +93,7 @@ export default function Auth() {
       title: "Connexion réussie",
       description: "Bienvenue sur Éclat Patrimoine !",
     });
-    navigate("/dashboard");
+    navigate(fullRedirectPath);
   };
 
   const handleSignup = async (values: SignupFormValues) => {
@@ -111,7 +118,7 @@ export default function Auth() {
       title: "Inscription réussie",
       description: "Bienvenue sur Éclat Patrimoine !",
     });
-    navigate("/dashboard");
+    navigate(fullRedirectPath);
   };
 
   return (
