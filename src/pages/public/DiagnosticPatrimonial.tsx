@@ -227,62 +227,98 @@ export default function DiagnosticPatrimonial() {
           </AccordionItem>
         </Accordion>
 
-        {/* Locked Results Preview */}
-        <Card className="border-2 border-dashed border-gray-300 bg-gray-50/50">
-          <CardHeader className="text-center pb-2">
-            <CardTitle className="text-lg text-gray-500 flex items-center justify-center gap-2">
-              <Lock className="w-5 h-5" />
-              Vos résultats sont prêts
+        {/* Locked Results Preview with Visual Teasing */}
+        <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-violet-500/5 overflow-hidden">
+          <CardHeader className="text-center pb-4">
+            <CardTitle className="text-xl text-gray-900 flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Vos résultats sont prêts !
             </CardTitle>
+            <p className="text-sm text-gray-500 mt-1">Créez un compte gratuit pour les débloquer</p>
           </CardHeader>
-          <CardContent className="text-center space-y-6">
-            {/* Teaser des scores */}
-            <div className="grid grid-cols-5 gap-2 max-w-md mx-auto">
-              {[
-                { label: "Finances", score: scores.finances },
-                { label: "Épargne", score: scores.epargne },
-                { label: "Immobilier", score: scores.immobilier },
-                { label: "Fiscalité", score: scores.fiscalite },
-                { label: "Transmission", score: scores.transmission },
-              ].map((item) => (
-                <div key={item.label} className="text-center">
-                  <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center mx-auto mb-1 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/30 to-transparent blur-sm" />
-                    <span className="text-lg font-bold text-gray-400">?</span>
+          <CardContent className="space-y-8">
+            {/* Global Score Teaser */}
+            <div className="text-center">
+              <p className="text-sm text-gray-500 mb-2">Score Patrimonial Global</p>
+              <div className="relative inline-block">
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center mx-auto relative overflow-hidden">
+                  {/* Actual score shown blurred */}
+                  <div className="absolute inset-0 flex items-center justify-center blur-md">
+                    <span className="text-5xl font-bold text-primary">{scoreGlobal}</span>
                   </div>
-                  <p className="text-xs text-gray-400 truncate">{item.label}</p>
+                  {/* Lock overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
+                    <div className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center">
+                      <Lock className="w-6 h-6 text-gray-400" />
+                    </div>
+                  </div>
                 </div>
-              ))}
+                <p className="text-xs text-gray-400 mt-2">/100</p>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <p className="text-gray-600">
-                Créez un compte gratuit pour découvrir :
+            {/* Pillar Scores Teaser - Blurred but visible */}
+            <div className="relative">
+              <div className="grid grid-cols-5 gap-3 max-w-lg mx-auto">
+                {[
+                  { label: "Finances", score: scores.finances, color: "from-blue-400 to-blue-600" },
+                  { label: "Épargne", score: scores.epargne, color: "from-emerald-400 to-emerald-600" },
+                  { label: "Immobilier", score: scores.immobilier, color: "from-amber-400 to-amber-600" },
+                  { label: "Fiscalité", score: scores.fiscalite, color: "from-rose-400 to-rose-600" },
+                  { label: "Transmission", score: scores.transmission, color: "from-violet-400 to-violet-600" },
+                ].map((item) => (
+                  <div key={item.label} className="text-center">
+                    <div className="relative">
+                      {/* Score circle with blur */}
+                      <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-2 relative overflow-hidden`}>
+                        <span className="text-lg font-bold text-white blur-[3px]">{item.score}</span>
+                        {/* Subtle lock overlay */}
+                        <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px] flex items-center justify-center">
+                          <Lock className="w-4 h-4 text-white/80" />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-600 font-medium truncate">{item.label}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Patrimoine Preview */}
+            <div className="relative bg-white/50 rounded-xl p-4 border border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-3 text-center">Répartition de votre patrimoine</p>
+              <div className="flex items-center justify-center gap-6 relative">
+                {/* Blurred bars */}
+                <div className="flex items-end gap-2 h-20">
+                  <div className="w-16 bg-gradient-to-t from-blue-500 to-blue-300 rounded-t-lg blur-[2px]" style={{ height: `${Math.max(20, repartitionPatrimoine.immobilier)}%` }} />
+                  <div className="w-16 bg-gradient-to-t from-emerald-500 to-emerald-300 rounded-t-lg blur-[2px]" style={{ height: `${Math.max(20, repartitionPatrimoine.financier)}%` }} />
+                  <div className="w-16 bg-gradient-to-t from-amber-500 to-amber-300 rounded-t-lg blur-[2px]" style={{ height: `${Math.max(20, repartitionPatrimoine.liquidites)}%` }} />
+                </div>
+                {/* Lock overlay */}
+                <div className="absolute inset-0 flex items-center justify-center bg-white/30 backdrop-blur-[1px] rounded-xl">
+                  <div className="flex items-center gap-2 text-gray-500 text-sm">
+                    <Lock className="w-4 h-4" />
+                    <span>Débloquez l'analyse</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex justify-center gap-4 mt-3 text-xs text-gray-400">
+                <span>Immobilier</span>
+                <span>Financier</span>
+                <span>Liquidités</span>
+              </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="text-center space-y-4 pt-2">
+              <Button onClick={handleViewResults} size="lg" className="gap-2 px-8 shadow-lg">
+                Débloquer mes résultats gratuitement
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+              <p className="text-xs text-gray-400">
+                ✓ Gratuit · ✓ Sans engagement · ✓ Données sauvegardées
               </p>
-              <ul className="text-sm text-gray-500 space-y-1">
-                <li className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  Votre score patrimonial global
-                </li>
-                <li className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  L'analyse détaillée par pilier
-                </li>
-                <li className="flex items-center justify-center gap-2">
-                  <Sparkles className="w-4 h-4 text-primary" />
-                  La répartition de votre patrimoine
-                </li>
-              </ul>
             </div>
-
-            <Button onClick={handleViewResults} size="lg" className="gap-2">
-              Voir mes résultats
-              <ArrowRight className="w-4 h-4" />
-            </Button>
-
-            <p className="text-xs text-gray-400">
-              Vos données sont sauvegardées automatiquement
-            </p>
           </CardContent>
         </Card>
       </div>
