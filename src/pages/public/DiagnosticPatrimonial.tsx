@@ -99,6 +99,44 @@ export default function DiagnosticPatrimonial() {
 
   const scoreGlobal = Math.round((scores.finances + scores.epargne + scores.immobilier + scores.fiscalite + scores.transmission) / 5);
 
+  // Déterminer si l'utilisateur a saisi des données significatives
+  const hasFilledData = useMemo(() => {
+    // Les valeurs par défaut dans le formulaire
+    const defaultRevenus = 4000;
+    const defaultDepenses = 2500;
+    const defaultEpargne = 500;
+    const defaultLiquidites = 15000;
+    const defaultSituationFamiliale = "marie";
+    const defaultNombreEnfants = 2;
+    
+    // On considère que l'utilisateur a modifié ses données si :
+    // - Il a changé les valeurs par défaut
+    // - Ou il a ajouté des valeurs sur des champs initialement à 0
+    const hasChangedDefaults = 
+      revenus !== defaultRevenus ||
+      depenses !== defaultDepenses ||
+      epargne !== defaultEpargne ||
+      liquidites !== defaultLiquidites ||
+      situationFamiliale !== defaultSituationFamiliale ||
+      nombreEnfants !== defaultNombreEnfants;
+    
+    const hasAddedValues = 
+      assuranceVie > 0 ||
+      per > 0 ||
+      peaCto > 0 ||
+      residencePrincipale > 0 ||
+      immobilierLocatif > 0 ||
+      loyersPercus > 0 ||
+      creditsImmo > 0 ||
+      creditsRestants > 0 ||
+      donationsRealisees > 0 ||
+      perUtilise ||
+      lmnpUtilise ||
+      assuranceVieBeneficiaire;
+    
+    return hasChangedDefaults || hasAddedValues;
+  }, [revenus, depenses, epargne, liquidites, situationFamiliale, nombreEnfants, assuranceVie, per, peaCto, residencePrincipale, immobilierLocatif, loyersPercus, creditsImmo, creditsRestants, donationsRealisees, perUtilise, lmnpUtilise, assuranceVieBeneficiaire]);
+
   // Sauvegarder les données dans localStorage à chaque changement
   useEffect(() => {
     const data = {
@@ -227,170 +265,202 @@ export default function DiagnosticPatrimonial() {
           </AccordionItem>
         </Accordion>
 
-        {/* Locked Results Preview with Visual Teasing */}
+        {/* Results Section - Conditional display based on data entry */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-violet-500/5 overflow-hidden">
-            <CardHeader className="text-center pb-4">
-              <CardTitle className="text-xl text-gray-900 flex items-center justify-center gap-2">
-                <motion.div
-                  animate={{ rotate: [0, 15, -15, 0] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-                >
-                  <Sparkles className="w-5 h-5 text-primary" />
-                </motion.div>
-                Vos résultats sont prêts !
-              </CardTitle>
-              <p className="text-sm text-gray-500 mt-1">Créez un compte gratuit pour les débloquer</p>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Global Score Teaser */}
-              <div className="text-center">
-                <p className="text-sm text-gray-500 mb-2">Score Patrimonial Global</p>
-                <div className="relative inline-block">
-                  <motion.div 
-                    className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center mx-auto relative overflow-hidden"
-                    animate={{ 
-                      boxShadow: [
-                        "0 0 0 0 rgba(45, 96, 255, 0)",
-                        "0 0 0 12px rgba(45, 96, 255, 0.1)",
-                        "0 0 0 0 rgba(45, 96, 255, 0)"
-                      ]
-                    }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+          {hasFilledData ? (
+            /* Locked Results Preview with Visual Teasing - Shown when user has entered data */
+            <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-violet-500/5 overflow-hidden">
+              <CardHeader className="text-center pb-4">
+                <CardTitle className="text-xl text-gray-900 flex items-center justify-center gap-2">
+                  <motion.div
+                    animate={{ rotate: [0, 15, -15, 0] }}
+                    transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
                   >
-                    {/* Actual score shown blurred */}
+                    <Sparkles className="w-5 h-5 text-primary" />
+                  </motion.div>
+                  Vos résultats sont prêts !
+                </CardTitle>
+                <p className="text-sm text-gray-500 mt-1">Créez un compte gratuit pour les débloquer</p>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                {/* Global Score Teaser */}
+                <div className="text-center">
+                  <p className="text-sm text-gray-500 mb-2">Score Patrimonial Global</p>
+                  <div className="relative inline-block">
                     <motion.div 
-                      className="absolute inset-0 flex items-center justify-center blur-md"
-                      animate={{ opacity: [0.7, 1, 0.7] }}
-                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-32 h-32 rounded-full bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center mx-auto relative overflow-hidden"
+                      animate={{ 
+                        boxShadow: [
+                          "0 0 0 0 rgba(45, 96, 255, 0)",
+                          "0 0 0 12px rgba(45, 96, 255, 0.1)",
+                          "0 0 0 0 rgba(45, 96, 255, 0)"
+                        ]
+                      }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <span className="text-5xl font-bold text-primary">{scoreGlobal}</span>
-                    </motion.div>
-                    {/* Lock overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
+                      {/* Actual score shown blurred */}
                       <motion.div 
-                        className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center"
-                        animate={{ scale: [1, 1.05, 1] }}
+                        className="absolute inset-0 flex items-center justify-center blur-md"
+                        animate={{ opacity: [0.7, 1, 0.7] }}
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                       >
-                        <Lock className="w-6 h-6 text-gray-400" />
+                        <span className="text-5xl font-bold text-primary">{scoreGlobal}</span>
                       </motion.div>
-                    </div>
-                  </motion.div>
-                  <p className="text-xs text-gray-400 mt-2">/100</p>
-                </div>
-              </div>
-
-              {/* Pillar Scores Teaser - Blurred but visible */}
-              <div className="relative">
-                <div className="grid grid-cols-5 gap-3 max-w-lg mx-auto">
-                  {[
-                    { label: "Finances", score: scores.finances, color: "from-blue-400 to-blue-600", delay: 0 },
-                    { label: "Épargne", score: scores.epargne, color: "from-emerald-400 to-emerald-600", delay: 0.1 },
-                    { label: "Immobilier", score: scores.immobilier, color: "from-amber-400 to-amber-600", delay: 0.2 },
-                    { label: "Fiscalité", score: scores.fiscalite, color: "from-rose-400 to-rose-600", delay: 0.3 },
-                    { label: "Transmission", score: scores.transmission, color: "from-violet-400 to-violet-600", delay: 0.4 },
-                  ].map((item, index) => (
-                    <motion.div 
-                      key={item.label} 
-                      className="text-center"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.3 + item.delay }}
-                    >
-                      <div className="relative">
-                        {/* Score circle with blur and pulse */}
+                      {/* Lock overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-white/40 backdrop-blur-[2px]">
                         <motion.div 
-                          className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-2 relative overflow-hidden`}
-                          animate={{ 
-                            scale: [1, 1.08, 1],
-                            opacity: [0.9, 1, 0.9]
-                          }}
-                          transition={{ 
-                            duration: 2.5, 
-                            repeat: Infinity, 
-                            ease: "easeInOut",
-                            delay: index * 0.2
-                          }}
+                          className="w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center"
+                          animate={{ scale: [1, 1.05, 1] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                         >
-                          <span className="text-lg font-bold text-white blur-[3px]">{item.score}</span>
-                          {/* Subtle lock overlay */}
-                          <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px] flex items-center justify-center">
-                            <Lock className="w-4 h-4 text-white/80" />
-                          </div>
+                          <Lock className="w-6 h-6 text-gray-400" />
                         </motion.div>
                       </div>
-                      <p className="text-xs text-gray-600 font-medium truncate">{item.label}</p>
                     </motion.div>
-                  ))}
+                    <p className="text-xs text-gray-400 mt-2">/100</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Patrimoine Preview */}
-              <div className="relative bg-white/50 rounded-xl p-4 border border-gray-200">
-                <p className="text-sm font-medium text-gray-700 mb-3 text-center">Répartition de votre patrimoine</p>
-                <div className="flex items-center justify-center gap-6 relative">
-                  {/* Blurred bars with animation */}
-                  <div className="flex items-end gap-2 h-20">
+                {/* Pillar Scores Teaser - Blurred but visible */}
+                <div className="relative">
+                  <div className="grid grid-cols-5 gap-3 max-w-lg mx-auto">
                     {[
-                      { value: repartitionPatrimoine.immobilier, color: "from-blue-500 to-blue-300", delay: 0 },
-                      { value: repartitionPatrimoine.financier, color: "from-emerald-500 to-emerald-300", delay: 0.1 },
-                      { value: repartitionPatrimoine.liquidites, color: "from-amber-500 to-amber-300", delay: 0.2 },
-                    ].map((bar, index) => (
+                      { label: "Finances", score: scores.finances, color: "from-blue-400 to-blue-600", delay: 0 },
+                      { label: "Épargne", score: scores.epargne, color: "from-emerald-400 to-emerald-600", delay: 0.1 },
+                      { label: "Immobilier", score: scores.immobilier, color: "from-amber-400 to-amber-600", delay: 0.2 },
+                      { label: "Fiscalité", score: scores.fiscalite, color: "from-rose-400 to-rose-600", delay: 0.3 },
+                      { label: "Transmission", score: scores.transmission, color: "from-violet-400 to-violet-600", delay: 0.4 },
+                    ].map((item, index) => (
                       <motion.div 
-                        key={index}
-                        className={`w-16 bg-gradient-to-t ${bar.color} rounded-t-lg blur-[2px]`}
-                        initial={{ height: 0 }}
-                        animate={{ height: `${Math.max(20, bar.value)}%` }}
-                        transition={{ duration: 0.8, delay: 0.5 + bar.delay, ease: "easeOut" }}
-                      />
+                        key={item.label} 
+                        className="text-center"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4, delay: 0.3 + item.delay }}
+                      >
+                        <div className="relative">
+                          {/* Score circle with blur and pulse */}
+                          <motion.div 
+                            className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-2 relative overflow-hidden`}
+                            animate={{ 
+                              scale: [1, 1.08, 1],
+                              opacity: [0.9, 1, 0.9]
+                            }}
+                            transition={{ 
+                              duration: 2.5, 
+                              repeat: Infinity, 
+                              ease: "easeInOut",
+                              delay: index * 0.2
+                            }}
+                          >
+                            <span className="text-lg font-bold text-white blur-[3px]">{item.score}</span>
+                            {/* Subtle lock overlay */}
+                            <div className="absolute inset-0 bg-white/20 backdrop-blur-[1px] flex items-center justify-center">
+                              <Lock className="w-4 h-4 text-white/80" />
+                            </div>
+                          </motion.div>
+                        </div>
+                        <p className="text-xs text-gray-600 font-medium truncate">{item.label}</p>
+                      </motion.div>
                     ))}
                   </div>
-                  {/* Lock overlay */}
-                  <motion.div 
-                    className="absolute inset-0 flex items-center justify-center bg-white/30 backdrop-blur-[1px] rounded-xl"
-                    animate={{ opacity: [0.8, 1, 0.8] }}
-                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <div className="flex items-center gap-2 text-gray-500 text-sm">
-                      <Lock className="w-4 h-4" />
-                      <span>Débloquez l'analyse</span>
-                    </div>
-                  </motion.div>
                 </div>
-                <div className="flex justify-center gap-4 mt-3 text-xs text-gray-400">
-                  <span>Immobilier</span>
-                  <span>Financier</span>
-                  <span>Liquidités</span>
-                </div>
-              </div>
 
-              {/* CTA Section */}
-              <div className="text-center space-y-4 pt-2">
-                <motion.div
-                  whileHover={{ scale: 1.02, y: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button onClick={handleViewResults} size="lg" className="gap-2 px-8 shadow-lg">
-                    Débloquer mes résultats gratuitement
-                    <motion.div
-                      animate={{ x: [0, 4, 0] }}
-                      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                {/* Patrimoine Preview */}
+                <div className="relative bg-white/50 rounded-xl p-4 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-700 mb-3 text-center">Répartition de votre patrimoine</p>
+                  <div className="flex items-center justify-center gap-6 relative">
+                    {/* Blurred bars with animation */}
+                    <div className="flex items-end gap-2 h-20">
+                      {[
+                        { value: repartitionPatrimoine.immobilier, color: "from-blue-500 to-blue-300", delay: 0 },
+                        { value: repartitionPatrimoine.financier, color: "from-emerald-500 to-emerald-300", delay: 0.1 },
+                        { value: repartitionPatrimoine.liquidites, color: "from-amber-500 to-amber-300", delay: 0.2 },
+                      ].map((bar, index) => (
+                        <motion.div 
+                          key={index}
+                          className={`w-16 bg-gradient-to-t ${bar.color} rounded-t-lg blur-[2px]`}
+                          initial={{ height: 0 }}
+                          animate={{ height: `${Math.max(20, bar.value)}%` }}
+                          transition={{ duration: 0.8, delay: 0.5 + bar.delay, ease: "easeOut" }}
+                        />
+                      ))}
+                    </div>
+                    {/* Lock overlay */}
+                    <motion.div 
+                      className="absolute inset-0 flex items-center justify-center bg-white/30 backdrop-blur-[1px] rounded-xl"
+                      animate={{ opacity: [0.8, 1, 0.8] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                     >
-                      <ArrowRight className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-gray-500 text-sm">
+                        <Lock className="w-4 h-4" />
+                        <span>Débloquez l'analyse</span>
+                      </div>
                     </motion.div>
-                  </Button>
-                </motion.div>
-                <p className="text-xs text-gray-400">
-                  ✓ Gratuit · ✓ Sans engagement · ✓ Données sauvegardées
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+                  </div>
+                  <div className="flex justify-center gap-4 mt-3 text-xs text-gray-400">
+                    <span>Immobilier</span>
+                    <span>Financier</span>
+                    <span>Liquidités</span>
+                  </div>
+                </div>
+
+                {/* CTA Section */}
+                <div className="text-center space-y-4 pt-2">
+                  <motion.div
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button onClick={handleViewResults} size="lg" className="gap-2 px-8 shadow-lg">
+                      Débloquer mes résultats gratuitement
+                      <motion.div
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                      >
+                        <ArrowRight className="w-4 h-4" />
+                      </motion.div>
+                    </Button>
+                  </motion.div>
+                  <p className="text-xs text-gray-400">
+                    ✓ Gratuit · ✓ Sans engagement · ✓ Données sauvegardées
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            /* Placeholder when no data has been entered yet */
+            <Card className="border border-dashed border-gray-300 bg-gray-50/50">
+              <CardContent className="py-12 text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto">
+                  <Lock className="w-8 h-8 text-gray-400" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-semibold text-gray-700">Complétez votre diagnostic</h3>
+                  <p className="text-sm text-gray-500 max-w-md mx-auto">
+                    Remplissez les sections ci-dessus pour découvrir votre score patrimonial personnalisé et recevoir des recommandations sur mesure.
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-4 pt-4 text-xs text-gray-400">
+                  <span className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
+                    Score global
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
+                    5 piliers analysés
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <div className="w-2 h-2 rounded-full bg-gray-300" />
+                    Recommandations IA
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </motion.div>
       </div>
     </PublicPageLayout>
