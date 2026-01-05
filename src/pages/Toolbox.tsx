@@ -27,8 +27,8 @@ import { useState, useEffect } from "react";
 const popularTools = [
   {
     id: "simulateur-ir",
-    title: "Simulateur IR",
-    description: "Calculez votre impôt sur le revenu",
+    title: "Impôt Revenu",
+    description: "Calculez votre IR et TMI",
     icon: Calculator,
     iconColor: "text-primary",
     iconBg: "bg-primary/10",
@@ -36,8 +36,8 @@ const popularTools = [
   },
   {
     id: "simulateur-immobilier",
-    title: "Simulateur Immobilier",
-    description: "Mensualité & Capacité d'emprunt",
+    title: "Crédit Immo",
+    description: "Mensualité et capacité",
     icon: Home,
     iconColor: "text-emerald-500",
     iconBg: "bg-emerald-500/10",
@@ -57,8 +57,8 @@ const popularTools = [
 const freeTools = [
   {
     id: "capacite-epargne",
-    title: "Capacité d'Épargne",
-    description: "Calculez votre potentiel d'épargne mensuelle et recevez des conseils.",
+    title: "Épargne Mensuelle",
+    description: "Calculez votre potentiel d'épargne.",
     icon: PiggyBank,
     iconColor: "text-teal-500",
     iconBg: "bg-teal-500/10",
@@ -66,8 +66,8 @@ const freeTools = [
   },
   {
     id: "inflation",
-    title: "Calculateur d'Inflation",
-    description: "Visualisez la perte de pouvoir d'achat face à l'inflation.",
+    title: "Inflation",
+    description: "Impact sur votre pouvoir d'achat.",
     icon: TrendingDown,
     iconColor: "text-orange-500",
     iconBg: "bg-orange-500/10",
@@ -75,8 +75,8 @@ const freeTools = [
   },
   {
     id: "simulateur-ir-basique",
-    title: "Simulateur IR (Basique)",
-    description: "Calculez votre TMI et votre impôt net sur le revenu.",
+    title: "IR Simplifié",
+    description: "Calcul rapide de votre TMI.",
     icon: Calculator,
     iconColor: "text-primary",
     iconBg: "bg-primary/10",
@@ -87,8 +87,8 @@ const freeTools = [
 const premiumTools = [
   {
     id: "simulateur-ir-complet",
-    title: "Simulateur IR (Complet)",
-    description: "TMI + Optimisation PER et Girardin Industriel pour réduire vos impôts.",
+    title: "Impôt Revenu+",
+    description: "TMI + optimisation PER et Girardin.",
     icon: Calculator,
     iconColor: "text-primary",
     iconBg: "bg-primary/10",
@@ -96,8 +96,8 @@ const premiumTools = [
   },
   {
     id: "simulateur-immobilier",
-    title: "Simulateur Immobilier",
-    description: "Calculez mensualité et capacité d'emprunt pour votre projet.",
+    title: "Crédit Immobilier",
+    description: "Mensualité et capacité d'emprunt.",
     icon: Home,
     iconColor: "text-emerald-500",
     iconBg: "bg-emerald-500/10",
@@ -106,7 +106,7 @@ const premiumTools = [
   {
     id: "interets-composes",
     title: "Intérêts Composés",
-    description: "Projetez vos placements avec tous les scénarios de marché.",
+    description: "Projections multi-scénarios.",
     icon: TrendingUp,
     iconColor: "text-rose-500",
     iconBg: "bg-rose-500/10",
@@ -114,8 +114,8 @@ const premiumTools = [
   },
   {
     id: "assurance-vie",
-    title: "Simulateur Assurance-Vie",
-    description: "Projetez l'évolution de votre contrat et l'impact des frais.",
+    title: "Assurance-Vie",
+    description: "Projection et impact des frais.",
     icon: Shield,
     iconColor: "text-violet-500",
     iconBg: "bg-violet-500/10",
@@ -123,8 +123,8 @@ const premiumTools = [
   },
   {
     id: "optimisation-per",
-    title: "Optimisation PER",
-    description: "Calculez votre réduction d'impôt et projetez la valeur future.",
+    title: "Plan Épargne Retraite",
+    description: "Réduction d'impôt et projection.",
     icon: Target,
     iconColor: "text-emerald-500",
     iconBg: "bg-emerald-500/10",
@@ -135,8 +135,8 @@ const premiumTools = [
 const expertTools = [
   {
     id: "analyse-action",
-    title: "Analyse Action IA",
-    description: "Analyse fondamentale complète avec recommandation style Equity Research.",
+    title: "Analyse Actions",
+    description: "Scoring IA et recommandation.",
     icon: LineChart,
     iconColor: "text-indigo-500",
     iconBg: "bg-indigo-500/10",
@@ -144,8 +144,8 @@ const expertTools = [
   },
   {
     id: "goal-based-investment",
-    title: "Conseiller IA Personnalisé",
-    description: "Décrivez votre objectif en langage naturel, l'IA construit votre stratégie.",
+    title: "Conseiller IA",
+    description: "Stratégie sur mesure par IA.",
     icon: MessageSquare,
     iconColor: "text-indigo-500",
     iconBg: "bg-indigo-500/10",
@@ -153,8 +153,8 @@ const expertTools = [
   },
   {
     id: "droits-succession",
-    title: "Droits de Succession",
-    description: "Estimez les droits à payer et optimisez la transmission de votre patrimoine.",
+    title: "Succession",
+    description: "Droits et optimisation transmission.",
     icon: Scale,
     iconColor: "text-purple-500",
     iconBg: "bg-purple-500/10",
@@ -162,8 +162,8 @@ const expertTools = [
   },
   {
     id: "comparateur-lmnp",
-    title: "Comparateur LMNP vs Location Nue",
-    description: "Comparez la fiscalité meublé vs vide avec simulation de plus-value 2025.",
+    title: "LMNP vs Nu",
+    description: "Comparatif fiscalité locative.",
     icon: Key,
     iconColor: "text-amber-500",
     iconBg: "bg-amber-500/10",
@@ -222,7 +222,7 @@ function ToolCard({ title, description, icon: Icon, iconColor, iconBg, path, bad
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <p className="font-medium text-foreground truncate">{title}</p>
+          <p className="font-medium text-foreground">{title}</p>
           {badge && (
             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${badgeColor}`}>
               {badge}
@@ -297,7 +297,7 @@ export default function Toolbox() {
                   <tool.icon className={`w-7 h-7 ${tool.iconColor}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground truncate">{tool.title}</p>
+                  <p className="font-semibold text-foreground">{tool.title}</p>
                   <p className="text-sm text-muted-foreground">{tool.description}</p>
                 </div>
               </button>
