@@ -96,6 +96,10 @@ serve(async (req) => {
       logStep("Subscription set to cancel at period end", { endDate });
     }
 
+    const periodEnd = canceledSubscription.current_period_end 
+      ? new Date(canceledSubscription.current_period_end * 1000).toISOString() 
+      : null;
+
     return new Response(JSON.stringify({
       success: true,
       message,
@@ -103,7 +107,7 @@ serve(async (req) => {
         id: canceledSubscription.id,
         status: canceledSubscription.status,
         cancel_at_period_end: canceledSubscription.cancel_at_period_end,
-        current_period_end: new Date(canceledSubscription.current_period_end * 1000).toISOString(),
+        current_period_end: periodEnd,
       }
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
