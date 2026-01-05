@@ -19,9 +19,14 @@ import {
   ChevronRight,
   ChevronLeft,
   Target,
-  X
+  X,
+  Circle,
+  Check
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRecommendationStatus, RecoStatus } from "@/hooks/useRecommendationStatus";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface Recommandation {
   titre: string;
@@ -50,7 +55,19 @@ interface RecommandationsIAProps {
   planAction?: { mois: string; action: string }[];
   scoreGlobal?: number;
   patrimoineTotal?: number;
+  diagnosticId?: string;
 }
+
+// Helper to generate a unique key for a recommendation
+const getRecoKey = (priority: string, index: number, titre: string): string => {
+  return `${priority}_${index}_${titre.slice(0, 20).replace(/\s/g, "_")}`;
+};
+
+const statusConfig: Record<RecoStatus, { label: string; icon: React.ComponentType<{ className?: string }>; color: string; bg: string }> = {
+  pending: { label: "À faire", icon: Circle, color: "text-muted-foreground", bg: "bg-muted" },
+  in_progress: { label: "En cours", icon: Clock, color: "text-amber-600", bg: "bg-amber-500/10" },
+  completed: { label: "Réalisée", icon: Check, color: "text-emerald-600", bg: "bg-emerald-500/10" },
+};
 
 // Fonction pour extraire un impact court et lisible
 const formatImpact = (impact: string): string => {
@@ -91,9 +108,12 @@ export function RecommandationsIA({
   planAction = [],
   scoreGlobal = 0,
   patrimoineTotal = 0,
+  diagnosticId,
 }: RecommandationsIAProps) {
   const [selectedReco, setSelectedReco] = useState<RecoWithPriority | null>(null);
   const [selectedAction, setSelectedAction] = useState<ActionWithIndex | null>(null);
+  
+  const { statuses, updateStatus, getCompletedCount } = useRecommendationStatus(diagnosticId);
 
   // Créer une liste plate de toutes les recommandations pour la navigation
   const allRecos: RecoWithPriority[] = [
@@ -237,44 +257,75 @@ export function RecommandationsIA({
     config: ReturnType<typeof getPriorityConfig>;
     priority: "haute" | "moyenne" | "longTerme";
     delay: number;
-  }) => (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: delay + index * 0.1 }}
-      onClick={() => handleRecoClick(reco, priority, index)}
-      className={`relative ${config.bg} ${config.border} border rounded-xl p-4 hover:shadow-md transition-all cursor-pointer group hover:scale-[1.01]`}
-    >
-      <div className="flex items-start gap-3">
-        {/* Numéro */}
-        <div className={`flex-shrink-0 w-7 h-7 rounded-full ${config.dot} text-white text-sm font-bold flex items-center justify-center`}>
-          {index + 1}
-        </div>
-        
-        {/* Contenu */}
-        <div className="flex-1 min-w-0">
-          {/* Header avec titre et badge */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-            <h4 className="font-semibold text-foreground text-sm leading-tight">
-              {reco.titre}
-            </h4>
-            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${config.badge}`}>
-              <TrendingUp className="w-3 h-3" />
-              {formatImpact(reco.impact)}
-            </span>
+  }) => {
+    const recoKey = getRecoKey(priority, index, reco.titre);
+    const currentStatus = statuses[recoKey] || "pending";
+    const statusInfo = statusConfig[currentStatus];
+    const StatusIcon = statusInfo.icon;
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: delay + index * 0.1 }}
+        onClick={() => handleRecoClick(reco, priority, index)}
+        className={cn(
+          "relative border rounded-xl p-4 hover:shadow-md transition-all cursor-pointer group hover:scale-[1.01]",
+          config.bg,
+          config.border,
+          currentStatus === "completed" && "opacity-75"
+        )}
+      >
+        <div className="flex items-start gap-3">
+          {/* Numéro */}
+          <div className={cn(
+            "flex-shrink-0 w-7 h-7 rounded-full text-white text-sm font-bold flex items-center justify-center",
+            currentStatus === "completed" ? "bg-emerald-500" : config.dot
+          )}>
+            {currentStatus === "completed" ? <Check className="w-4 h-4" /> : index + 1}
           </div>
           
-          {/* Description concise */}
-          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-            {reco.description}
-          </p>
+          {/* Contenu */}
+          <div className="flex-1 min-w-0">
+            {/* Header avec titre et badges */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+              <h4 className={cn(
+                "font-semibold text-foreground text-sm leading-tight",
+                currentStatus === "completed" && "line-through opacity-70"
+              )}>
+                {reco.titre}
+              </h4>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${config.badge}`}>
+                  <TrendingUp className="w-3 h-3" />
+                  {formatImpact(reco.impact)}
+                </span>
+                {/* Status Badge */}
+                {currentStatus !== "pending" && (
+                  <span className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap",
+                    statusInfo.bg,
+                    statusInfo.color
+                  )}>
+                    <StatusIcon className="w-3 h-3" />
+                    {statusInfo.label}
+                  </span>
+                )}
+              </div>
+            </div>
+            
+            {/* Description concise */}
+            <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+              {reco.description}
+            </p>
+          </div>
+          
+          {/* Chevron avec animation */}
+          <ChevronRight className="flex-shrink-0 w-5 h-5 text-muted-foreground/50 group-hover:text-primary transition-colors group-hover:translate-x-0.5" />
         </div>
-        
-        {/* Chevron avec animation */}
-        <ChevronRight className="flex-shrink-0 w-5 h-5 text-muted-foreground/50 group-hover:text-primary transition-colors group-hover:translate-x-0.5" />
-      </div>
-    </motion.div>
-  );
+      </motion.div>
+    );
+  };
 
   const renderSection = (
     recos: Recommandation[],
@@ -332,6 +383,26 @@ export function RecommandationsIA({
     const globalIndex = findRecoGlobalIndex(selectedReco);
     const canPrev = globalIndex > 0;
     const canNext = globalIndex < allRecos.length - 1;
+    
+    const recoKey = getRecoKey(selectedReco.priority, selectedReco.index, selectedReco.titre);
+    const currentStatus = statuses[recoKey] || "pending";
+
+    const handleStatusChange = async (newStatus: RecoStatus) => {
+      if (!diagnosticId) {
+        toast.error("Sauvegardez d'abord votre diagnostic");
+        return;
+      }
+      const success = await updateStatus(recoKey, newStatus);
+      if (success) {
+        toast.success(
+          newStatus === "completed" 
+            ? "Bravo ! Action marquée comme réalisée" 
+            : newStatus === "in_progress" 
+              ? "Action marquée en cours"
+              : "Statut mis à jour"
+        );
+      }
+    };
 
     return (
       <Dialog open={!!selectedReco} onOpenChange={() => setSelectedReco(null)}>
@@ -374,6 +445,36 @@ export function RecommandationsIA({
                 <p className="text-sm text-muted-foreground leading-relaxed">
                   {selectedReco.description}
                 </p>
+              </div>
+            </div>
+
+            {/* Statut de l'action */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CheckCircle2 className="w-4 h-4 text-violet-500" />
+                Statut de cette action
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {(["pending", "in_progress", "completed"] as RecoStatus[]).map((status) => {
+                  const sConfig = statusConfig[status];
+                  const SIcon = sConfig.icon;
+                  const isActive = currentStatus === status;
+                  return (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusChange(status)}
+                      className={cn(
+                        "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all border-2",
+                        isActive
+                          ? cn(sConfig.bg, sConfig.color, "border-current")
+                          : "bg-muted/50 text-muted-foreground border-transparent hover:bg-muted"
+                      )}
+                    >
+                      <SIcon className="w-4 h-4" />
+                      {sConfig.label}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>

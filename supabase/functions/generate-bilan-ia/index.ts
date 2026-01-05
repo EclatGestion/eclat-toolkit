@@ -129,11 +129,16 @@ serve(async (req) => {
       );
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL')!,
-      Deno.env.get('SUPABASE_ANON_KEY')!,
-      { global: { headers: { Authorization: authHeader } } }
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, { 
+      global: { headers: { Authorization: authHeader } } 
+    });
+    
+    // Service role client for updates
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
     if (authError || !user) {
@@ -155,7 +160,10 @@ serve(async (req) => {
       );
     }
     
-    console.log("[GENERATE-BILAN-IA] User", user.id, "requesting bilan analysis");
+    // Get diagnosticId if provided for saving recommendations
+    const diagnosticId = bilanData.diagnosticId;
+    
+    console.log("[GENERATE-BILAN-IA] User", user.id, "requesting bilan analysis", diagnosticId ? `for diagnostic ${diagnosticId}` : "");
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -328,6 +336,25 @@ Réponds UNIQUEMENT avec le JSON valide, sans markdown ni explication.`;
     }
 
     console.log("[GENERATE-BILAN-IA] Returning recommendations");
+    
+    // Save recommendations to diagnostic if diagnosticId provided
+    if (diagnosticId) {
+      try {
+        const { error: updateError } = await supabaseAdmin
+          .from("diagnostic_results")
+          .update({ ai_recommendations: recommandations })
+          .eq("id", diagnosticId)
+          .eq("user_id", user.id);
+        
+        if (updateError) {
+          console.error("[GENERATE-BILAN-IA] Error saving recommendations:", updateError);
+        } else {
+          console.log("[GENERATE-BILAN-IA] Recommendations saved to diagnostic", diagnosticId);
+        }
+      } catch (saveError) {
+        console.error("[GENERATE-BILAN-IA] Error saving recommendations:", saveError);
+      }
+    }
     
     return new Response(JSON.stringify(recommandations), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

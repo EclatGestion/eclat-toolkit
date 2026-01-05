@@ -402,6 +402,7 @@ export default function BilanPatrimonialAvance() {
     try {
       const { data, error } = await supabase.functions.invoke("generate-bilan-ia", {
         body: {
+          diagnosticId: currentDiagnosticId,
           financesScore: scores.finances,
           epargneScore: scores.epargne,
           immobilierScore: scores.immobilier,
@@ -726,6 +727,7 @@ export default function BilanPatrimonialAvance() {
               planAction={recommandations?.planAction}
               scoreGlobal={scoreGlobal}
               patrimoineTotal={patrimoineTotal}
+              diagnosticId={currentDiagnosticId || undefined}
             />
           </div>
         </TierLock>

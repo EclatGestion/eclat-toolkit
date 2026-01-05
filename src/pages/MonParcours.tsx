@@ -2,9 +2,10 @@ import { MainLayout } from "@/components/layout/MainLayout";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { usePremium } from "@/hooks/usePremium";
-import { useDiagnostics } from "@/hooks/useDiagnostics";
+import { useDiagnostics, AIRecommendations, Recommandation } from "@/hooks/useDiagnostics";
+import { useRecommendationStatus, RecoStatus } from "@/hooks/useRecommendationStatus";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { 
@@ -24,7 +25,12 @@ import {
   TrendingDown,
   FileText,
   Plus,
-  CalendarDays
+  CalendarDays,
+  AlertTriangle,
+  Lightbulb,
+  Check,
+  Circle,
+  CheckCircle2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
@@ -130,9 +136,47 @@ export default function MonParcours() {
   const hasDiagnostic = diagnostics.length > 0;
   const hasCompletedOnboarding = profile?.onboarding_completed;
 
+  // Get the latest diagnostic with AI recommendations
+  const latestDiagnosticWithRecos = useMemo(() => {
+    return diagnostics.find(d => d.ai_recommendations !== null && d.ai_recommendations !== undefined);
+  }, [diagnostics]);
+
+  // Get recommendations statuses for the latest diagnostic
+  const { statuses, updateStatus } = useRecommendationStatus(latestDiagnosticWithRecos?.id);
+
+  // Get priority actions from the latest diagnostic
+  const priorityActions = useMemo(() => {
+    if (!latestDiagnosticWithRecos?.ai_recommendations) return [];
+    
+    const recos = latestDiagnosticWithRecos.ai_recommendations;
+    const allRecos: Array<Recommandation & { priority: string; index: number; key: string }> = [];
+    
+    recos.haute?.forEach((r, i) => {
+      const key = `haute_${i}_${r.titre.slice(0, 20).replace(/\s/g, "_")}`;
+      allRecos.push({ ...r, priority: "haute", index: i, key });
+    });
+    recos.moyenne?.forEach((r, i) => {
+      const key = `moyenne_${i}_${r.titre.slice(0, 20).replace(/\s/g, "_")}`;
+      allRecos.push({ ...r, priority: "moyenne", index: i, key });
+    });
+    
+    // Filter out completed ones and take top 3
+    return allRecos
+      .filter(r => statuses[r.key] !== "completed")
+      .slice(0, 3);
+  }, [latestDiagnosticWithRecos, statuses]);
+
   const getNextStep = () => {
     if (!hasDiagnostic) {
       return { title: "Réalisez votre bilan patrimonial", path: "/tools/bilan-patrimonial", icon: Brain };
+    }
+    // If there are AI recommendations, show dynamic next step
+    if (priorityActions.length > 0) {
+      return { 
+        title: priorityActions[0].titre, 
+        path: `/tools/bilan-patrimonial?load=${latestDiagnosticWithRecos?.id}`, 
+        icon: AlertTriangle 
+      };
     }
     if (profile?.investment_goal === "reduire_impots") {
       return { title: "Optimisez votre fiscalité", path: "/tools/simulateur-ir", icon: Calculator };
@@ -209,25 +253,122 @@ export default function MonParcours() {
           </div>
         </motion.div>
 
-        {/* Prochaine étape */}
-        <motion.section variants={itemVariants}>
-          <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-            🎯 Votre prochaine étape
-          </h3>
-          <button
-            onClick={() => navigate(nextStep.path)}
-            className="w-full flex items-center gap-4 p-6 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left border-2 border-primary/20 hover:border-primary/40"
-          >
-            <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <nextStep.icon className="w-7 h-7 text-primary" />
+        {/* Mes actions prioritaires - Dynamique basé sur le dernier bilan */}
+        {priorityActions.length > 0 && latestDiagnosticWithRecos && (
+          <motion.section variants={itemVariants}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                ⚡ Mes actions prioritaires
+              </h3>
+              <span className="text-xs text-muted-foreground">
+                Basé sur votre bilan du {new Date(latestDiagnosticWithRecos.updated_at).toLocaleDateString("fr-FR")}
+              </span>
             </div>
-            <div className="flex-1">
-              <p className="font-semibold text-foreground text-lg">{nextStep.title}</p>
-              <p className="text-sm text-muted-foreground">Cliquez pour commencer</p>
+            
+            <div className="space-y-3">
+              {priorityActions.map((action, idx) => {
+                const currentStatus = statuses[action.key] || "pending";
+                const isCompleted = currentStatus === "completed";
+                const isInProgress = currentStatus === "in_progress";
+                
+                const priorityConfig = {
+                  haute: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+                  moyenne: { icon: Lightbulb, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+                }[action.priority] || { icon: Target, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" };
+                
+                const PriorityIcon = priorityConfig.icon;
+                
+                return (
+                  <div
+                    key={action.key}
+                    className={cn(
+                      "flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card border transition-all",
+                      priorityConfig.border
+                    )}
+                  >
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                      priorityConfig.bg
+                    )}>
+                      <PriorityIcon className={cn("w-5 h-5", priorityConfig.color)} />
+                    </div>
+                    
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "font-medium text-foreground",
+                        isCompleted && "line-through opacity-60"
+                      )}>
+                        {action.titre}
+                      </p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {action.description}
+                      </p>
+                    </div>
+                    
+                    {/* Status selector */}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => updateStatus(action.key, "in_progress")}
+                        className={cn(
+                          "p-2 rounded-lg transition-colors",
+                          isInProgress 
+                            ? "bg-amber-500/20 text-amber-600" 
+                            : "text-muted-foreground hover:bg-muted"
+                        )}
+                        title="En cours"
+                      >
+                        <Clock className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => updateStatus(action.key, "completed")}
+                        className={cn(
+                          "p-2 rounded-lg transition-colors",
+                          isCompleted 
+                            ? "bg-emerald-500/20 text-emerald-600" 
+                            : "text-muted-foreground hover:bg-muted"
+                        )}
+                        title="Réalisée"
+                      >
+                        <CheckCircle2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              <Button
+                variant="ghost"
+                onClick={() => navigate(`/tools/bilan-patrimonial?load=${latestDiagnosticWithRecos.id}`)}
+                className="w-full gap-2 text-muted-foreground hover:text-foreground"
+              >
+                Voir toutes mes recommandations
+                <ArrowRight className="w-4 h-4" />
+              </Button>
             </div>
-            <ArrowRight className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform" />
-          </button>
-        </motion.section>
+          </motion.section>
+        )}
+
+        {/* Prochaine étape - Affiché si pas de recommandations IA */}
+        {priorityActions.length === 0 && (
+          <motion.section variants={itemVariants}>
+            <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+              🎯 Votre prochaine étape
+            </h3>
+            <button
+              onClick={() => navigate(nextStep.path)}
+              className="w-full flex items-center gap-4 p-6 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all duration-200 group text-left border-2 border-primary/20 hover:border-primary/40"
+            >
+              <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <nextStep.icon className="w-7 h-7 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="font-semibold text-foreground text-lg">{nextStep.title}</p>
+                <p className="text-sm text-muted-foreground">Cliquez pour commencer</p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-primary group-hover:translate-x-1 transition-transform" />
+            </button>
+          </motion.section>
+        )}
 
         {/* Mes diagnostics sauvegardés */}
         <motion.section variants={itemVariants}>
