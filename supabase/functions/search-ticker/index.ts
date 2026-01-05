@@ -11,6 +11,49 @@ function validateQuery(query: string): boolean {
   return /^[A-Za-z0-9.\s-]{1,50}$/.test(query);
 }
 
+// Get Yahoo Finance authentication (cookie + crumb)
+async function getYahooAuth(): Promise<{ cookie: string; crumb: string } | null> {
+  try {
+    // Step 1: Get cookies from fc.yahoo.com
+    const cookieResponse = await fetch('https://fc.yahoo.com', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      },
+    });
+    
+    const setCookieHeader = cookieResponse.headers.get('set-cookie');
+    if (!setCookieHeader) {
+      console.error('No cookies received from fc.yahoo.com');
+      return null;
+    }
+    
+    // Extract all cookies
+    const cookies = setCookieHeader.split(',').map(c => c.split(';')[0].trim()).join('; ');
+    console.log('Got cookies from fc.yahoo.com');
+    
+    // Step 2: Get crumb using cookies
+    const crumbResponse = await fetch('https://query2.finance.yahoo.com/v1/test/getcrumb', {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Cookie': cookies,
+      },
+    });
+    
+    if (!crumbResponse.ok) {
+      console.error('Failed to get crumb:', crumbResponse.status);
+      return null;
+    }
+    
+    const crumb = await crumbResponse.text();
+    console.log('Got crumb from Yahoo Finance:', crumb.substring(0, 10) + '...');
+    
+    return { cookie: cookies, crumb };
+  } catch (error) {
+    console.error('Error getting Yahoo auth:', error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -61,17 +104,35 @@ serve(async (req) => {
 
     console.log(`[search-ticker] User ${user.id} searching for: ${query}`);
 
-    const searchUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0&enableFuzzyQuery=true&quotesQueryId=tss_match_phrase_query`;
+    // Get Yahoo Finance authentication
+    const auth = await getYahooAuth();
     
-    const response = await fetch(searchUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-      },
-    });
+    if (!auth) {
+      console.error('Failed to get Yahoo authentication, trying without auth');
+    }
+
+    const searchUrl = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0&enableFuzzyQuery=true&quotesQueryId=tss_match_phrase_query${auth ? `&crumb=${encodeURIComponent(auth.crumb)}` : ''}`;
+    
+    const headers: Record<string, string> = {
+      'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      'Accept': 'application/json',
+    };
+    
+    if (auth) {
+      headers['Cookie'] = auth.cookie;
+    }
+    
+    const response = await fetch(searchUrl, { headers });
 
     if (!response.ok) {
       console.error(`Yahoo search failed: ${response.status}`);
-      throw new Error(`Yahoo Finance search failed: ${response.status}`);
+      
+      // Fallback: return empty results instead of error to not break UX
+      // The user can still type the ticker directly
+      return new Response(
+        JSON.stringify({ quotes: [], fallback: true }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
@@ -96,9 +157,11 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     console.error('Search ticker error:', errorMessage);
+    
+    // Return empty results as fallback to not break UX
     return new Response(
-      JSON.stringify({ error: errorMessage, quotes: [] }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ quotes: [], error: errorMessage }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
