@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Crown, Diamond, Check, ArrowRight, Loader2, AlertCircle, Sparkles } from "lucide-react";
-import { usePremium, STRIPE_PRODUCTS } from "@/hooks/usePremium";
+import { Crown, Diamond, Check, ArrowRight, Loader2, AlertCircle, Sparkles, XCircle, AlertTriangle } from "lucide-react";
+import { usePremium } from "@/hooks/usePremium";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ interface SubscriptionChangeModalProps {
 
 type TierType = "premium" | "expert";
 type PlanType = "monthly" | "annual";
+type ModalStep = "plans" | "confirm-change" | "confirm-cancel";
 
 interface PlanOption {
   id: TierType;
@@ -72,7 +73,8 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
   const [selectedPlan, setSelectedPlan] = useState<TierType | null>(null);
   const [billingCycle, setBillingCycle] = useState<PlanType>("monthly");
   const [isLoading, setIsLoading] = useState(false);
-  const [confirmStep, setConfirmStep] = useState(false);
+  const [step, setStep] = useState<ModalStep>("plans");
+  const [cancelImmediate, setCancelImmediate] = useState(false);
 
   const currentTier = tier as TierType;
   const tierOrder = { free: 0, premium: 1, expert: 2 };
@@ -84,7 +86,7 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
   const handleSelectPlan = (planId: TierType) => {
     if (isCurrent(planId)) return;
     setSelectedPlan(planId);
-    setConfirmStep(true);
+    setStep("confirm-change");
   };
 
   const handleConfirmChange = async () => {
@@ -101,9 +103,7 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
       if (data?.success) {
         toast.success(data.message);
         await refreshSubscription();
-        onOpenChange(false);
-        setConfirmStep(false);
-        setSelectedPlan(null);
+        handleClose();
       } else {
         throw new Error(data?.message || "Échec de la mise à jour");
       }
@@ -115,9 +115,41 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
     }
   };
 
+  const handleCancelSubscription = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('cancel-subscription', {
+        body: { immediate: cancelImmediate }
+      });
+
+      if (error) throw error;
+
+      if (data?.success) {
+        toast.success(data.message);
+        await refreshSubscription();
+        handleClose();
+      } else {
+        throw new Error(data?.message || "Échec de l'annulation");
+      }
+    } catch (error) {
+      console.error("Error canceling subscription:", error);
+      toast.error(error instanceof Error ? error.message : "Impossible d'annuler l'abonnement");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleBack = () => {
-    setConfirmStep(false);
+    setStep("plans");
     setSelectedPlan(null);
+    setCancelImmediate(false);
+  };
+
+  const handleClose = () => {
+    onOpenChange(false);
+    setStep("plans");
+    setSelectedPlan(null);
+    setCancelImmediate(false);
   };
 
   const getButtonText = (planId: TierType) => {
@@ -141,16 +173,20 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
     : null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">
-            {confirmStep ? "Confirmer le changement" : "Changer de formule"}
+            {step === "confirm-cancel" 
+              ? "Annuler l'abonnement" 
+              : step === "confirm-change" 
+                ? "Confirmer le changement" 
+                : "Changer de formule"}
           </DialogTitle>
         </DialogHeader>
 
         <AnimatePresence mode="wait">
-          {!confirmStep ? (
+          {step === "plans" && (
             <motion.div
               key="plans"
               initial={{ opacity: 0, x: -20 }}
@@ -262,117 +298,230 @@ export function SubscriptionChangeModal({ open, onOpenChange }: SubscriptionChan
                   </ul>
                 </div>
               </div>
+
+              {/* Cancel subscription button */}
+              <div className="pt-4 border-t border-border">
+                <Button
+                  variant="ghost"
+                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/10 gap-2"
+                  onClick={() => setStep("confirm-cancel")}
+                >
+                  <XCircle className="w-4 h-4" />
+                  Annuler mon abonnement
+                </Button>
+              </div>
             </motion.div>
-          ) : (
+          )}
+
+          {step === "confirm-change" && selectedPlan && (
             <motion.div
-              key="confirm"
+              key="confirm-change"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
               className="space-y-6"
             >
-              {selectedPlan && (
-                <>
-                  {/* Change summary */}
-                  <div className="p-5 bg-muted/50 rounded-2xl space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center",
-                          currentTier === "premium" ? "bg-amber-500/10" : "bg-violet-500/10"
-                        )}>
-                          {currentTier === "premium" ? (
-                            <Crown className="w-5 h-5 text-amber-500" />
-                          ) : (
-                            <Diamond className="w-5 h-5 text-violet-500" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Actuel</p>
-                          <p className="font-medium text-foreground capitalize">{currentTier}</p>
-                        </div>
-                      </div>
-                      
-                      <ArrowRight className="w-5 h-5 text-muted-foreground" />
-                      
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center",
-                          selectedPlan === "premium" ? "bg-amber-500/10" : "bg-violet-500/10"
-                        )}>
-                          {selectedPlan === "premium" ? (
-                            <Crown className="w-5 h-5 text-amber-500" />
-                          ) : (
-                            <Diamond className="w-5 h-5 text-violet-500" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Nouveau</p>
-                          <p className="font-medium text-foreground capitalize">{selectedPlan}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Warning/Info based on change type */}
-                  <div className={cn(
-                    "p-4 rounded-xl flex items-start gap-3",
-                    isUpgrade(selectedPlan) ? "bg-emerald-500/10" : "bg-amber-500/10"
-                  )}>
-                    {isUpgrade(selectedPlan) ? (
-                      <Sparkles className="w-5 h-5 text-emerald-500 shrink-0" />
-                    ) : (
-                      <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-                    )}
-                    <div className="text-sm">
-                      {isUpgrade(selectedPlan) ? (
-                        <>
-                          <p className="font-medium text-foreground mb-1">Upgrade immédiat</p>
-                          <p className="text-muted-foreground">
-                            Votre abonnement sera mis à niveau immédiatement. Un prorata sera calculé 
-                            et facturé pour la période restante.
-                          </p>
-                        </>
+              {/* Change summary */}
+              <div className="p-5 bg-muted/50 rounded-2xl space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center",
+                      currentTier === "premium" ? "bg-amber-500/10" : "bg-violet-500/10"
+                    )}>
+                      {currentTier === "premium" ? (
+                        <Crown className="w-5 h-5 text-amber-500" />
                       ) : (
-                        <>
-                          <p className="font-medium text-foreground mb-1">Changement programmé</p>
-                          <p className="text-muted-foreground">
-                            Votre abonnement restera actif jusqu'au {renewalDate}. 
-                            Le nouveau plan prendra effet à cette date.
-                          </p>
-                        </>
+                        <Diamond className="w-5 h-5 text-violet-500" />
                       )}
                     </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Actuel</p>
+                      <p className="font-medium text-foreground capitalize">{currentTier}</p>
+                    </div>
                   </div>
-
-                  {/* Action buttons */}
-                  <div className="flex gap-3">
-                    <Button variant="outline" onClick={handleBack} className="flex-1">
-                      Retour
-                    </Button>
-                    <Button 
-                      onClick={handleConfirmChange} 
-                      disabled={isLoading}
-                      className={cn(
-                        "flex-1 gap-2",
-                        isUpgrade(selectedPlan) && "bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-                      )}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          Traitement...
-                        </>
+                  
+                  <ArrowRight className="w-5 h-5 text-muted-foreground" />
+                  
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-xl flex items-center justify-center",
+                      selectedPlan === "premium" ? "bg-amber-500/10" : "bg-violet-500/10"
+                    )}>
+                      {selectedPlan === "premium" ? (
+                        <Crown className="w-5 h-5 text-amber-500" />
                       ) : (
-                        <>
-                          Confirmer le changement
-                          <ArrowRight className="w-4 h-4" />
-                        </>
+                        <Diamond className="w-5 h-5 text-violet-500" />
                       )}
-                    </Button>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">Nouveau</p>
+                      <p className="font-medium text-foreground capitalize">{selectedPlan}</p>
+                    </div>
                   </div>
-                </>
-              )}
+                </div>
+              </div>
+
+              {/* Warning/Info based on change type */}
+              <div className={cn(
+                "p-4 rounded-xl flex items-start gap-3",
+                isUpgrade(selectedPlan) ? "bg-emerald-500/10" : "bg-amber-500/10"
+              )}>
+                {isUpgrade(selectedPlan) ? (
+                  <Sparkles className="w-5 h-5 text-emerald-500 shrink-0" />
+                ) : (
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                )}
+                <div className="text-sm">
+                  {isUpgrade(selectedPlan) ? (
+                    <>
+                      <p className="font-medium text-foreground mb-1">Upgrade immédiat</p>
+                      <p className="text-muted-foreground">
+                        Votre abonnement sera mis à niveau immédiatement. Un prorata sera calculé 
+                        et facturé pour la période restante.
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="font-medium text-foreground mb-1">Changement programmé</p>
+                      <p className="text-muted-foreground">
+                        Votre abonnement restera actif jusqu'au {renewalDate}. 
+                        Le nouveau plan prendra effet à cette date.
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={handleBack} className="flex-1">
+                  Retour
+                </Button>
+                <Button 
+                  onClick={handleConfirmChange} 
+                  disabled={isLoading}
+                  className={cn(
+                    "flex-1 gap-2",
+                    isUpgrade(selectedPlan) && "bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
+                  )}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Traitement...
+                    </>
+                  ) : (
+                    <>
+                      Confirmer le changement
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {step === "confirm-cancel" && (
+            <motion.div
+              key="confirm-cancel"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-6"
+            >
+              {/* Warning */}
+              <div className="p-5 bg-destructive/10 rounded-2xl flex items-start gap-4">
+                <AlertTriangle className="w-8 h-8 text-destructive shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-foreground mb-2">Êtes-vous sûr de vouloir annuler ?</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Vous perdrez l'accès à toutes les fonctionnalités premium, notamment :
+                  </p>
+                  <ul className="text-sm text-muted-foreground mt-2 space-y-1">
+                    <li>• Simulateurs avancés (IR, immobilier, succession...)</li>
+                    <li>• Recommandations IA personnalisées</li>
+                    <li>• Export PDF des bilans</li>
+                    <li>• Conseiller IA par objectifs</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Cancel options */}
+              <div className="space-y-3">
+                <p className="text-sm font-medium text-foreground">Quand souhaitez-vous annuler ?</p>
+                
+                <div
+                  className={cn(
+                    "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                    !cancelImmediate ? "border-primary bg-primary/5" : "border-border hover:border-muted-foreground/30"
+                  )}
+                  onClick={() => setCancelImmediate(false)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center",
+                      !cancelImmediate ? "border-primary" : "border-muted-foreground"
+                    )}>
+                      {!cancelImmediate && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">À la fin de la période</p>
+                      <p className="text-sm text-muted-foreground">
+                        Conservez l'accès jusqu'au {renewalDate}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={cn(
+                    "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                    cancelImmediate ? "border-destructive bg-destructive/5" : "border-border hover:border-muted-foreground/30"
+                  )}
+                  onClick={() => setCancelImmediate(true)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-5 h-5 rounded-full border-2 flex items-center justify-center",
+                      cancelImmediate ? "border-destructive" : "border-muted-foreground"
+                    )}>
+                      {cancelImmediate && <div className="w-2.5 h-2.5 rounded-full bg-destructive" />}
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Immédiatement</p>
+                      <p className="text-sm text-muted-foreground">
+                        Perte immédiate de l'accès premium (sans remboursement)
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={handleBack} className="flex-1">
+                  Retour
+                </Button>
+                <Button 
+                  variant="destructive"
+                  onClick={handleCancelSubscription} 
+                  disabled={isLoading}
+                  className="flex-1 gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Annulation...
+                    </>
+                  ) : (
+                    <>
+                      <XCircle className="w-4 h-4" />
+                      Confirmer l'annulation
+                    </>
+                  )}
+                </Button>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
