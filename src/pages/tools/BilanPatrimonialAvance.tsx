@@ -1,10 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { TierLock } from "@/components/premium/TierLock";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
 import { FinancesPersonnellesCard } from "@/components/simulators/bilan/FinancesPersonnellesCard";
 import { EpargneInvestissementsCard } from "@/components/simulators/bilan/EpargneInvestissementsCard";
 import { ImmobilierCard } from "@/components/simulators/bilan/ImmobilierCard";
@@ -14,10 +15,27 @@ import { ScoreRadarChart } from "@/components/simulators/bilan/ScoreRadarChart";
 import { PatrimoineDonutChart } from "@/components/simulators/bilan/PatrimoineDonutChart";
 import { RecommandationsIA } from "@/components/simulators/bilan/RecommandationsIA";
 import { useWealth } from "@/contexts/WealthContext";
+import { useDiagnostics, DiagnosticInput } from "@/hooks/useDiagnostics";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Brain, FileDown, Sparkles, Loader2 } from "lucide-react";
+import { Brain, FileDown, Sparkles, Loader2, Save, FolderOpen, Plus, Trash2 } from "lucide-react";
 import { exportBilanPdf } from "@/utils/bilanPdfExport";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const STORAGE_KEY = "eclat_diagnostic_data";
 
@@ -37,8 +55,19 @@ interface RecommandationsData {
 
 export default function BilanPatrimonialAvance() {
   const { totalRevenus, totalDepenses, epargneMensuelle } = useWealth();
-  const [searchParams] = useSearchParams();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const loadId = searchParams.get("load");
   const shouldRestore = searchParams.get("restore") === "true";
+  
+  const { diagnostics, createDiagnostic, updateDiagnostic, deleteDiagnostic, isLoading: diagnosticsLoading } = useDiagnostics();
+
+  // Current diagnostic being edited
+  const [currentDiagnosticId, setCurrentDiagnosticId] = useState<string | null>(null);
+  const [diagnosticName, setDiagnosticName] = useState("Mon diagnostic");
+  const [showSaveAsDialog, setShowSaveAsDialog] = useState(false);
+  const [newDiagnosticName, setNewDiagnosticName] = useState("");
 
   // Finances personnelles
   const [revenus, setRevenus] = useState(Math.round(totalRevenus / 12) || 4000);
@@ -73,11 +102,26 @@ export default function BilanPatrimonialAvance() {
   // IA State
   const [isLoadingIA, setIsLoadingIA] = useState(false);
   const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [recommandations, setRecommandations] = useState<RecommandationsData | null>(null);
 
-  // Restore data from localStorage if coming from /diagnostic
+  // Load diagnostic from URL param
   useEffect(() => {
-    if (shouldRestore) {
+    if (loadId && diagnostics.length > 0) {
+      const diagnostic = diagnostics.find(d => d.id === loadId);
+      if (diagnostic) {
+        loadDiagnosticData(diagnostic);
+        setCurrentDiagnosticId(diagnostic.id);
+        setDiagnosticName(diagnostic.name);
+        // Clear the URL param
+        setSearchParams({});
+      }
+    }
+  }, [loadId, diagnostics]);
+
+  // Restore from localStorage (coming from public diagnostic)
+  useEffect(() => {
+    if (shouldRestore && !loadId) {
       try {
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (savedData) {
@@ -102,15 +146,38 @@ export default function BilanPatrimonialAvance() {
           setNombreEnfants(data.nombreEnfants ?? nombreEnfants);
           setDonationsRealisees(data.donationsRealisees ?? donationsRealisees);
           setAssuranceVieBeneficiaire(data.assuranceVieBeneficiaire ?? assuranceVieBeneficiaire);
-          toast.success("Vos données ont été restaurées !");
-          // Clear the localStorage after restoring
+          toast.success("Données du diagnostic restaurées !");
           localStorage.removeItem(STORAGE_KEY);
+          setSearchParams({});
         }
       } catch (e) {
         console.error("Error restoring diagnostic data:", e);
       }
     }
-  }, [shouldRestore]);
+  }, [shouldRestore, loadId]);
+
+  const loadDiagnosticData = (diagnostic: any) => {
+    setRevenus(diagnostic.revenus || 4000);
+    setDepenses(diagnostic.depenses || 2500);
+    setEpargne(diagnostic.epargne || 500);
+    setCreditsRestants(diagnostic.credits_restants || 0);
+    setLiquidites(diagnostic.liquidites || 15000);
+    setAssuranceVie(diagnostic.assurance_vie || 0);
+    setPer(diagnostic.per || 0);
+    setPeaCto(diagnostic.pea_cto || 0);
+    setResidencePrincipale(diagnostic.residence_principale || 0);
+    setImmobilierLocatif(diagnostic.immobilier_locatif || 0);
+    setLoyersPercus(diagnostic.loyers_percus || 0);
+    setCreditsImmo(diagnostic.credits_immo || 0);
+    setRevenusImposables(diagnostic.revenus_imposables || revenus * 12);
+    setTmi(diagnostic.tmi || 30);
+    setPerUtilise(diagnostic.per_utilise || false);
+    setLmnpUtilise(diagnostic.lmnp_utilise || false);
+    setSituationFamiliale(diagnostic.situation_familiale || "marie");
+    setNombreEnfants(diagnostic.nombre_enfants || 2);
+    setDonationsRealisees(diagnostic.donations_realisees || 0);
+    setAssuranceVieBeneficiaire(diagnostic.assurance_vie_beneficiaire || false);
+  };
 
   // Refs for chart capture
   const radarChartRef = useRef<HTMLDivElement>(null);
@@ -167,6 +234,111 @@ export default function BilanPatrimonialAvance() {
   }, [revenus, epargne, creditsRestants, liquidites, assuranceVie, per, peaCto, patrimoineTotal, repartitionPatrimoine, immobilierLocatif, loyersPercus, perUtilise, lmnpUtilise, tmi, assuranceVieBeneficiaire, donationsRealisees, nombreEnfants, situationFamiliale]);
 
   const scoreGlobal = Math.round((scores.finances + scores.epargne + scores.immobilier + scores.fiscalite + scores.transmission) / 5);
+
+  const getDiagnosticInput = (): DiagnosticInput => ({
+    name: diagnosticName,
+    revenus,
+    depenses,
+    epargne,
+    credits_restants: creditsRestants,
+    liquidites,
+    assurance_vie: assuranceVie,
+    per,
+    pea_cto: peaCto,
+    residence_principale: residencePrincipale,
+    immobilier_locatif: immobilierLocatif,
+    loyers_percus: loyersPercus,
+    credits_immo: creditsImmo,
+    revenus_imposables: revenusImposables,
+    tmi,
+    per_utilise: perUtilise,
+    lmnp_utilise: lmnpUtilise,
+    situation_familiale: situationFamiliale,
+    nombre_enfants: nombreEnfants,
+    donations_realisees: donationsRealisees,
+    assurance_vie_beneficiaire: assuranceVieBeneficiaire,
+    score_global: scoreGlobal,
+    patrimoine_total: patrimoineTotal,
+  });
+
+  const handleSave = async () => {
+    if (!user) {
+      toast.error("Connectez-vous pour sauvegarder");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (currentDiagnosticId) {
+        const success = await updateDiagnostic(currentDiagnosticId, getDiagnosticInput());
+        if (success) toast.success("Diagnostic mis à jour !");
+      } else {
+        const created = await createDiagnostic(getDiagnosticInput());
+        if (created) {
+          setCurrentDiagnosticId(created.id);
+          toast.success("Diagnostic sauvegardé !");
+        }
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleSaveAs = async () => {
+    if (!user || !newDiagnosticName.trim()) return;
+
+    setIsSaving(true);
+    try {
+      const created = await createDiagnostic({
+        ...getDiagnosticInput(),
+        name: newDiagnosticName.trim(),
+      });
+      if (created) {
+        setCurrentDiagnosticId(created.id);
+        setDiagnosticName(newDiagnosticName.trim());
+        toast.success("Nouveau diagnostic créé !");
+      }
+    } finally {
+      setIsSaving(false);
+      setShowSaveAsDialog(false);
+      setNewDiagnosticName("");
+    }
+  };
+
+  const handleNew = () => {
+    setCurrentDiagnosticId(null);
+    setDiagnosticName("Nouveau diagnostic");
+    setRevenus(4000);
+    setDepenses(2500);
+    setEpargne(500);
+    setCreditsRestants(0);
+    setLiquidites(15000);
+    setAssuranceVie(0);
+    setPer(0);
+    setPeaCto(0);
+    setResidencePrincipale(0);
+    setImmobilierLocatif(0);
+    setLoyersPercus(0);
+    setCreditsImmo(0);
+    setRevenusImposables(48000);
+    setTmi(30);
+    setPerUtilise(false);
+    setLmnpUtilise(false);
+    setSituationFamiliale("marie");
+    setNombreEnfants(2);
+    setDonationsRealisees(0);
+    setAssuranceVieBeneficiaire(false);
+    setRecommandations(null);
+  };
+
+  const handleDelete = async () => {
+    if (!currentDiagnosticId) return;
+    
+    const success = await deleteDiagnostic(currentDiagnosticId);
+    if (success) {
+      handleNew();
+    }
+  };
 
   const handleGenerateBilan = async () => {
     setIsLoadingIA(true);
@@ -243,14 +415,95 @@ export default function BilanPatrimonialAvance() {
   return (
     <MainLayout title="Bilan Patrimonial Avancé">
       <div className="space-y-8 pb-8">
-        {/* Header */}
+        {/* Header with Save Actions */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
               <Brain className="w-7 h-7 text-primary" />
               Bilan Patrimonial Avancé
             </h1>
-            <p className="text-muted-foreground">Analyse complète avec recommandations IA personnalisées</p>
+            <div className="flex items-center gap-2 mt-1">
+              <Input
+                value={diagnosticName}
+                onChange={(e) => setDiagnosticName(e.target.value)}
+                className="h-8 w-48 text-sm bg-transparent border-dashed"
+                placeholder="Nom du diagnostic"
+              />
+              {currentDiagnosticId && (
+                <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+                  Sauvegardé
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Dropdown for loading diagnostics */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <FolderOpen className="w-4 h-4" />
+                  Ouvrir
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={handleNew}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nouveau diagnostic
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {diagnosticsLoading ? (
+                  <DropdownMenuItem disabled>Chargement...</DropdownMenuItem>
+                ) : diagnostics.length === 0 ? (
+                  <DropdownMenuItem disabled>Aucun diagnostic</DropdownMenuItem>
+                ) : (
+                  diagnostics.map((diag) => (
+                    <DropdownMenuItem
+                      key={diag.id}
+                      onClick={() => {
+                        loadDiagnosticData(diag);
+                        setCurrentDiagnosticId(diag.id);
+                        setDiagnosticName(diag.name);
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{diag.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          Score: {diag.score_global}/100 • {new Date(diag.updated_at).toLocaleDateString("fr-FR")}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Save button */}
+            <Button onClick={handleSave} disabled={isSaving} size="sm" className="gap-2">
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {currentDiagnosticId ? "Mettre à jour" : "Sauvegarder"}
+            </Button>
+
+            {/* Save As button */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                setNewDiagnosticName(diagnosticName + " (copie)");
+                setShowSaveAsDialog(true);
+              }}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Dupliquer
+            </Button>
+
+            {/* Delete button */}
+            {currentDiagnosticId && (
+              <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            )}
           </div>
         </div>
 
@@ -328,7 +581,7 @@ export default function BilanPatrimonialAvance() {
           </AccordionItem>
         </Accordion>
 
-        {/* Results Section - FREE for all users */}
+        {/* Results Section */}
         <Card className="border-0 shadow-lg">
           <CardHeader>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -336,7 +589,6 @@ export default function BilanPatrimonialAvance() {
                 <CardTitle className="text-xl">📊 Vos Résultats</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">Analyse basée sur vos données</p>
               </div>
-              {/* Score interpretation badge */}
               <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
                 scoreGlobal >= 70 
                   ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30" 
@@ -376,14 +628,12 @@ export default function BilanPatrimonialAvance() {
         {/* AI Recommendations - PREMIUM LOCKED */}
         <TierLock requiredTier="premium" featureName="Recommandations IA" variant="section">
           <div className="space-y-6">
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button onClick={handleGenerateBilan} disabled={isLoadingIA} className="gap-2" size="lg">
                 {isLoadingIA ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 {isLoadingIA ? "Analyse en cours..." : "Générer le bilan IA"}
               </Button>
               
-              {/* PDF Export - EXPERT LOCKED */}
               <TierLock requiredTier="expert" featureName="Export PDF Premium" variant="inline">
                 <Button variant="outline" onClick={handleExportPDF} disabled={!recommandations || isExportingPDF} className="gap-2" size="lg">
                   {isExportingPDF ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileDown className="w-4 h-4" />}
@@ -392,7 +642,6 @@ export default function BilanPatrimonialAvance() {
               </TierLock>
             </div>
 
-            {/* IA Recommendations */}
             <RecommandationsIA
               isLoading={isLoadingIA}
               synthese={recommandations?.synthese}
@@ -406,6 +655,34 @@ export default function BilanPatrimonialAvance() {
           </div>
         </TierLock>
       </div>
+
+      {/* Save As Dialog */}
+      <Dialog open={showSaveAsDialog} onOpenChange={setShowSaveAsDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Dupliquer le diagnostic</DialogTitle>
+            <DialogDescription>
+              Créez une copie de ce diagnostic pour tester différents scénarios.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Input
+              value={newDiagnosticName}
+              onChange={(e) => setNewDiagnosticName(e.target.value)}
+              placeholder="Nom du nouveau diagnostic"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSaveAsDialog(false)}>
+              Annuler
+            </Button>
+            <Button onClick={handleSaveAs} disabled={isSaving || !newDiagnosticName.trim()}>
+              {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Créer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </MainLayout>
   );
 }
