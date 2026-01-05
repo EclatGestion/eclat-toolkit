@@ -15,8 +15,8 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
 // Product and price mapping
 const TIER_PRODUCTS = {
   premium: {
-    monthly: { product_id: "prod_TY2MOQ5r4jvvuO", price_id: "price_1SYUhnCqNxHTprKBLJ7j1pBW" },
-    annual: { product_id: "prod_TY2NnrRNxrpsyC", price_id: "price_1SYUiSCqNxHTprKBtHYqNYrH" },
+    monthly: { product_id: "prod_TY2MOQ5r4jvvuO", price_id: "price_1SawI8CqNxHTprKBsizT359K" },
+    annual: { product_id: "prod_TY2NnrRNxrpsyC", price_id: "price_1SawIUCqNxHTprKByywy8Kw6" },
   },
   expert: {
     monthly: { product_id: "prod_TZZ1CE1G03xadZ", price_id: "price_1ScPt8CqNxHTprKBcSzg2cLY" },
