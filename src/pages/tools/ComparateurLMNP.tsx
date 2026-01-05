@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
-import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle, TrendingUp, Scale, CheckCircle } from "lucide-react";
+import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, MapPin, AlertTriangle, TrendingUp, Scale, CheckCircle, Zap } from "lucide-react";
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
+import { ComparisonSummary } from "@/components/simulators/lmnp/ComparisonSummary";
+import { ResultCard } from "@/components/simulators/lmnp/ResultCard";
 import { TierLock } from "@/components/premium/TierLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
@@ -947,87 +949,60 @@ export default function ComparateurLMNP() {
 
           {/* COLONNE DROITE: RÉSULTATS */}
           <div className="space-y-6">
+            {/* Indicateur calcul en temps réel */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              Calcul automatique en temps réel
+            </div>
+
+            {/* Synthèse Comparative */}
+            <ComparisonSummary
+              impotLocationNue={resultatLocationNue.impotTotal}
+              impotLMNP={resultatLMNP.impotTotal}
+              cashflowLocationNue={resultatLocationNue.cashflowNet}
+              cashflowLMNP={resultatLMNP.cashflowNet}
+              formatCurrency={formatCurrency}
+            />
+
             {/* Graphique Comparatif */}
             <Card className="rounded-2xl">
               <CardHeader className="pb-2">
-                <CardTitle className="text-base">Impôt Annuel Comparé</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Zap className="w-4 h-4 text-amber-500" />
+                  Comparaison Fiscale
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <ComparisonBarChart locationNue={resultatLocationNue.impotTotal} lmnp={resultatLMNP.impotTotal} />
               </CardContent>
             </Card>
 
-            {/* Cartes de Résultats */}
+            {/* Cartes de Résultats Détaillées */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Carte Location Nue */}
-              <Card className={`rounded-2xl border-l-4 ${!lmnpGagnant ? "border-l-primary bg-primary/5 dark:bg-primary/10" : "border-l-primary"}`}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Home className="w-4 h-4 text-primary" />
-                    Location Nue
-                    <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                      {resultatLocationNue.regimeChoisi}
-                    </span>
-                    {!lmnpGagnant && (
-                      <span className="ml-auto px-2 py-0.5 bg-primary text-primary-foreground text-xs rounded-full">GAGNANT</span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Loyers annuels</span>
-                    <span className="font-medium">{formatCurrency(resultatLocationNue.loyersAnnuels)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Base imposable</span>
-                    <span className="font-medium">{formatCurrency(resultatLocationNue.baseImposable)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm border-t pt-2">
-                    <span className="text-muted-foreground">Impôt total</span>
-                    <span className="font-bold text-destructive">{formatCurrency(resultatLocationNue.impotTotal)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm border-t pt-2">
-                    <span className="text-muted-foreground">Cashflow net</span>
-                    <span className="font-semibold">{formatCurrency(resultatLocationNue.cashflowNet)}</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Carte LMNP */}
-              <Card className={`rounded-2xl border-l-4 ${lmnpGagnant ? "border-l-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20" : "border-l-emerald-500"}`}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-sm">
-                    <Sofa className="w-4 h-4 text-emerald-500" />
-                    LMNP
-                    <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
-                      {resultatLMNP.regimeChoisi}
-                    </span>
-                    {lmnpGagnant && (
-                      <span className="ml-auto px-2 py-0.5 bg-emerald-500 text-white text-xs rounded-full">GAGNANT</span>
-                    )}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Loyers annuels</span>
-                    <span className="font-medium">{formatCurrency(resultatLMNP.loyersAnnuels)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Base imposable</span>
-                    <span className="font-medium">{formatCurrency(resultatLMNP.baseImposable)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm border-t pt-2">
-                    <span className="text-muted-foreground">Impôt total</span>
-                    <span className={`font-bold ${resultatLMNP.impotTotal === 0 ? "text-emerald-600" : "text-amber-600"}`}>
-                      {formatCurrency(resultatLMNP.impotTotal)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm border-t pt-2">
-                    <span className="text-muted-foreground">Cashflow net</span>
-                    <span className="font-semibold">{formatCurrency(resultatLMNP.cashflowNet)}</span>
-                  </div>
-                </CardContent>
-              </Card>
+              <ResultCard
+                title="Location Nue"
+                icon={Home}
+                regime={resultatLocationNue.regimeChoisi}
+                isWinner={!lmnpGagnant}
+                loyersAnnuels={resultatLocationNue.loyersAnnuels}
+                baseImposable={resultatLocationNue.baseImposable}
+                impotTotal={resultatLocationNue.impotTotal}
+                cashflowNet={resultatLocationNue.cashflowNet}
+                formatCurrency={formatCurrency}
+                variant="primary"
+              />
+              <ResultCard
+                title="LMNP"
+                icon={Sofa}
+                regime={resultatLMNP.regimeChoisi}
+                isWinner={lmnpGagnant}
+                loyersAnnuels={resultatLMNP.loyersAnnuels}
+                baseImposable={resultatLMNP.baseImposable}
+                impotTotal={resultatLMNP.impotTotal}
+                cashflowNet={resultatLMNP.cashflowNet}
+                formatCurrency={formatCurrency}
+                variant="emerald"
+              />
             </div>
 
             {/* Résultats Plus-Value */}
@@ -1267,20 +1242,7 @@ export default function ComparateurLMNP() {
               </CardContent>
             </Card>
 
-            {/* Bandeau Conseil */}
-            {economieAnnuelle > 500 && (
-              <Card className="rounded-2xl bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-950/30 dark:to-blue-950/30 border-0">
-                <CardContent className="py-4">
-                  <div className="flex items-start gap-3">
-                    <Lightbulb className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-foreground">En passant en meublé, vous économisez {formatCurrency(economieAnnuelle)} d'impôts par an</p>
-                      <p className="text-sm text-muted-foreground mt-1">Soit environ {formatCurrency(economieAnnuelle * 10)} sur 10 ans grâce aux amortissements</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+            {/* Note: Le bandeau conseil est maintenant intégré dans ComparisonSummary */}
 
             {/* Alerte LMP */}
             {resultatLMNP.alerteLMP && (
