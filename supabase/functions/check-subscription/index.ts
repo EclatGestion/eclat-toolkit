@@ -53,7 +53,7 @@ serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      logStep("No authorization header");
+      logStep("No authorization header - returning free tier");
       return new Response(JSON.stringify({ 
         subscribed: false, 
         tier: "free",
@@ -61,7 +61,7 @@ serve(async (req) => {
         subscription_end: null,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
+        status: 200, // Return 200 so client doesn't throw error
       });
     }
 
@@ -76,7 +76,7 @@ serve(async (req) => {
         subscription_end: null,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 401,
+        status: 200, // Return 200 so client doesn't throw error
       });
     }
     const user = userData.user;
