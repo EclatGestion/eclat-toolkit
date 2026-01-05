@@ -5,7 +5,8 @@ import { ProfileSettingsModal } from "@/components/settings/ProfileSettingsModal
 import { NotificationSettingsModal } from "@/components/settings/NotificationSettingsModal";
 import { SecuritySettingsModal } from "@/components/settings/SecuritySettingsModal";
 import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
-import { User, Bell, Shield, CreditCard, ChevronRight, LogOut, Trash2 } from "lucide-react";
+import { DataExportModal } from "@/components/settings/DataExportModal";
+import { User, Bell, Shield, CreditCard, ChevronRight, LogOut, Trash2, Download } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -34,6 +35,14 @@ const settingsSections = [
     icon: Shield,
     iconColor: "text-emerald-500",
     iconBg: "bg-emerald-500/10",
+  },
+  {
+    id: "export",
+    title: "Exporter mes données",
+    description: "Télécharger une copie de vos données (RGPD)",
+    icon: Download,
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10",
   },
 ];
 
@@ -153,6 +162,10 @@ export default function Settings() {
       <SecuritySettingsModal 
         open={openModal === "security"} 
         onOpenChange={(open) => setOpenModal(open ? "security" : null)} 
+      />
+      <DataExportModal 
+        open={openModal === "export"} 
+        onOpenChange={(open) => setOpenModal(open ? "export" : null)} 
       />
       <DeleteAccountModal 
         open={showDeleteModal} 
