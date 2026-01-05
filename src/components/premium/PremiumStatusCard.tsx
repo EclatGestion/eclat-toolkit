@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Crown, CreditCard, Calendar, ExternalLink, Diamond, Loader2, History, ArrowUpRight, FileText } from "lucide-react";
+import { Sparkles, Crown, CreditCard, Calendar, ExternalLink, Diamond, Loader2, History, ArrowUpRight, FileText, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePremium } from "@/hooks/usePremium";
 import { UpgradePremiumModal } from "./UpgradePremiumModal";
+import { SubscriptionChangeModal } from "./SubscriptionChangeModal";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
 const PLAN_PRICES = {
   premium: { monthly: "5,99€/mois", annual: "49,99€/an" },
   expert: { monthly: "14,99€/mois", annual: "149,99€/an" },
@@ -32,11 +32,11 @@ interface Invoice {
 export function PremiumStatusCard() {
   const { tier, isPremium, isExpert, isLoading, subscriptionData } = usePremium();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isChangeModalOpen, setIsChangeModalOpen] = useState(false);
   const [isManaging, setIsManaging] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
-
   const handleManageSubscription = async () => {
     setIsManaging(true);
     try {
@@ -159,6 +159,15 @@ export function PremiumStatusCard() {
 
         <div className="flex flex-wrap gap-3 mb-4">
           <Button 
+            variant="default" 
+            size="sm" 
+            className="gap-2"
+            onClick={() => setIsChangeModalOpen(true)}
+          >
+            <RefreshCw className="w-4 h-4" />
+            Changer de formule
+          </Button>
+          <Button 
             variant="outline" 
             size="sm" 
             className="gap-2"
@@ -170,7 +179,7 @@ export function PremiumStatusCard() {
             ) : (
               <ExternalLink className="w-4 h-4" />
             )}
-            Gérer l'abonnement
+            Facturation
           </Button>
           <Button 
             variant="ghost" 
@@ -188,11 +197,10 @@ export function PremiumStatusCard() {
           </Button>
         </div>
 
-        {/* Upgrade/Downgrade hint */}
-        <p className="text-xs text-muted-foreground mb-4">
-          Pour changer de formule (upgrade vers Expert ou passer à une offre inférieure), 
-          cliquez sur "Gérer l'abonnement" pour accéder au portail de gestion.
-        </p>
+        <SubscriptionChangeModal 
+          open={isChangeModalOpen} 
+          onOpenChange={setIsChangeModalOpen} 
+        />
 
         {/* Payment History */}
         {showHistory && (
