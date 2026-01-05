@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { ProductCard } from "@/components/academy/ProductCard";
-import { getProductsByCategory, FinancialProduct } from "@/data/financialProducts";
+import { ProductModal } from "@/components/academy/ProductModal";
+import { getProductsByCategory, financialProducts, FinancialProduct } from "@/data/financialProducts";
 import { cn } from "@/lib/utils";
 
 type CategoryFilter = "all" | FinancialProduct["category"];
@@ -19,8 +21,23 @@ const filters: { id: CategoryFilter; label: string }[] = [
 ];
 
 export default function Academie() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
+  const [selectedProduct, setSelectedProduct] = useState<FinancialProduct | null>(null);
   const products = getProductsByCategory(activeFilter);
+
+  // Handle product param from URL (from ActionDetailModal navigation)
+  useEffect(() => {
+    const productId = searchParams.get("product");
+    if (productId) {
+      const product = financialProducts.find(p => p.id === productId);
+      if (product) {
+        setSelectedProduct(product);
+        // Clean up URL after opening modal
+        setSearchParams({}, { replace: true });
+      }
+    }
+  }, [searchParams, setSearchParams]);
 
   return (
     <MainLayout title="Académie Financière">
@@ -63,6 +80,13 @@ export default function Academie() {
           </div>
         )}
       </div>
+
+      {/* Product Modal */}
+      <ProductModal
+        product={selectedProduct}
+        open={!!selectedProduct}
+        onOpenChange={(open) => !open && setSelectedProduct(null)}
+      />
     </MainLayout>
   );
 }
