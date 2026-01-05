@@ -329,13 +329,30 @@ export default function BilanPatrimonialAvance() {
         </Accordion>
 
         {/* Results Section - FREE for all users */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Scores par Pilier</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <Card className="border-0 shadow-lg">
+          <CardHeader>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <CardTitle className="text-xl">📊 Vos Résultats</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">Analyse basée sur vos données</p>
+              </div>
+              {/* Score interpretation badge */}
+              <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
+                scoreGlobal >= 70 
+                  ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/30" 
+                  : scoreGlobal >= 50 
+                    ? "bg-amber-500/10 text-amber-600 border border-amber-500/30"
+                    : "bg-red-500/10 text-red-600 border border-red-500/30"
+              }`}>
+                {scoreGlobal >= 70 ? "✓ Excellent" : scoreGlobal >= 50 ? "⚠ À améliorer" : "⚡ Action requise"}
+                {" • "}Score : {scoreGlobal}/100
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div ref={radarChartRef}>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Scores par Pilier</h3>
                 <ScoreRadarChart
                   financesScore={scores.finances}
                   epargneScore={scores.epargne}
@@ -344,24 +361,17 @@ export default function BilanPatrimonialAvance() {
                   transmissionScore={scores.transmission}
                 />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-0 shadow-lg">
-            <CardHeader>
-              <CardTitle>Répartition du Patrimoine</CardTitle>
-            </CardHeader>
-            <CardContent>
               <div ref={donutChartRef}>
+                <h3 className="text-sm font-medium text-muted-foreground mb-3">Répartition du Patrimoine</h3>
                 <PatrimoineDonutChart
                   immobilier={residencePrincipale + immobilierLocatif - creditsImmo}
                   financier={assuranceVie + per + peaCto}
                   liquidites={liquidites}
                 />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* AI Recommendations - PREMIUM LOCKED */}
         <TierLock requiredTier="premium" featureName="Recommandations IA" variant="section">
@@ -390,6 +400,8 @@ export default function BilanPatrimonialAvance() {
               moyenne={recommandations?.moyenne}
               longTerme={recommandations?.longTerme}
               planAction={recommandations?.planAction}
+              scoreGlobal={scoreGlobal}
+              patrimoineTotal={patrimoineTotal}
             />
           </div>
         </TierLock>

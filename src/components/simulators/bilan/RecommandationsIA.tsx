@@ -8,7 +8,6 @@ import {
   Loader2,
   TrendingUp,
   PiggyBank,
-  Target,
   ArrowRight,
   CheckCircle2
 } from "lucide-react";
@@ -84,12 +83,7 @@ export function RecommandationsIA({
   };
 
   const potentielAnnuel = calculatePotentiel();
-
-  const getScoreColor = (score: number) => {
-    if (score >= 70) return "text-emerald-500";
-    if (score >= 50) return "text-amber-500";
-    return "text-red-500";
-  };
+  const actionsUrgentes = haute.length;
 
   const getPriorityIcon = (priority: "haute" | "moyenne" | "longTerme") => {
     switch (priority) {
@@ -232,10 +226,10 @@ export function RecommandationsIA({
               {/* KPI Cards */}
               <div className="grid grid-cols-3 gap-3">
                 <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 text-center border border-border/50">
-                  <Target className="w-5 h-5 mx-auto mb-2 text-primary" />
-                  <div className="text-xs text-muted-foreground mb-1">Score Global</div>
-                  <div className={`text-2xl font-bold ${getScoreColor(scoreGlobal)}`}>
-                    {scoreGlobal}<span className="text-sm text-muted-foreground">/100</span>
+                  <AlertTriangle className={`w-5 h-5 mx-auto mb-2 ${actionsUrgentes > 0 ? "text-red-500" : "text-emerald-500"}`} />
+                  <div className="text-xs text-muted-foreground mb-1">Actions Urgentes</div>
+                  <div className={`text-2xl font-bold ${actionsUrgentes > 0 ? "text-red-500" : "text-emerald-500"}`}>
+                    {actionsUrgentes}
                   </div>
                 </div>
                 <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 text-center border border-border/50">
