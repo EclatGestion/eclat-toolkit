@@ -1,4 +1,12 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { 
   Sparkles, 
   AlertTriangle, 
@@ -9,7 +17,9 @@ import {
   PiggyBank,
   CheckCircle2,
   ChevronRight,
-  Target
+  ChevronLeft,
+  Target,
+  X
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -17,6 +27,18 @@ interface Recommandation {
   titre: string;
   description: string;
   impact: string;
+}
+
+interface RecoWithPriority extends Recommandation {
+  priority: "haute" | "moyenne" | "longTerme";
+  index: number;
+}
+
+interface ActionWithIndex {
+  mois: string;
+  action: string;
+  index: number;
+  total: number;
 }
 
 interface RecommandationsIAProps {
@@ -70,6 +92,43 @@ export function RecommandationsIA({
   scoreGlobal = 0,
   patrimoineTotal = 0,
 }: RecommandationsIAProps) {
+  const [selectedReco, setSelectedReco] = useState<RecoWithPriority | null>(null);
+  const [selectedAction, setSelectedAction] = useState<ActionWithIndex | null>(null);
+
+  // Créer une liste plate de toutes les recommandations pour la navigation
+  const allRecos: RecoWithPriority[] = [
+    ...haute.map((r, i) => ({ ...r, priority: "haute" as const, index: i })),
+    ...moyenne.map((r, i) => ({ ...r, priority: "moyenne" as const, index: i })),
+    ...longTerme.map((r, i) => ({ ...r, priority: "longTerme" as const, index: i })),
+  ];
+
+  const findRecoGlobalIndex = (reco: RecoWithPriority) => {
+    return allRecos.findIndex(
+      r => r.priority === reco.priority && r.index === reco.index
+    );
+  };
+
+  const navigateReco = (direction: "prev" | "next") => {
+    if (!selectedReco) return;
+    const currentIndex = findRecoGlobalIndex(selectedReco);
+    const newIndex = direction === "next" ? currentIndex + 1 : currentIndex - 1;
+    if (newIndex >= 0 && newIndex < allRecos.length) {
+      setSelectedReco(allRecos[newIndex]);
+    }
+  };
+
+  const navigateAction = (direction: "prev" | "next") => {
+    if (!selectedAction) return;
+    const newIndex = direction === "next" ? selectedAction.index + 1 : selectedAction.index - 1;
+    if (newIndex >= 0 && newIndex < planAction.length) {
+      setSelectedAction({
+        ...planAction[newIndex],
+        index: newIndex,
+        total: planAction.length
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <Card className="border-0 shadow-lg bg-card">
@@ -158,22 +217,33 @@ export function RecommandationsIA({
     }
   };
 
+  const handleRecoClick = (reco: Recommandation, priority: "haute" | "moyenne" | "longTerme", index: number) => {
+    setSelectedReco({ ...reco, priority, index });
+  };
+
+  const handleActionClick = (action: { mois: string; action: string }, index: number) => {
+    setSelectedAction({ ...action, index, total: planAction.length });
+  };
+
   const RecommendationCard = ({ 
     reco, 
     index, 
-    config, 
+    config,
+    priority,
     delay 
   }: { 
     reco: Recommandation; 
     index: number; 
     config: ReturnType<typeof getPriorityConfig>;
+    priority: "haute" | "moyenne" | "longTerme";
     delay: number;
   }) => (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: delay + index * 0.1 }}
-      className={`relative ${config.bg} ${config.border} border rounded-xl p-4 hover:shadow-md transition-shadow`}
+      onClick={() => handleRecoClick(reco, priority, index)}
+      className={`relative ${config.bg} ${config.border} border rounded-xl p-4 hover:shadow-md transition-all cursor-pointer group hover:scale-[1.01]`}
     >
       <div className="flex items-start gap-3">
         {/* Numéro */}
@@ -200,8 +270,8 @@ export function RecommandationsIA({
           </p>
         </div>
         
-        {/* Chevron */}
-        <ChevronRight className="flex-shrink-0 w-5 h-5 text-muted-foreground/50" />
+        {/* Chevron avec animation */}
+        <ChevronRight className="flex-shrink-0 w-5 h-5 text-muted-foreground/50 group-hover:text-primary transition-colors group-hover:translate-x-0.5" />
       </div>
     </motion.div>
   );
@@ -245,6 +315,7 @@ export function RecommandationsIA({
               reco={reco}
               index={index}
               config={config}
+              priority={priority}
               delay={delay}
             />
           ))}
@@ -253,8 +324,167 @@ export function RecommandationsIA({
     );
   };
 
+  // Modal pour les recommandations
+  const RecoModal = () => {
+    if (!selectedReco) return null;
+    const config = getPriorityConfig(selectedReco.priority);
+    const Icon = config.icon;
+    const globalIndex = findRecoGlobalIndex(selectedReco);
+    const canPrev = globalIndex > 0;
+    const canNext = globalIndex < allRecos.length - 1;
+
+    return (
+      <Dialog open={!!selectedReco} onOpenChange={() => setSelectedReco(null)}>
+        <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader className="pb-4 border-b border-border/50">
+            <div className="flex items-start gap-3">
+              <div className={`flex-shrink-0 p-2.5 rounded-xl bg-gradient-to-br ${config.gradient} text-white`}>
+                <Icon className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <DialogTitle className="text-lg font-semibold leading-tight pr-8">
+                  {selectedReco.titre}
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground mt-1">{config.title} • {config.subtitle}</p>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="space-y-5 py-4">
+            {/* Impact */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <TrendingUp className="w-4 h-4 text-emerald-500" />
+                Impact estimé
+              </div>
+              <div className={`p-4 rounded-xl ${config.bg} ${config.border} border`}>
+                <p className="text-sm text-foreground leading-relaxed">
+                  {selectedReco.impact}
+                </p>
+              </div>
+            </div>
+
+            {/* Description complète */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Target className="w-4 h-4 text-primary" />
+                Détails de l'action
+              </div>
+              <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {selectedReco.description}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between pt-4 border-t border-border/50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateReco("prev")}
+              disabled={!canPrev}
+              className="gap-1.5"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Précédent
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {globalIndex + 1} / {allRecos.length}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateReco("next")}
+              disabled={!canNext}
+              className="gap-1.5"
+            >
+              Suivant
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
+  // Modal pour les actions de la feuille de route
+  const ActionModal = () => {
+    if (!selectedAction) return null;
+    const canPrev = selectedAction.index > 0;
+    const canNext = selectedAction.index < selectedAction.total - 1;
+
+    return (
+      <Dialog open={!!selectedAction} onOpenChange={() => setSelectedAction(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="pb-4 border-b border-border/50">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white font-bold shadow-lg">
+                {selectedAction.index + 1}
+              </div>
+              <div className="flex-1">
+                <DialogTitle className="text-lg font-semibold">
+                  {selectedAction.mois}
+                </DialogTitle>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  Étape {selectedAction.index + 1} sur {selectedAction.total}
+                </p>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <div className="py-5">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <Target className="w-4 h-4 text-primary" />
+                Action à réaliser
+              </div>
+              <div className="p-4 rounded-xl bg-gradient-to-br from-muted/50 to-muted/30 border border-border/50">
+                <p className="text-sm text-foreground leading-relaxed">
+                  {selectedAction.action}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation */}
+          <div className="flex items-center justify-between pt-4 border-t border-border/50">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateAction("prev")}
+              disabled={!canPrev}
+              className="gap-1.5"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Précédent
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {selectedAction.index + 1} / {selectedAction.total}
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigateAction("next")}
+              disabled={!canNext}
+              className="gap-1.5"
+            >
+              Suivant
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="space-y-6">
+      {/* Modales */}
+      <RecoModal />
+      <ActionModal />
+
       {/* Synthèse avec KPIs */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -327,7 +557,7 @@ export function RecommandationsIA({
             <div>
               <span className="text-base font-semibold">Plan d'optimisation patrimoniale</span>
               <p className="text-xs font-normal text-muted-foreground mt-0.5">
-                {haute.length + moyenne.length + longTerme.length} recommandations personnalisées
+                {haute.length + moyenne.length + longTerme.length} recommandations personnalisées • Cliquez pour voir les détails
               </p>
             </div>
           </CardTitle>
@@ -355,7 +585,7 @@ export function RecommandationsIA({
                 <div>
                   <span className="text-base font-semibold">Feuille de route 12 mois</span>
                   <p className="text-xs font-normal text-muted-foreground mt-0.5">
-                    Étapes clés pour atteindre vos objectifs
+                    Cliquez sur une étape pour voir les détails
                   </p>
                 </div>
               </CardTitle>
@@ -369,10 +599,11 @@ export function RecommandationsIA({
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.4 + index * 0.05 }}
-                    className="relative bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl p-3 border border-border/50 hover:shadow-md transition-shadow"
+                    onClick={() => handleActionClick(action, index)}
+                    className="relative bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl p-3 border border-border/50 hover:shadow-md transition-all cursor-pointer group hover:scale-[1.02] hover:border-primary/30"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-xs font-bold shadow-sm group-hover:scale-110 transition-transform">
                         {index + 1}
                       </div>
                       <span className="text-xs font-semibold text-primary">
@@ -382,6 +613,7 @@ export function RecommandationsIA({
                     <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
                       {action.action}
                     </p>
+                    <ChevronRight className="absolute bottom-3 right-3 w-4 h-4 text-muted-foreground/30 group-hover:text-primary/70 transition-colors" />
                   </motion.div>
                 ))}
               </div>
