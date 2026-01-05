@@ -8,6 +8,7 @@ import { StockPriceChart } from '@/components/simulators/stock/StockPriceChart';
 import { ValuationGauge } from '@/components/simulators/stock/ValuationGauge';
 import { SWOTCard } from '@/components/simulators/stock/SWOTCard';
 import { AnalysisResults } from '@/components/simulators/stock/AnalysisResults';
+import { SaveSimulationButton } from '@/components/simulators/SaveSimulationButton';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { LineChart, Info, FileText } from 'lucide-react';
@@ -201,10 +202,29 @@ export default function AnalyseAction() {
                       <h2 className="text-3xl font-bold">{stockData.name}</h2>
                       <p className="text-lg text-muted-foreground">{stockData.ticker} • {stockData.sector}</p>
                     </div>
-                    <Button variant="outline" className="gap-2">
-                      <FileText className="h-4 w-4" />
-                      Exporter PDF
-                    </Button>
+                    <div className="flex gap-2">
+                      <SaveSimulationButton
+                        toolType="analyse-action"
+                        toolLabel="Analyse Action"
+                        parameters={{
+                          ticker: stockData.ticker,
+                          name: stockData.name,
+                          sector: stockData.sector,
+                        }}
+                        results={{
+                          price: stockData.price,
+                          scoreGlobal: analysis.scoreGlobal,
+                          recommandation: analysis.recommandation,
+                          valorisationVerdict: analysis.valorisation.verdict,
+                          prixCible: analysis.valorisation.prixCible,
+                          upside: analysis.valorisation.upside,
+                        }}
+                      />
+                      <Button variant="outline" className="gap-2">
+                        <FileText className="h-4 w-4" />
+                        Exporter PDF
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

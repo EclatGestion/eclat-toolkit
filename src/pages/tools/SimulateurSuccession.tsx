@@ -8,6 +8,7 @@ import { InputSlider } from "@/components/simulators/interets-composes/InputSlid
 import { SuccessionDonutChart } from "@/components/simulators/succession/SuccessionDonutChart";
 import { TierLock } from "@/components/premium/TierLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 import { ArrowLeft, Minus, Plus, AlertTriangle, Shield, Users, Landmark } from "lucide-react";
 import { Label } from "@/components/ui/label";
 
@@ -108,14 +109,33 @@ export default function SimulateurSuccession() {
       <TierLock requiredTier="expert" featureName="Simulateur de Droits de Succession" variant="section">
         <div className="space-y-6">
           {/* Header */}
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/catalogue")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">Droits de Succession</h1>
-              <p className="text-muted-foreground">Transmission aux enfants (ligne directe)</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" size="icon" onClick={() => navigate("/catalogue")}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Droits de Succession</h1>
+                <p className="text-muted-foreground">Transmission aux enfants (ligne directe)</p>
+              </div>
             </div>
+            <SaveSimulationButton
+              toolType="simulateur-succession"
+              toolLabel="Simulateur Succession"
+              parameters={{
+                patrimoine,
+                nombreEnfants,
+                assuranceVieActif,
+                montantAssuranceVie,
+              }}
+              results={{
+                droitsTotaux: currentResults.droitsTotaux,
+                netEnfants: currentResults.netEnfants,
+                economie: results.economie,
+                partParEnfant: currentResults.partParEnfant,
+                droitsParEnfant: currentResults.droitsParEnfant,
+              }}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

@@ -11,6 +11,7 @@ import { ProjectionChart } from "@/components/simulators/goal-based/ProjectionCh
 import { SuccessProbability } from "@/components/simulators/goal-based/SuccessProbability";
 import { ActionPlan } from "@/components/simulators/goal-based/ActionPlan";
 import { ResultsKPI } from "@/components/simulators/goal-based/ResultsKPI";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -119,6 +120,22 @@ export default function GoalBasedInvestment() {
             </div>
             {results && (
               <div className="flex gap-2">
+                <SaveSimulationButton
+                  toolType="conseiller-ia"
+                  toolLabel="Conseiller IA"
+                  parameters={{
+                    goalData,
+                    goalSummary,
+                  }}
+                  results={{
+                    allocation: results.allocation,
+                    enveloppes: results.enveloppes,
+                    capitalFinal: results.capitalFinal,
+                    probabiliteSucces: results.probabiliteSucces,
+                    versementMensuelRecommande: results.versementMensuelRecommande,
+                    rendementPondere: results.rendementPondere,
+                  }}
+                />
                 <Button variant="outline" size="sm" onClick={handleReset}>
                   <RefreshCw className="w-4 h-4 mr-2" />
                   Nouvel objectif
