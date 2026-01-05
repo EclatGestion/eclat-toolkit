@@ -8,12 +8,14 @@ type CategoryFilter = "all" | FinancialProduct["category"];
 
 const filters: { id: CategoryFilter; label: string }[] = [
   { id: "all", label: "Tous" },
+  { id: "epargne", label: "Épargne" },
   { id: "fiscalite", label: "Fiscalité" },
   { id: "retraite", label: "Retraite" },
   { id: "performance", label: "Performance" },
   { id: "immobilier", label: "Immobilier" },
   { id: "bourse", label: "Bourse" },
   { id: "alternatif", label: "Alternatif" },
+  { id: "transmission", label: "Transmission" },
 ];
 
 export default function Academie() {
