@@ -49,6 +49,7 @@ export type Database = {
       }
       diagnostic_results: {
         Row: {
+          ai_recommendations: Json | null
           assurance_vie: number | null
           assurance_vie_beneficiaire: boolean | null
           created_at: string | null
@@ -78,6 +79,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_recommendations?: Json | null
           assurance_vie?: number | null
           assurance_vie_beneficiaire?: boolean | null
           created_at?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_recommendations?: Json | null
           assurance_vie?: number | null
           assurance_vie_beneficiaire?: boolean | null
           created_at?: string | null
@@ -304,6 +307,44 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      recommendation_status: {
+        Row: {
+          created_at: string | null
+          diagnostic_id: string
+          id: string
+          recommendation_key: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          diagnostic_id: string
+          id?: string
+          recommendation_key: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          diagnostic_id?: string
+          id?: string
+          recommendation_key?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommendation_status_diagnostic_id_fkey"
+            columns: ["diagnostic_id"]
+            isOneToOne: false
+            referencedRelation: "diagnostic_results"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

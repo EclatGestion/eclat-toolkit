@@ -3,6 +3,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 
+export interface Recommandation {
+  titre: string;
+  description: string;
+  impact: string;
+}
+
+export interface AIRecommendations {
+  synthese: string;
+  haute: Recommandation[];
+  moyenne: Recommandation[];
+  longTerme: Recommandation[];
+  planAction: { mois: string; action: string }[];
+}
+
 export interface DiagnosticResult {
   id: string;
   name: string;
@@ -36,6 +50,8 @@ export interface DiagnosticResult {
   // Scores
   score_global: number;
   patrimoine_total: number;
+  // AI Recommendations
+  ai_recommendations?: AIRecommendations | null;
 }
 
 export interface DiagnosticInput {
@@ -84,7 +100,12 @@ export function useDiagnostics() {
         .order("updated_at", { ascending: false });
 
       if (error) throw error;
-      setDiagnostics(data || []);
+      // Cast the data to handle JSONB ai_recommendations field
+      const formattedData = (data || []).map((d) => ({
+        ...d,
+        ai_recommendations: d.ai_recommendations as unknown as AIRecommendations | null,
+      }));
+      setDiagnostics(formattedData);
     } catch (err) {
       console.error("Error fetching diagnostics:", err);
     } finally {
@@ -134,7 +155,10 @@ export function useDiagnostics() {
       if (error) throw error;
       
       await fetchDiagnostics();
-      return data;
+      return {
+        ...data,
+        ai_recommendations: data.ai_recommendations as unknown as AIRecommendations | null,
+      } as DiagnosticResult;
     } catch (err) {
       console.error("Error creating diagnostic:", err);
       toast.error("Erreur lors de la création du diagnostic");
