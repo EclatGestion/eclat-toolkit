@@ -52,12 +52,14 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 interface ProductModalProps {
-  product: FinancialProduct;
+  product: FinancialProduct | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
 export function ProductModal({ product, open, onOpenChange }: ProductModalProps) {
+  if (!product) return null;
+  
   const Icon = iconMap[product.iconName] || Shield;
   const risk = getRiskLabel(product.riskLevel);
 
