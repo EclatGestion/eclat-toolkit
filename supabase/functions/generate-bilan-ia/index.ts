@@ -1,9 +1,52 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation helpers
+function validateNumericRange(value: unknown, min: number, max: number): boolean {
+  return typeof value === 'number' && value >= min && value <= max;
+}
+
+function validateBilanData(data: unknown): { valid: boolean; error?: string } {
+  if (!data || typeof data !== 'object') {
+    return { valid: false, error: 'Invalid bilan data format' };
+  }
+  
+  const d = data as Record<string, unknown>;
+  
+  // Validate score fields (0-100)
+  const scoreFields = ['financesScore', 'epargneScore', 'immobilierScore', 'fiscaliteScore', 'transmissionScore', 'scoreGlobal'];
+  for (const field of scoreFields) {
+    if (d[field] !== undefined && !validateNumericRange(d[field], 0, 100)) {
+      return { valid: false, error: `Invalid ${field}: must be between 0 and 100` };
+    }
+  }
+  
+  // Validate monetary fields (reasonable limits)
+  const maxMoney = 100_000_000_000; // 100 billion max
+  const moneyFields = ['revenus', 'depenses', 'epargneMensuelle', 'liquidites', 'assuranceVie', 'per', 'peaCto', 
+                       'residencePrincipale', 'immobilierLocatif', 'loyersPercus', 'creditsImmo', 
+                       'revenusImposables', 'patrimoineTotal', 'donationsRealisees'];
+  for (const field of moneyFields) {
+    if (d[field] !== undefined && !validateNumericRange(d[field], 0, maxMoney)) {
+      return { valid: false, error: `Invalid ${field}: must be between 0 and ${maxMoney}` };
+    }
+  }
+  
+  // Validate percentage fields
+  const percentFields = ['tauxEpargne', 'tauxEndettement', 'tmi'];
+  for (const field of percentFields) {
+    if (d[field] !== undefined && !validateNumericRange(d[field], 0, 100)) {
+      return { valid: false, error: `Invalid ${field}: must be between 0 and 100` };
+    }
+  }
+  
+  return { valid: true };
+}
 
 interface BilanData {
   // Scores
@@ -77,13 +120,50 @@ serve(async (req) => {
   }
 
   try {
-    const bilanData: BilanData = await req.json();
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      console.error('[GENERATE-BILAN-IA] Auth error:', authError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const bilanData = await req.json();
     
-    console.log("[GENERATE-BILAN-IA] Received bilan data:", JSON.stringify(bilanData, null, 2));
+    // Input validation
+    const validation = validateBilanData(bilanData);
+    if (!validation.valid) {
+      return new Response(
+        JSON.stringify({ error: validation.error }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    console.log("[GENERATE-BILAN-IA] User", user.id, "requesting bilan analysis");
     
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("[GENERATE-BILAN-IA] LOVABLE_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
     const prompt = `Tu es un conseiller en gestion de patrimoine certifié CGP expert en fiscalité française.

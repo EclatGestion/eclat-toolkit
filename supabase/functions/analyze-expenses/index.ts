@@ -51,17 +51,39 @@ serve(async (req) => {
     const userId = user.id;
     const { pdfContent, fileName } = await req.json();
     
-    if (!pdfContent) {
-      throw new Error("PDF content is required");
+    // Input validation
+    if (!pdfContent || typeof pdfContent !== 'string') {
+      return new Response(
+        JSON.stringify({ error: "PDF content is required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
+    
+    // Size limit: 500KB max for PDF content
+    const MAX_PDF_SIZE = 500000;
+    if (pdfContent.length > MAX_PDF_SIZE) {
+      return new Response(
+        JSON.stringify({ error: `PDF content too large. Maximum ${MAX_PDF_SIZE / 1000}KB allowed.` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    // Validate fileName format (alphanumeric, dots, dashes, underscores only)
+    const sanitizedFileName = fileName && typeof fileName === 'string' 
+      ? fileName.replace(/[^a-zA-Z0-9._-]/g, '_').substring(0, 100)
+      : 'unknown.pdf';
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+      console.error("[analyze-expenses] LOVABLE_API_KEY not configured");
+      return new Response(
+        JSON.stringify({ error: "Service temporarily unavailable" }),
+        { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    console.log("Analyzing expenses from PDF:", fileName);
-    console.log("Text content length:", pdfContent.length, "characters");
+    console.log(`[analyze-expenses] User ${userId} analyzing PDF: ${sanitizedFileName}`);
+    console.log("[analyze-expenses] Text content length:", pdfContent.length, "characters");
 
     // Prompt optimisé pour texte brut
     const systemPrompt = `Tu es un expert financier. Analyse ce relevé bancaire et extrait les dépenses (montants NÉGATIFS uniquement).
@@ -165,7 +187,7 @@ ${pdfContent}`;
         .from("expense_analyses")
         .insert({
           user_id: userId,
-          file_name: fileName,
+          file_name: sanitizedFileName,
           source: "pdf",
           raw_transactions: analysisResult.transactions,
           categorized_expenses: analysisResult.categorizedExpenses,
