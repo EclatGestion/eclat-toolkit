@@ -144,11 +144,18 @@ serve(async (req) => {
         }],
         proration_behavior: 'none',
       });
-      const endDate = new Date(subscription.current_period_end * 1000).toLocaleDateString('fr-FR', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      });
+      
+      // Safe date formatting
+      let endDate = "la fin de votre période actuelle";
+      const periodEnd = updatedSubscription.current_period_end ?? subscription.current_period_end;
+      if (typeof periodEnd === 'number' && periodEnd > 0) {
+        endDate = new Date(periodEnd * 1000).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+      }
+      
       message = `Votre abonnement passera à ${newTier === 'premium' ? 'Premium' : 'Standard'} le ${endDate}.`;
       logStep("Downgrade scheduled", { effectiveDate: endDate });
     } else if (isSameTierPlanChange) {
@@ -166,13 +173,20 @@ serve(async (req) => {
       throw new Error("Unable to determine change type");
     }
 
+    // Safe date handling for response
+    let periodEndDate: string | null = null;
+    const periodEnd = updatedSubscription.current_period_end ?? subscription.current_period_end;
+    if (typeof periodEnd === 'number' && periodEnd > 0) {
+      periodEndDate = new Date(periodEnd * 1000).toISOString();
+    }
+
     return new Response(JSON.stringify({
       success: true,
       message,
       subscription: {
         id: updatedSubscription.id,
         status: updatedSubscription.status,
-        current_period_end: new Date(updatedSubscription.current_period_end * 1000).toISOString(),
+        current_period_end: periodEndDate,
       }
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
