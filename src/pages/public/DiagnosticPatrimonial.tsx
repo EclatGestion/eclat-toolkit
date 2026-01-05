@@ -525,6 +525,34 @@ export default function DiagnosticPatrimonial() {
                     </CardContent>
                   </Card>
                 </motion.div>
+
+                {/* CTA Section - End of Diagnostic */}
+                {revenus > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="mt-8 p-6 rounded-xl bg-gradient-to-r from-primary/10 to-violet-500/10 border border-primary/20"
+                  >
+                    <div className="text-center">
+                      <h3 className="text-lg font-semibold mb-2">
+                        Prêt à passer à l'action ?
+                      </h3>
+                      <p className="text-muted-foreground text-sm mb-4">
+                        Créez votre compte pour sauvegarder votre diagnostic et accéder à votre espace personnalisé.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <Button onClick={handleUnlockIA} className="gap-2">
+                          <UserPlus className="w-4 h-4" />
+                          Créer mon compte et sauvegarder
+                        </Button>
+                        <Button variant="outline" onClick={() => setCurrentStep(1)}>
+                          Modifier mes données
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </div>
             )}
 

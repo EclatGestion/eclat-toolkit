@@ -19,7 +19,7 @@ import { useDiagnostics, DiagnosticInput } from "@/hooks/useDiagnostics";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Brain, FileDown, Sparkles, Loader2, Save, FolderOpen, Plus, Trash2 } from "lucide-react";
+import { Brain, FileDown, Sparkles, Loader2, Save, FolderOpen, Plus, Trash2, ArrowRight } from "lucide-react";
 import { exportBilanPdf } from "@/utils/bilanPdfExport";
 import {
   Dialog,
@@ -29,6 +29,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,6 +77,7 @@ export default function BilanPatrimonialAvance() {
   const [currentDiagnosticId, setCurrentDiagnosticId] = useState<string | null>(null);
   const [diagnosticName, setDiagnosticName] = useState("Mon diagnostic");
   const [showSaveAsDialog, setShowSaveAsDialog] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [newDiagnosticName, setNewDiagnosticName] = useState("");
 
   // Finances personnelles
@@ -119,42 +130,81 @@ export default function BilanPatrimonialAvance() {
     }
   }, [loadId, diagnostics]);
 
-  // Restore from localStorage (coming from public diagnostic)
+  // Restore from localStorage and auto-save (coming from public diagnostic)
   useEffect(() => {
-    if (shouldRestore && !loadId) {
-      try {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        if (savedData) {
-          const data = JSON.parse(savedData);
-          setRevenus(data.revenus ?? revenus);
-          setDepenses(data.depenses ?? depenses);
-          setEpargne(data.epargne ?? epargne);
-          setCreditsRestants(data.creditsRestants ?? creditsRestants);
-          setLiquidites(data.liquidites ?? liquidites);
-          setAssuranceVie(data.assuranceVie ?? assuranceVie);
-          setPer(data.per ?? per);
-          setPeaCto(data.peaCto ?? peaCto);
-          setResidencePrincipale(data.residencePrincipale ?? residencePrincipale);
-          setImmobilierLocatif(data.immobilierLocatif ?? immobilierLocatif);
-          setLoyersPercus(data.loyersPercus ?? loyersPercus);
-          setCreditsImmo(data.creditsImmo ?? creditsImmo);
-          setRevenusImposables(data.revenusImposables ?? revenusImposables);
-          setTmi(data.tmi ?? tmi);
-          setPerUtilise(data.perUtilise ?? perUtilise);
-          setLmnpUtilise(data.lmnpUtilise ?? lmnpUtilise);
-          setSituationFamiliale(data.situationFamiliale ?? situationFamiliale);
-          setNombreEnfants(data.nombreEnfants ?? nombreEnfants);
-          setDonationsRealisees(data.donationsRealisees ?? donationsRealisees);
-          setAssuranceVieBeneficiaire(data.assuranceVieBeneficiaire ?? assuranceVieBeneficiaire);
-          toast.success("Données du diagnostic restaurées !");
-          localStorage.removeItem(STORAGE_KEY);
-          setSearchParams({});
+    const restoreAndSave = async () => {
+      if (shouldRestore && !loadId && user) {
+        try {
+          const savedData = localStorage.getItem(STORAGE_KEY);
+          if (savedData) {
+            const data = JSON.parse(savedData);
+            
+            // Restore state
+            setRevenus(data.revenus ?? 4000);
+            setDepenses(data.depenses ?? 2500);
+            setEpargne(data.epargne ?? 500);
+            setCreditsRestants(data.creditsRestants ?? 0);
+            setLiquidites(data.liquidites ?? 15000);
+            setAssuranceVie(data.assuranceVie ?? 0);
+            setPer(data.per ?? 0);
+            setPeaCto(data.peaCto ?? 0);
+            setResidencePrincipale(data.residencePrincipale ?? 0);
+            setImmobilierLocatif(data.immobilierLocatif ?? 0);
+            setLoyersPercus(data.loyersPercus ?? 0);
+            setCreditsImmo(data.creditsImmo ?? 0);
+            setRevenusImposables(data.revenusImposables ?? 48000);
+            setTmi(data.tmi ?? 30);
+            setPerUtilise(data.perUtilise ?? false);
+            setLmnpUtilise(data.lmnpUtilise ?? false);
+            setSituationFamiliale(data.situationFamiliale ?? "marie");
+            setNombreEnfants(data.nombreEnfants ?? 2);
+            setDonationsRealisees(data.donationsRealisees ?? 0);
+            setAssuranceVieBeneficiaire(data.assuranceVieBeneficiaire ?? false);
+            
+            // Auto-save to database
+            const created = await createDiagnostic({
+              name: "Mon premier diagnostic",
+              revenus: data.revenus ?? 4000,
+              depenses: data.depenses ?? 2500,
+              epargne: data.epargne ?? 500,
+              credits_restants: data.creditsRestants ?? 0,
+              liquidites: data.liquidites ?? 15000,
+              assurance_vie: data.assuranceVie ?? 0,
+              per: data.per ?? 0,
+              pea_cto: data.peaCto ?? 0,
+              residence_principale: data.residencePrincipale ?? 0,
+              immobilier_locatif: data.immobilierLocatif ?? 0,
+              loyers_percus: data.loyersPercus ?? 0,
+              credits_immo: data.creditsImmo ?? 0,
+              revenus_imposables: data.revenusImposables ?? 48000,
+              tmi: data.tmi ?? 30,
+              per_utilise: data.perUtilise ?? false,
+              lmnp_utilise: data.lmnpUtilise ?? false,
+              situation_familiale: data.situationFamiliale ?? "marie",
+              nombre_enfants: data.nombreEnfants ?? 2,
+              donations_realisees: data.donationsRealisees ?? 0,
+              assurance_vie_beneficiaire: data.assuranceVieBeneficiaire ?? false,
+              score_global: data.scoreGlobal ?? 0,
+              patrimoine_total: data.patrimoineTotal ?? 0,
+            });
+            
+            if (created) {
+              setCurrentDiagnosticId(created.id);
+              setDiagnosticName("Mon premier diagnostic");
+              toast.success("Diagnostic sauvegardé automatiquement !");
+            }
+            
+            localStorage.removeItem(STORAGE_KEY);
+            setSearchParams({});
+          }
+        } catch (e) {
+          console.error("Error restoring/saving diagnostic:", e);
         }
-      } catch (e) {
-        console.error("Error restoring diagnostic data:", e);
       }
-    }
-  }, [shouldRestore, loadId]);
+    };
+
+    restoreAndSave();
+  }, [shouldRestore, loadId, user, createDiagnostic]);
 
   const loadDiagnosticData = (diagnostic: any) => {
     setRevenus(diagnostic.revenus || 4000);
@@ -331,13 +381,20 @@ export default function BilanPatrimonialAvance() {
     setRecommandations(null);
   };
 
-  const handleDelete = async () => {
+  const handleDeleteClick = () => {
+    if (currentDiagnosticId) {
+      setShowDeleteConfirm(true);
+    }
+  };
+
+  const confirmDelete = async () => {
     if (!currentDiagnosticId) return;
     
     const success = await deleteDiagnostic(currentDiagnosticId);
     if (success) {
       handleNew();
     }
+    setShowDeleteConfirm(false);
   };
 
   const handleGenerateBilan = async () => {
@@ -500,7 +557,7 @@ export default function BilanPatrimonialAvance() {
 
             {/* Delete button */}
             {currentDiagnosticId && (
-              <Button variant="ghost" size="sm" onClick={handleDelete} className="text-destructive hover:text-destructive">
+              <Button variant="ghost" size="sm" onClick={handleDeleteClick} className="text-destructive hover:text-destructive">
                 <Trash2 className="w-4 h-4" />
               </Button>
             )}
@@ -625,6 +682,24 @@ export default function BilanPatrimonialAvance() {
           </CardContent>
         </Card>
 
+        {/* CTA Mon Parcours - affiché si diagnostic sauvegardé */}
+        {currentDiagnosticId && (
+          <Card className="border-primary/20 bg-primary/5">
+            <CardContent className="py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div>
+                <p className="font-medium">Diagnostic sauvegardé</p>
+                <p className="text-sm text-muted-foreground">
+                  Retrouvez-le dans votre espace personnalisé
+                </p>
+              </div>
+              <Button variant="outline" onClick={() => navigate("/mon-parcours")} className="gap-2">
+                Aller à Mon Parcours
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         {/* AI Recommendations - PREMIUM LOCKED */}
         <TierLock requiredTier="premium" featureName="Recommandations IA" variant="section">
           <div className="space-y-6">
@@ -680,9 +755,27 @@ export default function BilanPatrimonialAvance() {
               {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
               Créer
             </Button>
-          </DialogFooter>
+        </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Supprimer ce diagnostic ?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Cette action est irréversible. Le diagnostic "{diagnosticName}" sera définitivement supprimé.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Supprimer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </MainLayout>
   );
 }
