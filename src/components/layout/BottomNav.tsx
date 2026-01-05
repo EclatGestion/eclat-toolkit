@@ -1,4 +1,4 @@
-import { Compass, Wrench, Wallet, Settings } from "lucide-react";
+import { Compass, Wrench, Wallet, Settings, FolderOpen } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 
@@ -6,6 +6,7 @@ const navItems = [
   { title: "Parcours", url: "/mon-parcours", icon: Compass, badge: null },
   { title: "Patrimoine", url: "/patrimoine", icon: Wallet, badge: null },
   { title: "Outils", url: "/toolbox", icon: Wrench, badge: null },
+  { title: "Simulations", url: "/simulations", icon: FolderOpen, badge: null },
   { title: "Profil", url: "/settings", icon: Settings, badge: null },
 ];
 

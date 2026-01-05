@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,10 +7,13 @@ import { RendementCard } from "@/components/simulators/assurance-vie/RendementCa
 import { FraisCard } from "@/components/simulators/assurance-vie/FraisCard";
 import { ResultatsAssuranceVie } from "@/components/simulators/assurance-vie/ResultatsAssuranceVie";
 import { Shield, Calculator, BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 
 export default function AssuranceVie() {
+  const location = useLocation();
+
   // État du contrat
   const [montantInitial, setMontantInitial] = useState(10000);
   const [versementMensuel, setVersementMensuel] = useState(200);
@@ -32,6 +35,22 @@ export default function AssuranceVie() {
 
   // État de la simulation
   const [showResults, setShowResults] = useState(false);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.montantInitial !== undefined) setMontantInitial(p.montantInitial);
+      if (p.versementMensuel !== undefined) setVersementMensuel(p.versementMensuel);
+      if (p.horizon !== undefined) setHorizon(p.horizon);
+      if (p.modeSimple !== undefined) setModeSimple(p.modeSimple);
+      if (p.rendementUnique !== undefined) setRendementUnique(p.rendementUnique);
+      if (p.fraisGestion !== undefined) setFraisGestion(p.fraisGestion);
+      if (p.fraisUC !== undefined) setFraisUC(p.fraisUC);
+      setShowResults(true);
+    }
+  }, [location.state]);
 
   // Validation de la répartition
   const totalRepartition = fondsEuros + uc + autres;
@@ -209,6 +228,7 @@ export default function AssuranceVie() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
           >
             <ResultatsAssuranceVie
               valeurFinale={results.valeurFinale}
@@ -217,6 +237,30 @@ export default function AssuranceVie() {
               rendementMoyen={results.rendementMoyen}
               evolutionData={results.evolutionData}
             />
+            <div className="flex justify-end">
+              <SaveSimulationButton
+                toolType="assurance-vie"
+                toolLabel="Assurance-Vie"
+                parameters={{
+                  montantInitial,
+                  versementMensuel,
+                  horizon,
+                  modeSimple,
+                  rendementUnique,
+                  fondsEuros,
+                  uc,
+                  autres,
+                  fraisGestion,
+                  fraisUC,
+                }}
+                results={{
+                  valeurFinale: results.valeurFinale,
+                  totalInvesti: results.totalInvesti,
+                  gainNet: results.gainNet,
+                  rendementMoyen: results.rendementMoyen,
+                }}
+              />
+            </div>
           </motion.div>
         )}
 

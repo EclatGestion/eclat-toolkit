@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,8 +11,11 @@ import { ResultatsPER } from "@/components/simulators/per/ResultatsPER";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { Target, BookOpen, Lock, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 
 export default function OptimisationPER() {
+  const location = useLocation();
+
   // Bloc 1 - Situation fiscale
   const [revenuImposable, setRevenuImposable] = useState(50000);
   const [quotientFamilial, setQuotientFamilial] = useState(1);
@@ -27,6 +30,20 @@ export default function OptimisationPER() {
   const [horizon, setHorizon] = useState(20);
   const [rendementAnnuel, setRendementAnnuel] = useState(4);
   const [fraisGestion, setFraisGestion] = useState(1);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.revenuImposable !== undefined) setRevenuImposable(p.revenuImposable);
+      if (p.quotientFamilial !== undefined) setQuotientFamilial(p.quotientFamilial);
+      if (p.montantVersement !== undefined) setMontantVersement(p.montantVersement);
+      if (p.versementMensuel !== undefined) setVersementMensuel(p.versementMensuel);
+      if (p.horizon !== undefined) setHorizon(p.horizon);
+      if (p.rendementAnnuel !== undefined) setRendementAnnuel(p.rendementAnnuel);
+    }
+  }, [location.state]);
 
   // Calculs dérivés
   const tmiCalcule = useMemo(
@@ -249,6 +266,29 @@ export default function OptimisationPER() {
             title="Produits recommandés"
           />
         </motion.div>
+
+        {/* Save Button */}
+        <div className="flex justify-end">
+          <SaveSimulationButton
+            toolType="optimisation-per"
+            toolLabel="Optimisation PER"
+            parameters={{
+              revenuImposable,
+              quotientFamilial,
+              montantVersement,
+              versementMensuel,
+              horizon,
+              rendementAnnuel,
+              fraisGestion,
+            }}
+            results={{
+              reductionIR: resultats.reductionIR,
+              valeurFuture: resultats.valeurFuture,
+              effortReel: resultats.effortReel,
+              gainTotal: resultats.gainTotal,
+            }}
+          />
+        </div>
       </div>
     </MainLayout>
   );

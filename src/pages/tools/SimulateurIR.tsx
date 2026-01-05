@@ -1,16 +1,17 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, User, Users, Minus, Plus, TrendingDown, AlertTriangle, Info, PiggyBank, Palmtree } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { InputSlider } from "@/components/simulators/interets-composes/InputSlider";
 import { useAnimatedCounter } from "@/hooks/useAnimatedCounter";
 import { TMIGauge } from "@/components/simulators/ir/TMIGauge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { TierLock } from "@/components/premium/TierLock";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 
 // ============= CONSTANTES FISCALES 2025 =============
 const TAX_BRACKETS = [
@@ -124,6 +125,7 @@ function calculateTaxWithCap(
 
 export default function SimulateurIR() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   // ============= STATES =============
   const [revenuNet, setRevenuNet] = useState(60000);
@@ -138,6 +140,22 @@ export default function SimulateurIR() {
   // Girardin
   const [girardinActif, setGirardinActif] = useState(false);
   const [montantGirardin, setMontantGirardin] = useState(10000);
+
+  // Load saved simulation if navigating from Simulations page
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.revenuNet !== undefined) setRevenuNet(p.revenuNet);
+      if (p.isCouple !== undefined) setIsCouple(p.isCouple);
+      if (p.children !== undefined) setChildren(p.children);
+      if (p.perActif !== undefined) setPerActif(p.perActif);
+      if (p.montantPER !== undefined) setMontantPER(p.montantPER);
+      if (p.reportPER !== undefined) setReportPER(p.reportPER);
+      if (p.girardinActif !== undefined) setGirardinActif(p.girardinActif);
+      if (p.montantGirardin !== undefined) setMontantGirardin(p.montantGirardin);
+    }
+  }, [location.state]);
 
   // ============= CALCULS =============
   const parts = useMemo(() => calculateParts(isCouple, children), [isCouple, children]);
@@ -613,6 +631,30 @@ export default function SimulateurIR() {
                   Comment réduire mon impôt de {formatCurrency(economie)} ?
                 </Button>
               )}
+
+              {/* Save Simulation Button */}
+              <div className="flex justify-end">
+                <SaveSimulationButton
+                  toolType="simulateur-ir"
+                  toolLabel="Simulateur IR"
+                  parameters={{
+                    revenuNet,
+                    isCouple,
+                    children,
+                    perActif,
+                    montantPER,
+                    reportPER,
+                    girardinActif,
+                    montantGirardin,
+                  }}
+                  results={{
+                    impot: hasOptimisation ? resultatOptimise.tax : resultatInitial.tax,
+                    tmi: hasOptimisation ? resultatOptimise.tmi : resultatInitial.tmi,
+                    economie,
+                    parts,
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
