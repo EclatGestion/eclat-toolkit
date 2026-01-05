@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Crown, CreditCard, Calendar, ExternalLink, Diamond, Loader2 } from "lucide-react";
+import { Sparkles, Crown, CreditCard, Calendar, ExternalLink, Diamond, Loader2, History, ArrowUpRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePremium } from "@/hooks/usePremium";
 import { UpgradePremiumModal } from "./UpgradePremiumModal";
@@ -17,10 +17,25 @@ const PLAN_LABELS = {
   expert: "Plan Expert",
 };
 
+interface Invoice {
+  id: string;
+  number: string;
+  date: number;
+  amount: number;
+  currency: string;
+  status: string;
+  pdfUrl: string | null;
+  hostedUrl: string | null;
+  description: string;
+}
+
 export function PremiumStatusCard() {
   const { tier, isPremium, isExpert, isLoading, subscriptionData } = usePremium();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isManaging, setIsManaging] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
 
   const handleManageSubscription = async () => {
     setIsManaging(true);
@@ -40,6 +55,26 @@ export function PremiumStatusCard() {
     }
   };
 
+  const loadPaymentHistory = async () => {
+    if (invoices.length > 0) {
+      setShowHistory(!showHistory);
+      return;
+    }
+    
+    setIsLoadingHistory(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('payment-history');
+      if (error) throw error;
+      setInvoices(data?.invoices || []);
+      setShowHistory(true);
+    } catch (error) {
+      console.error("Error loading payment history:", error);
+      toast.error("Impossible de charger l'historique");
+    } finally {
+      setIsLoadingHistory(false);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleDateString('fr-FR', {
@@ -47,6 +82,21 @@ export function PremiumStatusCard() {
       month: 'long',
       year: 'numeric'
     });
+  };
+
+  const formatInvoiceDate = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  };
+
+  const formatAmount = (amount: number, currency: string) => {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amount / 100);
   };
 
   const getPriceLabel = () => {
@@ -107,7 +157,7 @@ export function PremiumStatusCard() {
           </div>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-3 mb-4">
           <Button 
             variant="outline" 
             size="sm" 
@@ -122,7 +172,84 @@ export function PremiumStatusCard() {
             )}
             Gérer l'abonnement
           </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="gap-2"
+            onClick={loadPaymentHistory}
+            disabled={isLoadingHistory}
+          >
+            {isLoadingHistory ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <History className="w-4 h-4" />
+            )}
+            Historique
+          </Button>
         </div>
+
+        {/* Upgrade/Downgrade hint */}
+        <p className="text-xs text-muted-foreground mb-4">
+          Pour changer de formule (upgrade vers Expert ou passer à une offre inférieure), 
+          cliquez sur "Gérer l'abonnement" pour accéder au portail de gestion.
+        </p>
+
+        {/* Payment History */}
+        {showHistory && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            className="border-t border-border pt-4 mt-4"
+          >
+            <h4 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+              <History className="w-4 h-4" />
+              Historique des paiements
+            </h4>
+            {invoices.length === 0 ? (
+              <p className="text-sm text-muted-foreground">Aucun paiement enregistré</p>
+            ) : (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {invoices.map((invoice) => (
+                  <div 
+                    key={invoice.id}
+                    className="flex items-center justify-between py-2 px-3 bg-background/50 rounded-lg text-sm"
+                  >
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-4 h-4 text-muted-foreground" />
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {formatAmount(invoice.amount, invoice.currency)}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatInvoiceDate(invoice.date)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-0.5 text-xs rounded-full ${
+                        invoice.status === 'paid' 
+                          ? 'bg-emerald-500/10 text-emerald-600' 
+                          : 'bg-amber-500/10 text-amber-600'
+                      }`}>
+                        {invoice.status === 'paid' ? 'Payé' : invoice.status}
+                      </span>
+                      {invoice.pdfUrl && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => window.open(invoice.pdfUrl!, '_blank')}
+                        >
+                          <ArrowUpRight className="w-3 h-3" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        )}
       </motion.div>
     );
   }
