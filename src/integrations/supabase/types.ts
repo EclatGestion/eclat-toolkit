@@ -47,6 +47,96 @@ export type Database = {
         }
         Relationships: []
       }
+      diagnostic_results: {
+        Row: {
+          assurance_vie: number | null
+          assurance_vie_beneficiaire: boolean | null
+          created_at: string | null
+          credits_immo: number | null
+          credits_restants: number | null
+          depenses: number | null
+          donations_realisees: number | null
+          epargne: number | null
+          id: string
+          immobilier_locatif: number | null
+          liquidites: number | null
+          lmnp_utilise: boolean | null
+          loyers_percus: number | null
+          name: string | null
+          nombre_enfants: number | null
+          patrimoine_total: number | null
+          pea_cto: number | null
+          per: number | null
+          per_utilise: boolean | null
+          residence_principale: number | null
+          revenus: number | null
+          revenus_imposables: number | null
+          score_global: number | null
+          situation_familiale: string | null
+          tmi: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          assurance_vie?: number | null
+          assurance_vie_beneficiaire?: boolean | null
+          created_at?: string | null
+          credits_immo?: number | null
+          credits_restants?: number | null
+          depenses?: number | null
+          donations_realisees?: number | null
+          epargne?: number | null
+          id?: string
+          immobilier_locatif?: number | null
+          liquidites?: number | null
+          lmnp_utilise?: boolean | null
+          loyers_percus?: number | null
+          name?: string | null
+          nombre_enfants?: number | null
+          patrimoine_total?: number | null
+          pea_cto?: number | null
+          per?: number | null
+          per_utilise?: boolean | null
+          residence_principale?: number | null
+          revenus?: number | null
+          revenus_imposables?: number | null
+          score_global?: number | null
+          situation_familiale?: string | null
+          tmi?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          assurance_vie?: number | null
+          assurance_vie_beneficiaire?: boolean | null
+          created_at?: string | null
+          credits_immo?: number | null
+          credits_restants?: number | null
+          depenses?: number | null
+          donations_realisees?: number | null
+          epargne?: number | null
+          id?: string
+          immobilier_locatif?: number | null
+          liquidites?: number | null
+          lmnp_utilise?: boolean | null
+          loyers_percus?: number | null
+          name?: string | null
+          nombre_enfants?: number | null
+          patrimoine_total?: number | null
+          pea_cto?: number | null
+          per?: number | null
+          per_utilise?: boolean | null
+          residence_principale?: number | null
+          revenus?: number | null
+          revenus_imposables?: number | null
+          score_global?: number | null
+          situation_familiale?: string | null
+          tmi?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       expense_analyses: {
         Row: {
           analysis_date: string | null
