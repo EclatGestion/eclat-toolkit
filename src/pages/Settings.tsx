@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { PremiumStatusCard } from "@/components/premium/PremiumStatusCard";
+import { ProfileSettingsModal } from "@/components/settings/ProfileSettingsModal";
+import { NotificationSettingsModal } from "@/components/settings/NotificationSettingsModal";
+import { SecuritySettingsModal } from "@/components/settings/SecuritySettingsModal";
 import { User, Bell, Shield, CreditCard, ChevronRight, LogOut } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -48,10 +51,14 @@ const itemVariants = {
 
 export default function Settings() {
   const { signOut } = useAuth();
-  const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [openModal, setOpenModal] = useState<string | null>(null);
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleSectionClick = (sectionId: string) => {
+    setOpenModal(sectionId);
   };
 
   return (
@@ -82,7 +89,7 @@ export default function Settings() {
                 key={section.id}
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.99 }}
-                onClick={() => setActiveSection(section.id)}
+                onClick={() => handleSectionClick(section.id)}
                 className="bg-card rounded-2xl p-4 shadow-card flex items-center gap-4 cursor-pointer hover:shadow-lg transition-all duration-300"
               >
                 <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${section.iconBg}`}>
@@ -110,6 +117,20 @@ export default function Settings() {
           </Button>
         </motion.div>
       </motion.div>
+
+      {/* Modals */}
+      <ProfileSettingsModal 
+        open={openModal === "profile"} 
+        onOpenChange={(open) => setOpenModal(open ? "profile" : null)} 
+      />
+      <NotificationSettingsModal 
+        open={openModal === "notifications"} 
+        onOpenChange={(open) => setOpenModal(open ? "notifications" : null)} 
+      />
+      <SecuritySettingsModal 
+        open={openModal === "security"} 
+        onOpenChange={(open) => setOpenModal(open ? "security" : null)} 
+      />
     </MainLayout>
   );
 }
