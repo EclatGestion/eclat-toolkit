@@ -64,6 +64,8 @@ interface ResultatLocationNue {
   baseImposableReel: number;
   baseImposable: number;
   regimeChoisi: "Micro-Foncier" | "Réel";
+  impotIR: number;
+  impotPS: number;
   impotTotal: number;
   cashflowNet: number;
   deficitFoncier: number;
@@ -78,6 +80,8 @@ interface ResultatLMNP {
   baseImposableReel: number;
   baseImposable: number;
   regimeChoisi: "Micro-BIC" | "Réel Simplifié";
+  impotIR: number;
+  impotPS: number;
   impotTotal: number;
   cashflowNet: number;
   amortissementBati: number;
@@ -213,8 +217,10 @@ export default function ComparateurLMNP() {
       regimeChoisi = "Réel";
     }
 
-    // Impôt final
-    const impotBrut = baseImposable * (tmi / 100 + PRELEVEMENTS_SOCIAUX);
+    // Impôt final - séparation IR et PS
+    const impotIR = baseImposable * (tmi / 100);
+    const impotPS = baseImposable * PRELEVEMENTS_SOCIAUX;
+    const impotBrut = impotIR + impotPS;
     const impotTotal = Math.max(0, impotBrut - economieDeficitFoncier);
     const cashflowNet = loyersAnnuels - chargesDeductibles - travauxDeductibles - impotTotal;
 
@@ -226,6 +232,8 @@ export default function ComparateurLMNP() {
       baseImposableReel,
       baseImposable,
       regimeChoisi,
+      impotIR,
+      impotPS,
       impotTotal,
       cashflowNet,
       deficitFoncier,
@@ -290,8 +298,10 @@ export default function ComparateurLMNP() {
       : baseImposableReel;
     const regimeChoisi: "Micro-BIC" | "Réel Simplifié" = baseImposable === baseImposableMicro ? "Micro-BIC" : "Réel Simplifié";
 
-    // Impôt
-    const impotTotal = baseImposable * (tmi / 100 + tauxSocialApplique);
+    // Impôt - séparation IR et PS
+    const impotIR = baseImposable * (tmi / 100);
+    const impotPS = baseImposable * tauxSocialApplique;
+    const impotTotal = impotIR + impotPS;
     const cashflowNet = loyersAnnuels - chargesDeductibles - travauxDeductiblesImmediat - impotTotal;
 
     return {
@@ -301,6 +311,8 @@ export default function ComparateurLMNP() {
       baseImposableReel,
       baseImposable,
       regimeChoisi,
+      impotIR,
+      impotPS,
       impotTotal,
       cashflowNet,
       amortissementBati,
@@ -986,10 +998,14 @@ export default function ComparateurLMNP() {
                 isWinner={!lmnpGagnant}
                 loyersAnnuels={resultatLocationNue.loyersAnnuels}
                 baseImposable={resultatLocationNue.baseImposable}
+                impotIR={resultatLocationNue.impotIR}
+                impotPS={resultatLocationNue.impotPS}
                 impotTotal={resultatLocationNue.impotTotal}
                 cashflowNet={resultatLocationNue.cashflowNet}
                 formatCurrency={formatCurrency}
                 variant="primary"
+                tmi={tmi}
+                tauxPS={17.2}
               />
               <ResultCard
                 title="LMNP"
@@ -998,10 +1014,14 @@ export default function ComparateurLMNP() {
                 isWinner={lmnpGagnant}
                 loyersAnnuels={resultatLMNP.loyersAnnuels}
                 baseImposable={resultatLMNP.baseImposable}
+                impotIR={resultatLMNP.impotIR}
+                impotPS={resultatLMNP.impotPS}
                 impotTotal={resultatLMNP.impotTotal}
                 cashflowNet={resultatLMNP.cashflowNet}
                 formatCurrency={formatCurrency}
                 variant="emerald"
+                tmi={tmi}
+                tauxPS={resultatLMNP.alerteLMP ? 40 : 17.2}
               />
             </div>
 
