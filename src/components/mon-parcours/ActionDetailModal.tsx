@@ -1,6 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   AlertTriangle, 
   Lightbulb, 
@@ -32,6 +33,7 @@ import { RecoStatus } from "@/hooks/useRecommendationStatus";
 import { FinancialProduct } from "@/data/financialProducts";
 import { generateActionSteps } from "@/utils/recommendationMapping";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 // Icon mapping for products
 const iconMap: Record<string, LucideIcon> = {
@@ -229,21 +231,70 @@ export function ActionDetailModal({
               Statut actuel
             </h4>
             <div className="flex gap-2">
-              {statusOptions.map(({ status, label, icon: Icon, activeClass }) => (
-                <button
-                  key={status}
-                  onClick={() => onStatusChange(status)}
-                  className={cn(
-                    "flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border",
-                    currentStatus === status
-                      ? activeClass + " border-transparent"
-                      : "bg-background border-border text-muted-foreground hover:bg-muted"
-                  )}
-                >
-                  <Icon className="w-4 h-4" />
-                  {label}
-                </button>
-              ))}
+              {statusOptions.map(({ status, label, icon: StatusIcon, activeClass }) => {
+                const isActive = currentStatus === status;
+                const isCompleted = status === "completed" && isActive;
+                
+                return (
+                  <motion.button
+                    key={status}
+                    onClick={() => {
+                      onStatusChange(status);
+                      if (status === "completed" && currentStatus !== "completed") {
+                        toast.success("Bravo ! Action complétée 🎉", {
+                          description: "Continuez sur cette lancée !",
+                        });
+                      }
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    animate={isCompleted ? {
+                      backgroundColor: ["hsl(var(--emerald-500) / 0.2)", "hsl(142 76% 36% / 0.3)", "hsl(var(--emerald-500) / 0.2)"],
+                    } : {}}
+                    transition={{ duration: 0.5 }}
+                    className={cn(
+                      "flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all border relative overflow-hidden",
+                      isActive
+                        ? activeClass + " border-transparent"
+                        : "bg-background border-border text-muted-foreground hover:bg-muted"
+                    )}
+                  >
+                    <AnimatePresence mode="wait">
+                      {isCompleted ? (
+                        <motion.div
+                          key="completed-icon"
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          exit={{ scale: 0 }}
+                          transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="default-icon"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                        >
+                          <StatusIcon className="w-4 h-4" />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    {label}
+                    
+                    {/* Success ripple effect */}
+                    {isCompleted && (
+                      <motion.div
+                        className="absolute inset-0 bg-emerald-500/20 rounded-xl"
+                        initial={{ scale: 0, opacity: 1 }}
+                        animate={{ scale: 2, opacity: 0 }}
+                        transition={{ duration: 0.6 }}
+                      />
+                    )}
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>
