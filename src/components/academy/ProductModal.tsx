@@ -1,4 +1,8 @@
-import { Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, Key, Users, Clock, Layers, TreePine, Check, LucideIcon, MessageCircle, Lightbulb } from "lucide-react";
+import { 
+  Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, 
+  Key, Users, Clock, Layers, TreePine, Check, LucideIcon, MessageCircle, Lightbulb,
+  Heart, Landmark, Briefcase, UserCheck, BarChart3, Factory, Home, Building, Coins, Bitcoin
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +28,17 @@ const iconMap: Record<string, LucideIcon> = {
   Clock,
   Layers,
   TreePine,
+  Lightbulb,
+  Heart,
+  Landmark,
+  Briefcase,
+  UserCheck,
+  BarChart3,
+  Factory,
+  Home,
+  Building,
+  Coins,
+  Bitcoin,
 };
 
 interface ProductModalProps {

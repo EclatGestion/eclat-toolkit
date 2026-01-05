@@ -304,6 +304,290 @@ export const financialProducts: FinancialProduct[] = [
       scenario: "Transmission d'une forêt de 100 000€.",
       figures: "Droits de succession calculés sur seulement : 25 000 €"
     }
+  },
+  {
+    id: "or-physique",
+    title: "Or Physique",
+    shortDescription: "Valeur refuge millénaire pour protéger votre patrimoine des crises.",
+    fullDescription: "L'or est l'actif de protection par excellence. Il ne génère pas de rendement mais conserve sa valeur sur le très long terme. Idéal pour se prémunir contre l'inflation et les crises systémiques.",
+    keyBenefits: [
+      "Protection contre l'inflation et les crises",
+      "Actif tangible et universel",
+      "Fiscalité avantageuse après 22 ans (exonération)",
+      "Décorrélation totale des marchés financiers"
+    ],
+    riskLevel: 3,
+    idealFor: "Protection patrimoniale et diversification défensive",
+    category: "alternatif",
+    iconName: "Coins",
+    iconColor: "text-yellow-500",
+    iconBg: "bg-yellow-500/10",
+    caseStudy: {
+      title: "Valeur refuge",
+      scenario: "Achat de 10 000€ d'or en période de crise.",
+      figures: "Historiquement : +15% à +30% de valorisation pendant les récessions"
+    }
+  },
+  {
+    id: "crypto",
+    title: "Cryptomonnaies",
+    shortDescription: "Actifs numériques à très haut risque pour une diversification spéculative.",
+    fullDescription: "Bitcoin, Ethereum et autres cryptos offrent un potentiel de gain exceptionnel mais avec une volatilité extrême. À réserver à une petite part du patrimoine pour les profils avertis.",
+    keyBenefits: [
+      "Potentiel de performance très élevé",
+      "Décorrélation des actifs traditionnels",
+      "Accessibilité 24h/24, 7j/7",
+      "Flat tax de 30% sur les plus-values"
+    ],
+    riskLevel: 7,
+    idealFor: "Spéculation avec de l'argent que vous pouvez perdre",
+    category: "alternatif",
+    iconName: "Bitcoin",
+    iconColor: "text-orange-500",
+    iconBg: "bg-orange-500/10",
+    caseStudy: {
+      title: "Haut risque, haut rendement",
+      scenario: "Investissement de 1 000€ en Bitcoin en 2020.",
+      figures: "Valeur potentielle 2024 : entre 500€ et 5 000€ selon le timing"
+    }
+  },
+
+  // --- FISCALITÉ (COMPLÉMENTS) ---
+  {
+    id: "fcpi-fip",
+    title: "FCPI / FIP",
+    shortDescription: "Réduction d'impôt de 18-25% en investissant dans les PME innovantes.",
+    fullDescription: "Les FCPI (Fonds Communs de Placement dans l'Innovation) et FIP (Fonds d'Investissement de Proximité) financent des PME françaises. En échange, vous bénéficiez d'une réduction d'impôt immédiate.",
+    keyBenefits: [
+      "Réduction IR de 18% à 25% du montant investi",
+      "Soutien à l'économie locale et l'innovation",
+      "Diversification sur plusieurs PME",
+      "Potentiel de plus-value à terme"
+    ],
+    riskLevel: 5,
+    idealFor: "Contribuables souhaitant défiscaliser tout en soutenant l'économie",
+    category: "fiscalite",
+    iconName: "Lightbulb",
+    iconColor: "text-yellow-500",
+    iconBg: "bg-yellow-500/10",
+    caseStudy: {
+      title: "Défiscalisation PME",
+      scenario: "Investissement de 4 000€ dans un FCPI.",
+      figures: "Réduction d'impôt immédiate : 1 000€ (25%)"
+    }
+  },
+  {
+    id: "dons-ifi",
+    title: "Dons et IFI",
+    shortDescription: "Réduisez votre IFI de 75% en soutenant des associations d'intérêt général.",
+    fullDescription: "Les dons aux associations reconnues d'utilité publique permettent de réduire directement votre IFI. C'est la seule réduction possible sur cet impôt, avec un taux record de 75%.",
+    keyBenefits: [
+      "Réduction IFI de 75% du don (plafond 50 000€)",
+      "Impact social et solidaire",
+      "Choix de la cause soutenue",
+      "Reçu fiscal immédiat"
+    ],
+    riskLevel: 1,
+    idealFor: "Assujettis IFI souhaitant donner du sens à leur impôt",
+    category: "fiscalite",
+    iconName: "Heart",
+    iconColor: "text-rose-500",
+    iconBg: "bg-rose-500/10",
+    caseStudy: {
+      title: "IFI solidaire",
+      scenario: "Don de 10 000€ à une fondation.",
+      figures: "Réduction IFI : 7 500€ | Coût réel du don : 2 500€"
+    }
+  },
+  {
+    id: "malraux",
+    title: "Loi Malraux",
+    shortDescription: "Défiscalisation jusqu'à 30% pour la restauration de biens historiques.",
+    fullDescription: "Le dispositif Malraux offre une réduction d'impôt pour les travaux de restauration dans les secteurs sauvegardés. C'est l'un des rares dispositifs non plafonné par le plafonnement global des niches fiscales.",
+    keyBenefits: [
+      "Réduction d'impôt de 22% à 30% des travaux",
+      "Hors plafonnement des niches fiscales (10 000€)",
+      "Valorisation patrimoniale du bien",
+      "Loyers décents après rénovation"
+    ],
+    riskLevel: 4,
+    idealFor: "Forte fiscalité + goût pour le patrimoine architectural",
+    category: "fiscalite",
+    iconName: "Landmark",
+    iconColor: "text-stone-500",
+    iconBg: "bg-stone-500/10",
+    caseStudy: {
+      title: "Restauration Malraux",
+      scenario: "Travaux de 100 000€ en secteur sauvegardé.",
+      figures: "Réduction d'impôt : 30 000€ (étalée sur 4 ans max)"
+    }
+  },
+
+  // --- RETRAITE (COMPLÉMENTS) ---
+  {
+    id: "pereco",
+    title: "PERECO (Entreprise)",
+    shortDescription: "Profitez de l'abondement employeur pour booster votre épargne retraite.",
+    fullDescription: "Le PER d'Entreprise Collectif permet de bénéficier de versements de votre employeur (abondement) en plus de vos propres versements. L'abondement est exonéré d'impôt et de charges.",
+    keyBenefits: [
+      "Abondement employeur (jusqu'à 300% de vos versements)",
+      "Versements volontaires déductibles du revenu",
+      "Participation et intéressement transférables",
+      "Sortie en capital ou rente à la retraite"
+    ],
+    riskLevel: 3,
+    idealFor: "Salariés avec un employeur proposant un PERECO généreux",
+    category: "retraite",
+    iconName: "Briefcase",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10",
+    caseStudy: {
+      title: "Abondement x3",
+      scenario: "Versement de 1 000€ avec abondement à 300%.",
+      figures: "Épargne totale : 4 000€ | Effort réel : 1 000€"
+    }
+  },
+  {
+    id: "madelin",
+    title: "Contrat Madelin",
+    shortDescription: "Le PER des indépendants : cotisations 100% déductibles du BNC/BIC.",
+    fullDescription: "Remplacé par le PER individuel, le Madelin reste actif pour les anciens contrats. Il permet aux TNS de déduire leurs cotisations retraite de leur bénéfice imposable.",
+    keyBenefits: [
+      "Déductibilité totale des cotisations",
+      "Plafonds élevés pour les TNS",
+      "Constitution d'une retraite complémentaire",
+      "Transfert possible vers un PER"
+    ],
+    riskLevel: 3,
+    idealFor: "Indépendants et professions libérales",
+    category: "retraite",
+    iconName: "UserCheck",
+    iconColor: "text-teal-500",
+    iconBg: "bg-teal-500/10",
+    caseStudy: {
+      title: "Optimisation TNS",
+      scenario: "Médecin versant 15 000€/an.",
+      figures: "Économie d'impôt annuelle : 6 750€ (TMI 45%)"
+    }
+  },
+
+  // --- BOURSE (COMPLÉMENTS) ---
+  {
+    id: "compte-titres",
+    title: "Compte-Titres Ordinaire",
+    shortDescription: "Accès illimité aux marchés mondiaux sans plafond ni contrainte.",
+    fullDescription: "Le CTO est l'enveloppe la plus flexible pour investir en bourse. Aucun plafond, aucune restriction géographique. Fiscalité moins avantageuse (flat tax 30%) mais liberté totale.",
+    keyBenefits: [
+      "Aucun plafond de versement",
+      "Accès à tous les marchés mondiaux",
+      "Tous types d'actifs (actions, obligations, ETF, dérivés)",
+      "Retraits à tout moment sans clôture"
+    ],
+    riskLevel: 4,
+    idealFor: "Investisseurs actifs ou PEA déjà au plafond",
+    category: "bourse",
+    iconName: "LineChart",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10",
+    caseStudy: {
+      title: "Diversification mondiale",
+      scenario: "Portefeuille de 100 000€ sur actions US.",
+      figures: "Accès aux GAFAM, Tesla, Nvidia... impossibles en PEA"
+    }
+  },
+  {
+    id: "etf",
+    title: "ETF (Trackers)",
+    shortDescription: "Investissez en bourse à moindre coût avec un panier diversifié.",
+    fullDescription: "Les ETF répliquent la performance d'un indice (CAC 40, S&P 500, MSCI World) avec des frais très faibles. C'est la solution idéale pour l'investisseur passif long terme.",
+    keyBenefits: [
+      "Frais de gestion très bas (0.1% à 0.5%)",
+      "Diversification immédiate sur des centaines de titres",
+      "Liquidité quotidienne",
+      "Éligibles PEA et Assurance-Vie"
+    ],
+    riskLevel: 4,
+    idealFor: "Investissement passif long terme (DCA)",
+    category: "bourse",
+    iconName: "BarChart3",
+    iconColor: "text-indigo-500",
+    iconBg: "bg-indigo-500/10",
+    caseStudy: {
+      title: "MSCI World",
+      scenario: "Investissement mensuel de 200€ sur ETF World.",
+      figures: "Performance historique moyenne : ~8%/an sur 30 ans"
+    }
+  },
+  {
+    id: "pea-pme",
+    title: "PEA-PME",
+    shortDescription: "Investissez dans les PME européennes avec 75 000€ de plafond supplémentaire.",
+    fullDescription: "Le PEA-PME complète le PEA classique avec un plafond additionnel de 75 000€ dédié aux petites et moyennes entreprises européennes. Même fiscalité avantageuse après 5 ans.",
+    keyBenefits: [
+      "Plafond supplémentaire de 75 000€",
+      "Exonération d'impôt après 5 ans",
+      "Soutien à l'économie locale",
+      "Cumulable avec le PEA classique"
+    ],
+    riskLevel: 5,
+    idealFor: "PEA au plafond cherchant à investir davantage en exonération",
+    category: "bourse",
+    iconName: "Factory",
+    iconColor: "text-violet-500",
+    iconBg: "bg-violet-500/10",
+    caseStudy: {
+      title: "Small caps européennes",
+      scenario: "Investissement de 30 000€ sur PME cotées.",
+      figures: "Potentiel de croissance supérieur aux grandes capitalisations"
+    }
+  },
+
+  // --- IMMOBILIER (COMPLÉMENTS) ---
+  {
+    id: "lmnp",
+    title: "LMNP (Location Meublée)",
+    shortDescription: "Location meublée avec amortissement comptable pour une fiscalité proche de zéro.",
+    fullDescription: "Le statut LMNP permet d'amortir le bien immobilier et les meubles, créant un déficit comptable qui efface la fiscalité sur les loyers. C'est le régime préféré des investisseurs immobiliers.",
+    keyBenefits: [
+      "Amortissement du bien et des meubles",
+      "Loyers souvent non imposés pendant 15-20 ans",
+      "Régime réel ou micro-BIC au choix",
+      "Récupération de TVA possible (résidences services)"
+    ],
+    riskLevel: 3,
+    idealFor: "Revenus locatifs sans fiscalité",
+    category: "immobilier",
+    iconName: "Home",
+    iconColor: "text-emerald-500",
+    iconBg: "bg-emerald-500/10",
+    caseStudy: {
+      title: "Fiscalité zéro",
+      scenario: "Studio meublé générant 6 000€/an de loyers.",
+      figures: "Impôt sur les loyers : 0€ grâce à l'amortissement"
+    }
+  },
+  {
+    id: "pinel",
+    title: "Loi Pinel / Pinel+",
+    shortDescription: "Réduction d'impôt de 9% à 14% en louant un bien neuf pendant 6 à 12 ans.",
+    fullDescription: "Le dispositif Pinel offre une réduction d'impôt en contrepartie d'un engagement de location à loyer plafonné. Les taux ont baissé en 2024 mais Pinel+ maintient les anciens taux sous conditions.",
+    keyBenefits: [
+      "Réduction d'impôt jusqu'à 14% du prix (Pinel+)",
+      "Constitution d'un patrimoine immobilier",
+      "Loyers perçus pendant l'engagement",
+      "Possibilité de louer à un ascendant/descendant"
+    ],
+    riskLevel: 3,
+    idealFor: "Défiscalisation + constitution de patrimoine immobilier",
+    category: "immobilier",
+    iconName: "Building",
+    iconColor: "text-sky-500",
+    iconBg: "bg-sky-500/10",
+    caseStudy: {
+      title: "Investissement Pinel+",
+      scenario: "Achat d'un T2 neuf à 200 000€, engagement 12 ans.",
+      figures: "Réduction d'impôt totale : 28 000€ (14%)"
+    }
   }
 ];
 
