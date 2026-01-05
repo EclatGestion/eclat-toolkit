@@ -30,8 +30,21 @@ import {
   Lightbulb,
   Check,
   Circle,
-  CheckCircle2
+  CheckCircle2,
+  Trash2
 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
 
@@ -99,7 +112,26 @@ export default function MonParcours() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { tier, refreshSubscription } = usePremium();
-  const { diagnostics, isLoading: diagnosticsLoading } = useDiagnostics();
+  const { diagnostics, isLoading: diagnosticsLoading, refreshDiagnostics } = useDiagnostics();
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDeleteDiagnostic = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setDeletingId(id);
+    
+    const { error } = await supabase
+      .from("diagnostic_results")
+      .delete()
+      .eq("id", id);
+    
+    if (error) {
+      toast.error("Erreur lors de la suppression");
+    } else {
+      toast.success("Diagnostic supprimé");
+      refreshDiagnostics();
+    }
+    setDeletingId(null);
+  };
   const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -394,34 +426,69 @@ export default function MonParcours() {
           ) : diagnostics.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {diagnostics.slice(0, 3).map((diag) => (
-                <button
+                <div
                   key={diag.id}
-                  onClick={() => navigate(`/tools/bilan-patrimonial?load=${diag.id}`)}
-                  className="flex items-start gap-3 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all text-left border border-transparent hover:border-primary/20"
+                  className="relative flex items-start gap-3 p-4 bg-card rounded-2xl shadow-card hover:shadow-lg transition-all text-left border border-transparent hover:border-primary/20 group"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <FileText className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-foreground truncate">{diag.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <CalendarDays className="w-3 h-3 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(diag.updated_at).toLocaleDateString("fr-FR")}
-                      </span>
+                  <button
+                    onClick={() => navigate(`/tools/bilan-patrimonial?load=${diag.id}`)}
+                    className="flex items-start gap-3 flex-1 text-left"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <FileText className="w-5 h-5 text-primary" />
                     </div>
-                    <div className={cn(
-                      "mt-2 px-2 py-0.5 rounded-full text-xs font-medium w-fit",
-                      diag.score_global >= 70 
-                        ? "bg-emerald-500/10 text-emerald-600"
-                        : diag.score_global >= 50
-                          ? "bg-amber-500/10 text-amber-600"
-                          : "bg-red-500/10 text-red-600"
-                    )}>
-                      Score : {diag.score_global}/100
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{diag.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <CalendarDays className="w-3 h-3 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(diag.updated_at).toLocaleDateString("fr-FR")}
+                        </span>
+                      </div>
+                      <div className={cn(
+                        "mt-2 px-2 py-0.5 rounded-full text-xs font-medium w-fit",
+                        diag.score_global >= 70 
+                          ? "bg-emerald-500/10 text-emerald-600"
+                          : diag.score_global >= 50
+                            ? "bg-amber-500/10 text-amber-600"
+                            : "bg-red-500/10 text-red-600"
+                      )}>
+                        Score : {diag.score_global}/100
+                      </div>
                     </div>
-                  </div>
-                </button>
+                  </button>
+                  
+                  {/* Delete button */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <button
+                        onClick={(e) => e.stopPropagation()}
+                        className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Supprimer ce diagnostic ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Cette action est irréversible. Le diagnostic "{diag.name}" et toutes ses données seront définitivement supprimés.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={(e) => handleDeleteDiagnostic(diag.id, e)}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          disabled={deletingId === diag.id}
+                        >
+                          {deletingId === diag.id ? "Suppression..." : "Supprimer"}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               ))}
             </div>
           ) : (
