@@ -1,5 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Leaf, Scale, Sparkles } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export type ProfilType = "econome" | "standard" | "confort";
 
@@ -12,73 +18,82 @@ const profils = [
   {
     id: "econome" as ProfilType,
     label: "Économe",
-    description: "Sorties rares, achats essentiels",
+    tooltip: "Sorties rares, achats essentiels uniquement",
     montant: 400,
     icon: Leaf,
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
-    borderColor: "border-emerald-500",
+    color: "emerald",
   },
   {
     id: "standard" as ProfilType,
     label: "Standard",
-    description: "Équilibre vie sociale et budget",
+    tooltip: "Équilibre entre vie sociale et budget maîtrisé",
     montant: 700,
     icon: Scale,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
-    borderColor: "border-blue-500",
+    color: "blue",
   },
   {
     id: "confort" as ProfilType,
     label: "Confort",
-    description: "Restaurants, loisirs fréquents",
+    tooltip: "Restaurants, loisirs et sorties fréquentes",
     montant: 1100,
     icon: Sparkles,
-    color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
-    borderColor: "border-amber-500",
+    color: "amber",
   },
 ];
 
+const colorClasses = {
+  emerald: {
+    active: "border-emerald-500 bg-emerald-500/10 text-emerald-700",
+    icon: "text-emerald-500",
+  },
+  blue: {
+    active: "border-blue-500 bg-blue-500/10 text-blue-700",
+    icon: "text-blue-500",
+  },
+  amber: {
+    active: "border-amber-500 bg-amber-500/10 text-amber-700",
+    icon: "text-amber-500",
+  },
+};
+
 export function ProfilSelector({ profilActif, onSelect }: ProfilSelectorProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      {profils.map((profil) => {
-        const Icon = profil.icon;
-        const isActive = profilActif === profil.id;
-        
-        return (
-          <button
-            key={profil.id}
-            onClick={() => onSelect(profil.id)}
-            className={cn(
-              "p-3 sm:p-4 rounded-2xl border-2 transition-all duration-200 text-left",
-              "hover:scale-[1.02] hover:shadow-md",
-              isActive
-                ? `${profil.borderColor} ${profil.bgColor}`
-                : "border-border bg-card hover:border-muted-foreground/30"
-            )}
-          >
-            <div className="flex sm:flex-col items-center sm:items-start gap-3 sm:gap-0">
-              <div className={cn("p-2 rounded-xl w-fit sm:mb-2", profil.bgColor)}>
-                <Icon className={cn("h-4 w-4", profil.color)} />
-              </div>
-              <div className="space-y-0.5 sm:space-y-1 flex-1 min-w-0">
-                <p className={cn("font-medium text-xs sm:text-sm", isActive && profil.color)}>
-                  {profil.label}
-                </p>
-                <p className="text-[10px] sm:text-xs text-muted-foreground line-clamp-1 sm:line-clamp-2">
-                  {profil.description}
-                </p>
-                <p className={cn("text-xs sm:text-sm font-semibold", profil.color)}>
-                  {profil.montant} €/mois
-                </p>
-              </div>
-            </div>
-          </button>
-        );
-      })}
-    </div>
+    <TooltipProvider>
+      <div className="flex flex-wrap gap-2">
+        {profils.map((profil) => {
+          const Icon = profil.icon;
+          const isActive = profilActif === profil.id;
+          const colors = colorClasses[profil.color as keyof typeof colorClasses];
+
+          return (
+            <Tooltip key={profil.id}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => onSelect(profil.id)}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2.5 rounded-full border-2 transition-all duration-200",
+                    "hover:scale-[1.02] hover:shadow-sm",
+                    isActive
+                      ? colors.active
+                      : "border-border bg-card hover:border-muted-foreground/30"
+                  )}
+                >
+                  <Icon className={cn("h-4 w-4", isActive ? colors.icon : "text-muted-foreground")} />
+                  <span className={cn("font-medium text-sm", !isActive && "text-foreground")}>
+                    {profil.label}
+                  </span>
+                  <span className={cn("text-sm", isActive ? "opacity-80" : "text-muted-foreground")}>
+                    ~{profil.montant}€
+                  </span>
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom" className="max-w-[200px]">
+                <p>{profil.tooltip}</p>
+              </TooltipContent>
+            </Tooltip>
+          );
+        })}
+      </div>
+    </TooltipProvider>
   );
 }

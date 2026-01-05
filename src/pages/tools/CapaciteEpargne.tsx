@@ -125,6 +125,7 @@ export default function CapaciteEpargne() {
               setProfilActif={setProfilActif}
               useSlider={useSlider}
               setUseSlider={setUseSlider}
+              revenus={revenusTotaux}
             />
           </motion.div>
         </div>

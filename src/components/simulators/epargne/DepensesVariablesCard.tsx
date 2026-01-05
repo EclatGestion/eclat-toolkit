@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShoppingBag } from "lucide-react";
-import { InputSlider } from "../interets-composes/InputSlider";
+import { ShoppingBag, Lightbulb } from "lucide-react";
+import { Slider } from "@/components/ui/slider";
+import { Label } from "@/components/ui/label";
 import { ProfilSelector, type ProfilType } from "./ProfilSelector";
 
 interface DepensesVariablesCardProps {
@@ -10,6 +11,7 @@ interface DepensesVariablesCardProps {
   setProfilActif: (profil: ProfilType | null) => void;
   useSlider: boolean;
   setUseSlider: (value: boolean) => void;
+  revenus?: number;
 }
 
 const PROFILS_VALUES: Record<ProfilType, number> = {
@@ -23,8 +25,8 @@ export function DepensesVariablesCard({
   setDepensesVariables,
   profilActif,
   setProfilActif,
-  useSlider,
   setUseSlider,
+  revenus = 0,
 }: DepensesVariablesCardProps) {
   const handleProfilChange = (profil: ProfilType) => {
     setProfilActif(profil);
@@ -32,11 +34,15 @@ export function DepensesVariablesCard({
     setUseSlider(false);
   };
 
-  const handleSliderChange = (value: number) => {
-    setDepensesVariables(value);
+  const handleSliderChange = (value: number[]) => {
+    setDepensesVariables(value[0]);
     setProfilActif(null);
     setUseSlider(true);
   };
+
+  const pourcentageRevenus = revenus > 0 
+    ? Math.round((depensesVariables / revenus) * 100) 
+    : null;
 
   return (
     <Card className="rounded-3xl shadow-card">
@@ -48,45 +54,59 @@ export function DepensesVariablesCard({
           Dépenses variables
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">
-            Choisissez un profil de dépenses ou définissez un montant personnalisé
-          </p>
-          
-          <ProfilSelector
-            profilActif={profilActif}
-            onSelect={handleProfilChange}
-          />
-        </div>
+      <CardContent className="space-y-5">
+        {/* Question claire */}
+        <p className="text-sm text-muted-foreground">
+          Quel est votre style de vie ?
+        </p>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">ou</span>
-          </div>
-        </div>
-
-        <InputSlider
-          label="Montant personnalisé"
-          value={depensesVariables}
-          onChange={handleSliderChange}
-          min={0}
-          max={3000}
-          step={50}
-          unit="€"
+        {/* Profils en chips */}
+        <ProfilSelector
+          profilActif={profilActif}
+          onSelect={handleProfilChange}
         />
 
-        <div className="pt-2 border-t border-border">
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Dépenses variables</span>
-            <span className="text-lg font-semibold text-purple-500">
+        {/* Slider d'ajustement */}
+        <div className="pt-4 border-t border-border">
+          <Label className="text-sm text-muted-foreground">
+            Ajustez selon vos habitudes
+          </Label>
+
+          <div className="mt-4 px-1">
+            <Slider
+              value={[depensesVariables]}
+              onValueChange={handleSliderChange}
+              min={200}
+              max={2000}
+              step={50}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground mt-2">
+              <span>200€</span>
+              <span>2000€</span>
+            </div>
+          </div>
+
+          {/* Montant final - grand et centré */}
+          <div className="text-center mt-5">
+            <span className="text-3xl font-bold text-purple-500">
               {depensesVariables.toLocaleString("fr-FR")} €
+            </span>
+            <span className="text-sm text-muted-foreground block mt-1">
+              par mois
             </span>
           </div>
         </div>
+
+        {/* Insight contextuel */}
+        {pourcentageRevenus !== null && pourcentageRevenus > 0 && (
+          <div className="flex items-start gap-2 bg-blue-500/10 rounded-xl p-3">
+            <Lightbulb className="h-4 w-4 text-blue-500 mt-0.5 shrink-0" />
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              Cela représente <span className="font-semibold">{pourcentageRevenus}%</span> de vos revenus mensuels
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
