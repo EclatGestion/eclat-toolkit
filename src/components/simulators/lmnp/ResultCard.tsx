@@ -11,10 +11,14 @@ interface ResultCardProps {
   isWinner: boolean;
   loyersAnnuels: number;
   baseImposable: number;
+  impotIR: number;
+  impotPS: number;
   impotTotal: number;
   cashflowNet: number;
   formatCurrency: (value: number) => string;
   variant: "primary" | "emerald";
+  tmi: number;
+  tauxPS: number;
 }
 
 export function ResultCard({
@@ -24,10 +28,14 @@ export function ResultCard({
   isWinner,
   loyersAnnuels,
   baseImposable,
+  impotIR,
+  impotPS,
   impotTotal,
   cashflowNet,
   formatCurrency,
   variant,
+  tmi,
+  tauxPS,
 }: ResultCardProps) {
   const isPrimary = variant === "primary";
 
@@ -82,14 +90,14 @@ export function ResultCard({
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* KPI Principal - Impôt */}
+          {/* KPI Principal - Impôt Total */}
           <div
             className={cn(
               "text-center py-4 px-3 rounded-xl",
               isPrimary ? "bg-primary/5" : "bg-emerald-50 dark:bg-emerald-950/30"
             )}
           >
-            <p className="text-xs text-muted-foreground mb-1">Impôt annuel</p>
+            <p className="text-xs text-muted-foreground mb-1">Impôt total annuel</p>
             <p
               className={cn(
                 "text-3xl font-bold",
@@ -102,6 +110,7 @@ export function ResultCard({
             >
               {formatCurrency(impotTotal)}
             </p>
+            <p className="text-xs text-muted-foreground mt-1">IR + PS</p>
           </div>
 
           {/* Détails */}
@@ -113,6 +122,18 @@ export function ResultCard({
             <div className="flex justify-between">
               <span className="text-muted-foreground">Base imposable</span>
               <span className="font-medium">{formatCurrency(baseImposable)}</span>
+            </div>
+
+            {/* Décomposition fiscale IR + PS */}
+            <div className="pt-2 mt-2 border-t border-dashed space-y-1.5">
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">IR ({tmi}%)</span>
+                <span className="font-medium">{formatCurrency(impotIR)}</span>
+              </div>
+              <div className="flex justify-between text-xs">
+                <span className="text-muted-foreground">PS ({tauxPS}%)</span>
+                <span className="font-medium">{formatCurrency(impotPS)}</span>
+              </div>
             </div>
           </div>
 
