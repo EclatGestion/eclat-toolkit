@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { WealthProvider } from "@/contexts/WealthContext";
+import { PremiumProvider } from "@/contexts/PremiumContext";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { OnboardingGuard } from "@/components/auth/OnboardingGuard";
 import { PublicRoute } from "@/components/auth/PublicRoute";
@@ -55,63 +56,65 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
-      <WealthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-              {/* Public SEO Pages */}
-                <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-                <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-                <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
-                <Route path="/academie" element={<AcademiePublic />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/blog" element={<BlogIndex />} />
-                <Route path="/blog/:slug" element={<BlogArticle />} />
-                <Route path="/mentions-legales" element={<MentionsLegales />} />
-                <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
-                <Route path="/cgu" element={<CGU />} />
-                <Route path="/diagnostic" element={<DiagnosticPatrimonial />} />
-                
-                {/* Partner Pages */}
-                <Route path="/partenaire/assurance-vie" element={<PartenaireAssuranceVie />} />
-                
-                {/* Redirects for old routes */}
-                <Route path="/dashboard" element={<Navigate to="/mon-parcours" replace />} />
-                <Route path="/catalogue" element={<Navigate to="/toolbox" replace />} />
-                
-                {/* Protected Pages */}
-                <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
-                <Route path="/mon-parcours" element={<ProtectedRoute><OnboardingGuard><MonParcours /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/toolbox" element={<ProtectedRoute><OnboardingGuard><Toolbox /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/contact-eclat" element={<ProtectedRoute><OnboardingGuard><ContactEclat /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/patrimoine" element={<ProtectedRoute><OnboardingGuard><Patrimoine /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/droits-succession" element={<ProtectedRoute><OnboardingGuard><SimulateurSuccession /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/comparateur-lmnp" element={<ProtectedRoute><OnboardingGuard><ComparateurLMNP /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/capacite-epargne" element={<ProtectedRoute><OnboardingGuard><CapaciteEpargne /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/inflation" element={<ProtectedRoute><OnboardingGuard><Inflation /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/assurance-vie" element={<ProtectedRoute><OnboardingGuard><AssuranceVie /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/optimisation-per" element={<ProtectedRoute><OnboardingGuard><OptimisationPER /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/bilan-patrimonial" element={<ProtectedRoute><OnboardingGuard><BilanPatrimonialAvance /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/goal-based-investment" element={<ProtectedRoute><OnboardingGuard><GoalBasedInvestment /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/analyse-action" element={<ProtectedRoute><OnboardingGuard><AnalyseAction /></OnboardingGuard></ProtectedRoute>} />
-                <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
-                
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-            <CookieBanner />
-          </BrowserRouter>
-        </TooltipProvider>
-      </WealthProvider>
+      <PremiumProvider>
+        <WealthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                {/* Public SEO Pages */}
+                  <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+                  <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
+                  <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
+                  <Route path="/academie" element={<AcademiePublic />} />
+                  <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/blog" element={<BlogIndex />} />
+                  <Route path="/blog/:slug" element={<BlogArticle />} />
+                  <Route path="/mentions-legales" element={<MentionsLegales />} />
+                  <Route path="/confidentialite" element={<PolitiqueConfidentialite />} />
+                  <Route path="/cgu" element={<CGU />} />
+                  <Route path="/diagnostic" element={<DiagnosticPatrimonial />} />
+                  
+                  {/* Partner Pages */}
+                  <Route path="/partenaire/assurance-vie" element={<PartenaireAssuranceVie />} />
+                  
+                  {/* Redirects for old routes */}
+                  <Route path="/dashboard" element={<Navigate to="/mon-parcours" replace />} />
+                  <Route path="/catalogue" element={<Navigate to="/toolbox" replace />} />
+                  
+                  {/* Protected Pages */}
+                  <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
+                  <Route path="/mon-parcours" element={<ProtectedRoute><OnboardingGuard><MonParcours /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/toolbox" element={<ProtectedRoute><OnboardingGuard><Toolbox /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/contact-eclat" element={<ProtectedRoute><OnboardingGuard><ContactEclat /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/patrimoine" element={<ProtectedRoute><OnboardingGuard><Patrimoine /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/simulations" element={<ProtectedRoute><OnboardingGuard><Simulations /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute><OnboardingGuard><Settings /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/academie-pro" element={<ProtectedRoute><OnboardingGuard><Academie /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/interets-composes" element={<ProtectedRoute><OnboardingGuard><InteretsComposes /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/simulateur-immobilier" element={<ProtectedRoute><OnboardingGuard><SimulateurImmobilier /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/simulateur-ir" element={<ProtectedRoute><OnboardingGuard><SimulateurIR /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/droits-succession" element={<ProtectedRoute><OnboardingGuard><SimulateurSuccession /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/comparateur-lmnp" element={<ProtectedRoute><OnboardingGuard><ComparateurLMNP /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/capacite-epargne" element={<ProtectedRoute><OnboardingGuard><CapaciteEpargne /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/inflation" element={<ProtectedRoute><OnboardingGuard><Inflation /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/assurance-vie" element={<ProtectedRoute><OnboardingGuard><AssuranceVie /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/optimisation-per" element={<ProtectedRoute><OnboardingGuard><OptimisationPER /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/bilan-patrimonial" element={<ProtectedRoute><OnboardingGuard><BilanPatrimonialAvance /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/goal-based-investment" element={<ProtectedRoute><OnboardingGuard><GoalBasedInvestment /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/analyse-action" element={<ProtectedRoute><OnboardingGuard><AnalyseAction /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/tools/:toolId" element={<ProtectedRoute><OnboardingGuard><ToolPage /></OnboardingGuard></ProtectedRoute>} />
+                  
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+              <CookieBanner />
+            </BrowserRouter>
+          </TooltipProvider>
+        </WealthProvider>
+      </PremiumProvider>
     </AuthProvider>
   </QueryClientProvider>
 );

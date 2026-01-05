@@ -135,13 +135,14 @@ export function ActionDetailModal({
   ];
 
   const handleViewProduct = () => {
+    if (!matchingProduct) return;
     onOpenChange(false);
-    navigate("/academie");
+    navigate(`/academie-pro?product=${matchingProduct.id}`);
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center", priorityConfig.bg)}>
