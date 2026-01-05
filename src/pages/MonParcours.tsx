@@ -6,8 +6,9 @@ import { useDiagnostics, AIRecommendations, Recommandation } from "@/hooks/useDi
 import { useRecommendationStatus, RecoStatus } from "@/hooks/useRecommendationStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { 
   ArrowRight, 
   Target, 
@@ -31,7 +32,9 @@ import {
   Check,
   Circle,
   CheckCircle2,
-  Trash2
+  Trash2,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
 import {
   AlertDialog,
@@ -47,6 +50,8 @@ import {
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { UpgradeSuccessModal } from "@/components/premium/UpgradeSuccessModal";
+import { ActionDetailModal } from "@/components/mon-parcours/ActionDetailModal";
+import { getPrimaryProduct } from "@/utils/recommendationMapping";
 
 interface UserProfile {
   first_name: string | null;
@@ -108,12 +113,17 @@ const itemVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+type ActionWithMeta = Recommandation & { priority: string; index: number; key: string };
+
 export default function MonParcours() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { tier, refreshSubscription } = usePremium();
   const { diagnostics, isLoading: diagnosticsLoading, refreshDiagnostics } = useDiagnostics();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [showAllActions, setShowAllActions] = useState(false);
+  const [selectedAction, setSelectedAction] = useState<ActionWithMeta | null>(null);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
 
   const handleDeleteDiagnostic = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -176,12 +186,12 @@ export default function MonParcours() {
   // Get recommendations statuses for the latest diagnostic
   const { statuses, updateStatus } = useRecommendationStatus(latestDiagnosticWithRecos?.id);
 
-  // Get priority actions from the latest diagnostic
-  const priorityActions = useMemo(() => {
+  // Get ALL actions from the latest diagnostic
+  const allActions = useMemo(() => {
     if (!latestDiagnosticWithRecos?.ai_recommendations) return [];
     
     const recos = latestDiagnosticWithRecos.ai_recommendations;
-    const allRecos: Array<Recommandation & { priority: string; index: number; key: string }> = [];
+    const allRecos: ActionWithMeta[] = [];
     
     recos.haute?.forEach((r, i) => {
       const key = `haute_${i}_${r.titre.slice(0, 20).replace(/\s/g, "_")}`;
@@ -191,21 +201,47 @@ export default function MonParcours() {
       const key = `moyenne_${i}_${r.titre.slice(0, 20).replace(/\s/g, "_")}`;
       allRecos.push({ ...r, priority: "moyenne", index: i, key });
     });
+    recos.longTerme?.forEach((r, i) => {
+      const key = `longTerme_${i}_${r.titre.slice(0, 20).replace(/\s/g, "_")}`;
+      allRecos.push({ ...r, priority: "longTerme", index: i, key });
+    });
     
-    // Filter out completed ones and take top 3
-    return allRecos
-      .filter(r => statuses[r.key] !== "completed")
-      .slice(0, 3);
-  }, [latestDiagnosticWithRecos, statuses]);
+    return allRecos;
+  }, [latestDiagnosticWithRecos]);
+
+  // Split into pending and completed
+  const pendingActions = useMemo(() => 
+    allActions.filter(r => statuses[r.key] !== "completed"),
+    [allActions, statuses]
+  );
+  
+  const completedActions = useMemo(() => 
+    allActions.filter(r => statuses[r.key] === "completed"),
+    [allActions, statuses]
+  );
+
+  // Calculate progress
+  const progressPercentage = useMemo(() => {
+    if (allActions.length === 0) return 0;
+    return Math.round((completedActions.length / allActions.length) * 100);
+  }, [allActions, completedActions]);
+
+  // Actions to display
+  const displayedActions = useMemo(() => {
+    if (showAllActions) {
+      return [...pendingActions, ...completedActions];
+    }
+    return pendingActions.slice(0, 3);
+  }, [showAllActions, pendingActions, completedActions]);
 
   const getNextStep = () => {
     if (!hasDiagnostic) {
       return { title: "Réalisez votre bilan patrimonial", path: "/tools/bilan-patrimonial", icon: Brain };
     }
     // If there are AI recommendations, show dynamic next step
-    if (priorityActions.length > 0) {
+    if (pendingActions.length > 0) {
       return { 
-        title: priorityActions[0].titre, 
+        title: pendingActions[0].titre, 
         path: `/tools/bilan-patrimonial?load=${latestDiagnosticWithRecos?.id}`, 
         icon: AlertTriangle 
       };
@@ -226,6 +262,17 @@ export default function MonParcours() {
   };
 
   const nextStep = getNextStep();
+
+  const handleActionClick = (action: ActionWithMeta) => {
+    setSelectedAction(action);
+    setIsActionModalOpen(true);
+  };
+
+  const handleStatusUpdate = async (status: RecoStatus) => {
+    if (selectedAction) {
+      await updateStatus(selectedAction.key, status);
+    }
+  };
 
   if (loading) {
     return (
@@ -286,7 +333,7 @@ export default function MonParcours() {
         </motion.div>
 
         {/* Mes actions prioritaires - Dynamique basé sur le dernier bilan */}
-        {priorityActions.length > 0 && latestDiagnosticWithRecos && (
+        {allActions.length > 0 && latestDiagnosticWithRecos && (
           <motion.section variants={itemVariants}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
@@ -297,91 +344,121 @@ export default function MonParcours() {
               </span>
             </div>
             
+            {/* Barre de progression */}
+            <div className="mb-6 bg-card rounded-2xl p-4 shadow-card border border-border">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-foreground">Progression</span>
+                <span className={cn(
+                  "text-sm font-semibold",
+                  progressPercentage >= 70 ? "text-emerald-500" :
+                  progressPercentage >= 40 ? "text-amber-500" : "text-red-500"
+                )}>
+                  {progressPercentage}%
+                </span>
+              </div>
+              <Progress 
+                value={progressPercentage} 
+                className="h-3"
+              />
+              <p className="text-xs text-muted-foreground mt-2">
+                {completedActions.length} action{completedActions.length > 1 ? "s" : ""} réalisée{completedActions.length > 1 ? "s" : ""} sur {allActions.length}
+              </p>
+            </div>
+            
             <div className="space-y-3">
-              {priorityActions.map((action, idx) => {
-                const currentStatus = statuses[action.key] || "pending";
-                const isCompleted = currentStatus === "completed";
-                const isInProgress = currentStatus === "in_progress";
-                
-                const priorityConfig = {
-                  haute: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
-                  moyenne: { icon: Lightbulb, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-                }[action.priority] || { icon: Target, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" };
-                
-                const PriorityIcon = priorityConfig.icon;
-                
-                return (
-                  <div
-                    key={action.key}
-                    className={cn(
-                      "flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card border transition-all",
-                      priorityConfig.border
-                    )}
-                  >
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                      priorityConfig.bg
-                    )}>
-                      <PriorityIcon className={cn("w-5 h-5", priorityConfig.color)} />
-                    </div>
-                    
-                    <div className="flex-1 min-w-0">
-                      <p className={cn(
-                        "font-medium text-foreground",
-                        isCompleted && "line-through opacity-60"
+              <AnimatePresence mode="popLayout">
+                {displayedActions.map((action) => {
+                  const currentStatus = statuses[action.key] || "pending";
+                  const isCompleted = currentStatus === "completed";
+                  const isInProgress = currentStatus === "in_progress";
+                  
+                  const priorityConfig = {
+                    haute: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
+                    moyenne: { icon: Lightbulb, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
+                    longTerme: { icon: Target, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+                  }[action.priority] || { icon: Target, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" };
+                  
+                  const PriorityIcon = priorityConfig.icon;
+                  
+                  return (
+                    <motion.div
+                      key={action.key}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className={cn(
+                        "flex items-center gap-4 p-4 bg-card rounded-2xl shadow-card border transition-all cursor-pointer hover:shadow-lg",
+                        priorityConfig.border,
+                        isCompleted && "opacity-60"
+                      )}
+                      onClick={() => handleActionClick(action)}
+                    >
+                      <div className={cn(
+                        "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                        priorityConfig.bg
                       )}>
-                        {action.titre}
-                      </p>
-                      <p className="text-sm text-muted-foreground truncate">
-                        {action.description}
-                      </p>
-                    </div>
-                    
-                    {/* Status selector */}
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => updateStatus(action.key, "in_progress")}
-                        className={cn(
-                          "p-2 rounded-lg transition-colors",
-                          isInProgress 
-                            ? "bg-amber-500/20 text-amber-600" 
-                            : "text-muted-foreground hover:bg-muted"
+                        <PriorityIcon className={cn("w-5 h-5", priorityConfig.color)} />
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <p className={cn(
+                          "font-medium text-foreground",
+                          isCompleted && "line-through"
+                        )}>
+                          {action.titre}
+                        </p>
+                        <p className="text-sm text-muted-foreground truncate">
+                          {action.description}
+                        </p>
+                      </div>
+                      
+                      {/* Status indicator */}
+                      <div className="flex items-center gap-2 shrink-0">
+                        {isCompleted && (
+                          <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-xs font-medium flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Fait
+                          </span>
                         )}
-                        title="En cours"
-                      >
-                        <Clock className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => updateStatus(action.key, "completed")}
-                        className={cn(
-                          "p-2 rounded-lg transition-colors",
-                          isCompleted 
-                            ? "bg-emerald-500/20 text-emerald-600" 
-                            : "text-muted-foreground hover:bg-muted"
+                        {isInProgress && (
+                          <span className="px-2 py-1 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-medium flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            En cours
+                          </span>
                         )}
-                        title="Réalisée"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
               
-              <Button
-                variant="ghost"
-                onClick={() => navigate(`/tools/bilan-patrimonial?load=${latestDiagnosticWithRecos.id}`)}
-                className="w-full gap-2 text-muted-foreground hover:text-foreground"
-              >
-                Voir toutes mes recommandations
-                <ArrowRight className="w-4 h-4" />
-              </Button>
+              {allActions.length > 3 && (
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowAllActions(!showAllActions)}
+                  className="w-full gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  {showAllActions ? (
+                    <>
+                      Voir moins
+                      <ChevronUp className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Voir toutes mes actions ({allActions.length - 3} de plus)
+                      <ChevronDown className="w-4 h-4" />
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </motion.section>
         )}
 
         {/* Prochaine étape - Affiché si pas de recommandations IA */}
-        {priorityActions.length === 0 && (
+        {allActions.length === 0 && (
           <motion.section variants={itemVariants}>
             <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
               🎯 Votre prochaine étape
@@ -664,6 +741,20 @@ export default function MonParcours() {
       </motion.div>
 
       <UpgradeSuccessModal open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen} />
+      
+      <ActionDetailModal
+        open={isActionModalOpen}
+        onOpenChange={setIsActionModalOpen}
+        action={selectedAction}
+        currentStatus={selectedAction ? (statuses[selectedAction.key] || "pending") : "pending"}
+        onStatusChange={handleStatusUpdate}
+        matchingProduct={selectedAction ? getPrimaryProduct(selectedAction.titre, selectedAction.description) : null}
+        diagnosticData={latestDiagnosticWithRecos ? {
+          tmi: latestDiagnosticWithRecos.tmi,
+          patrimoine_total: latestDiagnosticWithRecos.patrimoine_total,
+          revenus: latestDiagnosticWithRecos.revenus
+        } : undefined}
+      />
     </MainLayout>
   );
 }
