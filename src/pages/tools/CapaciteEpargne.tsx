@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { RevenusCard } from "@/components/simulators/epargne/RevenusCard";
 import { DepensesFixesCard } from "@/components/simulators/epargne/DepensesFixesCard";
 import { DepensesVariablesCard } from "@/components/simulators/epargne/DepensesVariablesCard";
 import { ResultatsEpargne } from "@/components/simulators/epargne/ResultatsEpargne";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 import type { ProfilType } from "@/components/simulators/epargne/ProfilSelector";
 
 interface Credit {
@@ -16,6 +18,8 @@ interface Credit {
 }
 
 export default function CapaciteEpargne() {
+  const location = useLocation();
+
   // États Revenus
   const [salaireNet, setSalaireNet] = useState(2500);
   const [autresRevenus, setAutresRevenus] = useState(0);
@@ -33,6 +37,23 @@ export default function CapaciteEpargne() {
 
   // État affichage résultats
   const [showResults, setShowResults] = useState(false);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.salaireNet !== undefined) setSalaireNet(p.salaireNet);
+      if (p.autresRevenus !== undefined) setAutresRevenus(p.autresRevenus);
+      if (p.loyer !== undefined) setLoyer(p.loyer);
+      if (p.credits !== undefined) setCredits(p.credits);
+      if (p.abonnements !== undefined) setAbonnements(p.abonnements);
+      if (p.impots !== undefined) setImpots(p.impots);
+      if (p.depensesVariables !== undefined) setDepensesVariables(p.depensesVariables);
+      if (p.profilActif !== undefined) setProfilActif(p.profilActif);
+      setShowResults(true);
+    }
+  }, [location.state]);
 
   // Calculs
   const revenusTotaux = salaireNet + autresRevenus;
@@ -131,6 +152,7 @@ export default function CapaciteEpargne() {
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
+            className="space-y-4"
           >
             <ResultatsEpargne
               capaciteEpargne={capaciteEpargne}
@@ -139,6 +161,28 @@ export default function CapaciteEpargne() {
               depensesFixes={depensesFixes}
               depensesVariables={depensesVariables}
             />
+            <div className="flex justify-end">
+              <SaveSimulationButton
+                toolType="capacite-epargne"
+                toolLabel="Capacité d'Épargne"
+                parameters={{
+                  salaireNet,
+                  autresRevenus,
+                  loyer,
+                  credits,
+                  abonnements,
+                  impots,
+                  depensesVariables,
+                  profilActif,
+                }}
+                results={{
+                  capaciteEpargne,
+                  tauxEpargne,
+                  revenusTotaux,
+                  depensesFixes,
+                }}
+              />
+            </div>
           </motion.div>
         )}
       </div>

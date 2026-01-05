@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
@@ -12,6 +13,7 @@ import { CapacityBar } from "@/components/simulators/immobilier/CapacityBar";
 import { Home, TrendingUp, ArrowRight, Lock, Crown } from "lucide-react";
 import { usePremium } from "@/hooks/usePremium";
 import { TierLock } from "@/components/premium/TierLock";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 
 function calculateMensualite(montant: number, tauxAnnuel: number, dureeAnnees: number) {
   if (montant <= 0 || tauxAnnuel <= 0 || dureeAnnees <= 0) {
@@ -61,6 +63,7 @@ function calculateCapacite(
 }
 
 export default function SimulateurImmobilier() {
+  const location = useLocation();
   const { isPremium } = usePremium();
   const [activeTab, setActiveTab] = useState("mensualite");
   
@@ -77,6 +80,18 @@ export default function SimulateurImmobilier() {
   const [dureeCapacite, setDureeCapacite] = useState(20);
   const [tauxCapacite, setTauxCapacite] = useState(3.90);
   const [apportCapacite, setApportCapacite] = useState(30000);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.montantProjet !== undefined) setMontantProjet(p.montantProjet);
+      if (p.apportPersonnel !== undefined) setApportPersonnel(p.apportPersonnel);
+      if (p.dureeMensualite !== undefined) setDureeMensualite(p.dureeMensualite);
+      if (p.tauxMensualite !== undefined) setTauxMensualite(p.tauxMensualite);
+    }
+  }, [location.state]);
 
   const resultMensualite = useMemo(() => {
     const montantEmprunte = Math.max(0, montantProjet - apportPersonnel);
@@ -335,6 +350,25 @@ export default function SimulateurImmobilier() {
               </div>
             </TabsContent>
           </Tabs>
+
+          {/* Save Button */}
+          <div className="flex justify-end mt-6">
+            <SaveSimulationButton
+              toolType="simulateur-immobilier"
+              toolLabel="Simulateur Immobilier"
+              parameters={{
+                montantProjet,
+                apportPersonnel,
+                dureeMensualite,
+                tauxMensualite,
+              }}
+              results={{
+                mensualite: resultMensualite.mensualite,
+                coutTotal: resultMensualite.coutTotal,
+                interets: resultMensualite.interets,
+              }}
+            />
+          </div>
         </div>
       </div>
     </MainLayout>

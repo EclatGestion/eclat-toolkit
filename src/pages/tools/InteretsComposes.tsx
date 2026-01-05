@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // Compound interest simulator with premium features
 import { MainLayout } from "@/components/layout/MainLayout";
@@ -14,6 +14,7 @@ import { SimulationRetraite } from "@/components/simulators/interets-composes/Si
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
 import { usePremium } from "@/hooks/usePremium";
 import { TierLock } from "@/components/premium/TierLock";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 import { cn } from "@/lib/utils";
 
 interface ChartDataPoint {
@@ -64,6 +65,7 @@ function calculateCompoundInterest(
 
 export default function InteretsComposes() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { isPremium } = usePremium();
 
   // Input states
@@ -73,6 +75,19 @@ export default function InteretsComposes() {
   const [rendement, setRendement] = useState(8.5);
   const [selectedScenario, setSelectedScenario] = useState<string | null>("equilibre");
   const [showComparison, setShowComparison] = useState(false);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.capitalInitial !== undefined) setCapitalInitial(p.capitalInitial);
+      if (p.epargneMensuelle !== undefined) setEpargneMensuelle(p.epargneMensuelle);
+      if (p.duree !== undefined) setDuree(p.duree);
+      if (p.rendement !== undefined) setRendement(p.rendement);
+      if (p.selectedScenario !== undefined) setSelectedScenario(p.selectedScenario);
+    }
+  }, [location.state]);
 
   // Handle scenario selection
   const handleScenarioSelect = (scenario: Scenario) => {
@@ -301,6 +316,26 @@ export default function InteretsComposes() {
               />
             </TierLock>
           )}
+        </div>
+
+        {/* Save Button */}
+        <div className="flex justify-end mt-6">
+          <SaveSimulationButton
+            toolType="interets-composes"
+            toolLabel="Intérêts Composés"
+            parameters={{
+              capitalInitial,
+              epargneMensuelle,
+              duree,
+              rendement,
+              selectedScenario,
+            }}
+            results={{
+              capitalFinal: chartData[chartData.length - 1]?.votreScenario || 0,
+              totalVerse: chartData[chartData.length - 1]?.totalVerse || 0,
+              interetsGagnes: (chartData[chartData.length - 1]?.votreScenario || 0) - (chartData[chartData.length - 1]?.totalVerse || 0),
+            }}
+          />
         </div>
       </div>
     </MainLayout>

@@ -1,21 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { DonneesBaseCard } from "@/components/simulators/inflation/DonneesBaseCard";
 import { ComparatifCard } from "@/components/simulators/inflation/ComparatifCard";
 import { ResultatsInflation } from "@/components/simulators/inflation/ResultatsInflation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { BookOpen, TrendingDown, Lock } from "lucide-react";
 import { motion } from "framer-motion";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 
 export default function Inflation() {
+  const location = useLocation();
+
   // États pour les inputs
   const [montant, setMontant] = useState(10000);
   const [inflation, setInflation] = useState(2.5);
   const [duree, setDuree] = useState(10);
   const [comparatifActif, setComparatifActif] = useState(false);
   const [rendement, setRendement] = useState(3);
+
+  // Load saved simulation
+  useEffect(() => {
+    const loadSimulation = location.state?.loadSimulation;
+    if (loadSimulation?.parameters) {
+      const p = loadSimulation.parameters;
+      if (p.montant !== undefined) setMontant(p.montant);
+      if (p.inflation !== undefined) setInflation(p.inflation);
+      if (p.duree !== undefined) setDuree(p.duree);
+      if (p.comparatifActif !== undefined) setComparatifActif(p.comparatifActif);
+      if (p.rendement !== undefined) setRendement(p.rendement);
+    }
+  }, [location.state]);
+
+  // Calculate results for saving
+  const results = useMemo(() => {
+    const pouvoirAchatFinal = montant * Math.pow(1 - inflation / 100, duree);
+    const perteValeur = montant - pouvoirAchatFinal;
+    const valeurInvestie = comparatifActif ? montant * Math.pow(1 + (rendement - inflation) / 100, duree) : undefined;
+    return { pouvoirAchatFinal, perteValeur, valeurInvestie };
+  }, [montant, inflation, duree, comparatifActif, rendement]);
 
   return (
     <MainLayout title="Calculateur d'Inflation">
@@ -95,7 +119,7 @@ export default function Inflation() {
           </div>
 
           {/* Colonne droite - Résultats */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-2 space-y-4">
             <ResultatsInflation
               montant={montant}
               inflation={inflation}
@@ -103,6 +127,20 @@ export default function Inflation() {
               comparatifActif={comparatifActif}
               rendement={rendement}
             />
+            <div className="flex justify-end">
+              <SaveSimulationButton
+                toolType="inflation"
+                toolLabel="Calculateur d'Inflation"
+                parameters={{
+                  montant,
+                  inflation,
+                  duree,
+                  comparatifActif,
+                  rendement,
+                }}
+                results={results}
+              />
+            </div>
           </div>
         </div>
 
