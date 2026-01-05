@@ -10,6 +10,7 @@ import { Home, Sofa, Lightbulb, TrendingDown, Euro, Building2, Receipt, Hammer, 
 import { ComparisonBarChart } from "@/components/simulators/lmnp/ComparisonBarChart";
 import { TierLock } from "@/components/premium/TierLock";
 import { RecommendedProducts } from "@/components/academy/RecommendedProducts";
+import { SaveSimulationButton } from "@/components/simulators/SaveSimulationButton";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
@@ -602,6 +603,39 @@ export default function ComparateurLMNP() {
   return (
     <MainLayout title="Comparateur LMNP vs Location Nue">
       <TierLock requiredTier="expert" featureName="Comparateur LMNP vs Location Nue" variant="section">
+        {/* Header avec bouton sauvegarde */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Comparateur LMNP vs Location Nue</h1>
+            <p className="text-muted-foreground">Simulation fiscale 2025 avec réforme plus-value</p>
+          </div>
+          <SaveSimulationButton
+            toolType="comparateur-lmnp"
+            toolLabel="Comparateur LMNP"
+            parameters={{
+              prixBien,
+              montantMeubles,
+              loyerMensuel,
+              tauxVacance,
+              chargesCopro,
+              taxeFonciere,
+              tmi,
+              typeLocation,
+              horizonBilan,
+            }}
+            results={{
+              cashflowNue: resultatLocationNue.cashflowNet,
+              cashflowLMNP: resultatLMNP.cashflowNet,
+              impotNue: resultatLocationNue.impotTotal,
+              impotLMNP: resultatLMNP.impotTotal,
+              economieAnnuelle,
+              gagnant: lmnpGagnant ? "LMNP" : "Location Nue",
+              enrichissementNue: bilanGlobal.enrichissementNue,
+              enrichissementLMNP: bilanGlobal.enrichissementLMNP,
+            }}
+          />
+        </div>
+        
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* COLONNE GAUCHE: INPUTS */}
           <div className="space-y-6">
