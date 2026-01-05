@@ -2,7 +2,8 @@ import { useState } from "react";
 import { 
   Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, 
   Key, Users, Clock, Layers, TreePine, LucideIcon, Lightbulb, Heart, Landmark,
-  Briefcase, UserCheck, BarChart3, Factory, Home, Building, Coins, Bitcoin
+  Briefcase, UserCheck, BarChart3, Factory, Home, Building, Coins, Bitcoin,
+  Wallet, BadgePercent, Lock, ShieldCheck, Hammer, Receipt, Wine, Palette, Gift
 } from "lucide-react";
 import { FinancialProduct, getRiskLabel } from "@/data/financialProducts";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,15 @@ const iconMap: Record<string, LucideIcon> = {
   Building,
   Coins,
   Bitcoin,
+  Wallet,
+  BadgePercent,
+  Lock,
+  ShieldCheck,
+  Hammer,
+  Receipt,
+  Wine,
+  Palette,
+  Gift,
 };
 
 interface ProductCardProps {

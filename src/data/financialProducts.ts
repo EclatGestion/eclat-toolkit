@@ -12,7 +12,7 @@ export interface FinancialProduct {
   keyBenefits: string[];
   riskLevel: number; // 1 à 7
   idealFor: string;
-  category: "fiscalite" | "retraite" | "performance" | "immobilier" | "bourse" | "alternatif";
+  category: "fiscalite" | "retraite" | "performance" | "immobilier" | "bourse" | "alternatif" | "epargne" | "transmission";
   iconName: string;
   iconColor: string;
   iconBg: string;
@@ -587,6 +587,315 @@ export const financialProducts: FinancialProduct[] = [
       title: "Investissement Pinel+",
       scenario: "Achat d'un T2 neuf à 200 000€, engagement 12 ans.",
       figures: "Réduction d'impôt totale : 28 000€ (14%)"
+    }
+  },
+
+  // --- ÉPARGNE (LIVRETS & COMPTES) ---
+  {
+    id: "livret-a",
+    title: "Livret A / LDDS",
+    shortDescription: "Épargne garantie et disponible immédiatement, sans risque ni fiscalité.",
+    fullDescription: "Le Livret A et le LDDS sont les placements les plus sûrs en France. Capital garanti par l'État, intérêts exonérés d'impôt, disponibilité immédiate. Le taux est fixé par le gouvernement.",
+    keyBenefits: [
+      "Capital 100% garanti par l'État",
+      "Intérêts totalement exonérés d'impôt",
+      "Disponibilité immédiate des fonds",
+      "Plafonds : 22 950€ (Livret A) + 12 000€ (LDDS)"
+    ],
+    riskLevel: 1,
+    idealFor: "Épargne de précaution et liquidités court terme",
+    category: "epargne",
+    iconName: "Wallet",
+    iconColor: "text-blue-500",
+    iconBg: "bg-blue-500/10",
+    caseStudy: {
+      title: "Épargne de précaution",
+      scenario: "Placement de 22 950€ au taux de 3%.",
+      figures: "Intérêts annuels : 688€ nets d'impôt"
+    }
+  },
+  {
+    id: "lep",
+    title: "LEP (Livret Épargne Populaire)",
+    shortDescription: "Le meilleur livret réglementé à 4%, réservé aux revenus modestes.",
+    fullDescription: "Le LEP offre un taux supérieur au Livret A (4% vs 3% en 2024) mais est réservé aux foyers dont le revenu fiscal de référence ne dépasse pas un certain plafond. C'est le placement le plus rentable sans risque.",
+    keyBenefits: [
+      "Taux supérieur au Livret A (4% en 2024)",
+      "Capital garanti et disponible",
+      "Intérêts 100% exonérés d'impôt",
+      "Plafond de 10 000€"
+    ],
+    riskLevel: 1,
+    idealFor: "Revenus modestes cherchant le meilleur rendement sans risque",
+    category: "epargne",
+    iconName: "BadgePercent",
+    iconColor: "text-green-500",
+    iconBg: "bg-green-500/10",
+    caseStudy: {
+      title: "Rendement optimisé",
+      scenario: "Placement de 10 000€ au taux de 4%.",
+      figures: "Intérêts annuels : 400€ nets (vs 300€ sur Livret A)"
+    }
+  },
+  {
+    id: "compte-terme",
+    title: "Compte à Terme",
+    shortDescription: "Bloquez votre épargne pour un taux garanti supérieur aux livrets.",
+    fullDescription: "Le compte à terme est un placement bancaire où vous bloquez une somme pour une durée définie (3 mois à 5 ans) en échange d'un taux garanti. Plus la durée est longue, plus le taux est élevé.",
+    keyBenefits: [
+      "Taux garanti et connu à l'avance",
+      "Capital 100% sécurisé (garantie bancaire)",
+      "Aucun frais de gestion",
+      "Alternative aux livrets saturés"
+    ],
+    riskLevel: 1,
+    idealFor: "Trésorerie excédentaire à horizon 6 mois à 3 ans",
+    category: "epargne",
+    iconName: "Lock",
+    iconColor: "text-slate-500",
+    iconBg: "bg-slate-500/10",
+    caseStudy: {
+      title: "Blocage 12 mois",
+      scenario: "Placement de 50 000€ sur CAT à 3.5%.",
+      figures: "Intérêts garantis : 1 750€ net de frais"
+    }
+  },
+  {
+    id: "pel-cel",
+    title: "PEL / CEL",
+    shortDescription: "Épargne logement avec droits à prêt immobilier à taux préférentiel.",
+    fullDescription: "Le Plan Épargne Logement (PEL) et le Compte Épargne Logement (CEL) permettent d'épargner en vue d'un projet immobilier tout en acquérant des droits à prêt à taux avantageux.",
+    keyBenefits: [
+      "Droits à prêt immobilier à taux fixe",
+      "Taux de rémunération garanti",
+      "Prime d'État sous conditions (anciens PEL)",
+      "Cumulable avec d'autres livrets"
+    ],
+    riskLevel: 1,
+    idealFor: "Préparation d'un projet immobilier",
+    category: "epargne",
+    iconName: "Home",
+    iconColor: "text-amber-500",
+    iconBg: "bg-amber-500/10",
+    caseStudy: {
+      title: "Achat immobilier",
+      scenario: "PEL de 40 000€ sur 4 ans.",
+      figures: "Droits à prêt de 92 000€ à taux préférentiel"
+    }
+  },
+
+  // --- ASSURANCE-VIE (VARIANTES PREMIUM) ---
+  {
+    id: "av-luxembourg",
+    title: "Assurance-Vie Luxembourgeoise",
+    shortDescription: "Protection maximale du capital et accès aux fonds institutionnels.",
+    fullDescription: "L'assurance-vie luxembourgeoise offre une protection supérieure (super-privilège du souscripteur) et donne accès à des supports exclusifs : Private Equity, fonds dédiés, titres vifs. Réservée aux patrimoines > 250k€.",
+    keyBenefits: [
+      "Super-privilège : créancier de 1er rang",
+      "Triangle de sécurité (séparation des actifs)",
+      "Accès aux fonds institutionnels",
+      "Neutralité fiscale (fiscalité du pays de résidence)"
+    ],
+    riskLevel: 3,
+    idealFor: "Patrimoines > 250k€ cherchant sécurité et diversification",
+    category: "performance",
+    iconName: "ShieldCheck",
+    iconColor: "text-blue-600",
+    iconBg: "bg-blue-600/10",
+    caseStudy: {
+      title: "Protection patrimoniale",
+      scenario: "Placement de 500 000€ en AV Luxembourgeoise.",
+      figures: "En cas de faillite de l'assureur : récupération de 100% du capital"
+    }
+  },
+  {
+    id: "contrat-capi",
+    title: "Contrat de Capitalisation",
+    shortDescription: "L'assurance-vie des sociétés, transmissible de son vivant.",
+    fullDescription: "Le contrat de capitalisation fonctionne comme une assurance-vie mais peut être souscrit par une personne morale et se transmet par donation. Il ne bénéficie pas de l'avantage successoral mais offre une flexibilité unique.",
+    keyBenefits: [
+      "Accessible aux personnes morales (SCI, holdings)",
+      "Transmissible par donation (purge des plus-values)",
+      "Mêmes supports que l'assurance-vie",
+      "Antériorité fiscale conservée après transmission"
+    ],
+    riskLevel: 2,
+    idealFor: "Trésorerie d'entreprise ou transmission anticipée",
+    category: "performance",
+    iconName: "Building2",
+    iconColor: "text-purple-500",
+    iconBg: "bg-purple-500/10",
+    caseStudy: {
+      title: "Transmission de son vivant",
+      scenario: "Donation d'un contrat de 200 000€ avec 50 000€ de plus-values.",
+      figures: "Plus-values purgées à la donation, zéro impôt pour le donataire"
+    }
+  },
+
+  // --- IMMOBILIER (COMPLÉMENTS) ---
+  {
+    id: "sci",
+    title: "SCI (Société Civile Immobilière)",
+    shortDescription: "Gérez et transmettez votre patrimoine immobilier en famille avec souplesse.",
+    fullDescription: "La SCI est une structure juridique pour détenir de l'immobilier à plusieurs. Elle facilite la gestion familiale, la transmission progressive des parts et offre une flexibilité fiscale (IR ou IS).",
+    keyBenefits: [
+      "Transmission progressive des parts (donations)",
+      "Gestion collégiale simplifiée",
+      "Choix du régime fiscal (IR ou IS)",
+      "Protection du patrimoine familial"
+    ],
+    riskLevel: 2,
+    idealFor: "Familles souhaitant organiser leur patrimoine immobilier",
+    category: "immobilier",
+    iconName: "Users",
+    iconColor: "text-indigo-500",
+    iconBg: "bg-indigo-500/10",
+    caseStudy: {
+      title: "Transmission familiale",
+      scenario: "Parents détenant un immeuble de 500 000€ en SCI.",
+      figures: "Donation de 100% des parts en 20 ans sans droits de succession"
+    }
+  },
+  {
+    id: "denormandie",
+    title: "Loi Denormandie",
+    shortDescription: "Le Pinel de l'ancien : rénovez un bien en centre-ville et défiscalisez.",
+    fullDescription: "Le dispositif Denormandie offre les mêmes avantages que Pinel mais pour l'ancien avec travaux. Il cible les centres-villes dégradés et impose 25% minimum de travaux dans le budget.",
+    keyBenefits: [
+      "Réduction d'impôt jusqu'à 21% sur 12 ans",
+      "Investissement dans l'ancien rénové",
+      "Prix d'achat souvent inférieur au neuf",
+      "Contribution à la rénovation urbaine"
+    ],
+    riskLevel: 4,
+    idealFor: "Défiscalisation + rénovation de l'ancien",
+    category: "immobilier",
+    iconName: "Hammer",
+    iconColor: "text-orange-500",
+    iconBg: "bg-orange-500/10",
+    caseStudy: {
+      title: "Rénovation centre-ville",
+      scenario: "Achat 150 000€ + 50 000€ de travaux, engagement 12 ans.",
+      figures: "Réduction d'impôt totale : 42 000€"
+    }
+  },
+  {
+    id: "deficit-foncier",
+    title: "Déficit Foncier",
+    shortDescription: "Déduisez les travaux de vos revenus fonciers ET de votre revenu global.",
+    fullDescription: "Le déficit foncier permet de déduire les travaux d'entretien et de réparation des revenus fonciers. L'excédent (jusqu'à 10 700€/an) est imputable sur le revenu global.",
+    keyBenefits: [
+      "Déduction des travaux sans plafonnement sur revenus fonciers",
+      "Imputation sur revenu global (10 700€/an)",
+      "Report du déficit sur 10 ans",
+      "Hors plafonnement des niches fiscales"
+    ],
+    riskLevel: 3,
+    idealFor: "Propriétaires avec revenus fonciers et travaux à réaliser",
+    category: "immobilier",
+    iconName: "Receipt",
+    iconColor: "text-teal-500",
+    iconBg: "bg-teal-500/10",
+    caseStudy: {
+      title: "Rénovation locative",
+      scenario: "30 000€ de travaux avec 15 000€ de revenus fonciers.",
+      figures: "Économie d'impôt : jusqu'à 8 000€ (selon TMI)"
+    }
+  },
+
+  // --- ALTERNATIF (COMPLÉMENTS) ---
+  {
+    id: "gfv",
+    title: "GFV (Groupement Foncier Viticole)",
+    shortDescription: "Investissez dans les vignes françaises avec avantages fiscaux et bouteilles de vin.",
+    fullDescription: "Le GFV permet d'acquérir des parts de vignobles. Vous bénéficiez des mêmes avantages fiscaux que les GFI (forêts) : réduction IR à l'entrée et abattement successoral de 75%.",
+    keyBenefits: [
+      "Abattement successoral de 75%",
+      "Réduction IR de 18-25% à l'entrée",
+      "Revenus en nature (bouteilles de vin)",
+      "Actif tangible et plaisir"
+    ],
+    riskLevel: 3,
+    idealFor: "Amateurs de vin et transmission patrimoniale",
+    category: "alternatif",
+    iconName: "Wine",
+    iconColor: "text-rose-500",
+    iconBg: "bg-rose-500/10",
+    caseStudy: {
+      title: "Investissement viticole",
+      scenario: "Parts de GFV en Bourgogne pour 50 000€.",
+      figures: "Réduction IR : 12 500€ + droits de succession sur 12 500€"
+    }
+  },
+  {
+    id: "art-collection",
+    title: "Art et Objets de Collection",
+    shortDescription: "Actifs tangibles hors IFI avec potentiel de plus-value exonérée.",
+    fullDescription: "L'investissement dans l'art (tableaux, sculptures, antiquités, voitures de collection) offre une exonération d'IFI et une fiscalité avantageuse sur les plus-values après détention longue.",
+    keyBenefits: [
+      "Exonération totale d'IFI",
+      "Plus-value exonérée après 22 ans",
+      "Diversification plaisir",
+      "Actif tangible transmissible"
+    ],
+    riskLevel: 5,
+    idealFor: "Passionnés d'art avec patrimoine important",
+    category: "alternatif",
+    iconName: "Palette",
+    iconColor: "text-pink-500",
+    iconBg: "bg-pink-500/10",
+    caseStudy: {
+      title: "Collection d'art",
+      scenario: "Achat d'un tableau contemporain à 30 000€.",
+      figures: "Après 22 ans : plus-value 100% exonérée d'impôt"
+    }
+  },
+
+  // --- TRANSMISSION ---
+  {
+    id: "donation",
+    title: "Donation de son Vivant",
+    shortDescription: "Transmettez jusqu'à 100 000€ par enfant sans impôt tous les 15 ans.",
+    fullDescription: "La donation permet de transmettre son patrimoine de son vivant en profitant d'abattements renouvelables. C'est l'outil central de l'ingénierie patrimoniale pour réduire les droits de succession.",
+    keyBenefits: [
+      "Abattement de 100 000€ par enfant (renouvelable)",
+      "Abattement de 31 865€ par petit-enfant",
+      "Don manuel ou notarié au choix",
+      "Réduction des droits avec l'âge du donateur"
+    ],
+    riskLevel: 1,
+    idealFor: "Toute personne souhaitant anticiper sa succession",
+    category: "transmission",
+    iconName: "Gift",
+    iconColor: "text-pink-500",
+    iconBg: "bg-pink-500/10",
+    caseStudy: {
+      title: "Transmission anticipée",
+      scenario: "Couple avec 2 enfants, patrimoine de 600 000€.",
+      figures: "Transmission de 400 000€ sans aucun droit (100k x 2 parents x 2 enfants)"
+    }
+  },
+  {
+    id: "holding-apport-cession",
+    title: "Holding & Apport-Cession (150-0 B ter)",
+    shortDescription: "Vendez votre entreprise et réinvestissez en report d'imposition.",
+    fullDescription: "Le dispositif 150-0 B ter permet d'apporter les titres de votre entreprise à une holding avant cession, puis de réinvestir le produit de la vente sans payer immédiatement la plus-value.",
+    keyBenefits: [
+      "Report d'imposition de la plus-value (jusqu'à 30%)",
+      "Réinvestissement dans l'économie réelle",
+      "Diversification du patrimoine post-cession",
+      "Transmission facilitée via la holding"
+    ],
+    riskLevel: 4,
+    idealFor: "Entrepreneurs cédant leur société",
+    category: "transmission",
+    iconName: "Briefcase",
+    iconColor: "text-slate-600",
+    iconBg: "bg-slate-600/10",
+    caseStudy: {
+      title: "Cession d'entreprise",
+      scenario: "Vente d'une société pour 2 000 000€ (plus-value : 1 800 000€).",
+      figures: "Économie d'impôt immédiate : 540 000€ (flat tax reportée)"
     }
   }
 ];

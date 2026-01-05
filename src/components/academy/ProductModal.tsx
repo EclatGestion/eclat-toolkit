@@ -1,7 +1,8 @@
 import { 
   Shield, PiggyBank, Palmtree, Rocket, LineChart, Building2, TrendingUp, Film, 
   Key, Users, Clock, Layers, TreePine, Check, LucideIcon, MessageCircle, Lightbulb,
-  Heart, Landmark, Briefcase, UserCheck, BarChart3, Factory, Home, Building, Coins, Bitcoin
+  Heart, Landmark, Briefcase, UserCheck, BarChart3, Factory, Home, Building, Coins, Bitcoin,
+  Wallet, BadgePercent, Lock, ShieldCheck, Hammer, Receipt, Wine, Palette, Gift
 } from "lucide-react";
 import {
   Dialog,
@@ -39,6 +40,15 @@ const iconMap: Record<string, LucideIcon> = {
   Building,
   Coins,
   Bitcoin,
+  Wallet,
+  BadgePercent,
+  Lock,
+  ShieldCheck,
+  Hammer,
+  Receipt,
+  Wine,
+  Palette,
+  Gift,
 };
 
 interface ProductModalProps {
