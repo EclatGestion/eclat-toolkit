@@ -1,5 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { 
   Sparkles, 
   AlertTriangle, 
@@ -8,8 +7,9 @@ import {
   Loader2,
   TrendingUp,
   PiggyBank,
-  ArrowRight,
-  CheckCircle2
+  CheckCircle2,
+  ChevronRight,
+  Target
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -29,6 +29,36 @@ interface RecommandationsIAProps {
   scoreGlobal?: number;
   patrimoineTotal?: number;
 }
+
+// Fonction pour extraire un impact court et lisible
+const formatImpact = (impact: string): string => {
+  // Extraire les montants principaux
+  const euroMatch = impact.match(/(\d[\d\s]*\d?\s*€|\d+\s*[kK]€|\d+\s*000\s*€)/g);
+  const percentMatch = impact.match(/(\d+)\s*%/);
+  
+  if (euroMatch && euroMatch.length > 0) {
+    // Prendre le premier montant significatif
+    const amount = euroMatch[0].replace(/\s/g, '');
+    if (amount.includes('000')) {
+      const num = parseInt(amount.replace(/[^\d]/g, ''));
+      if (num >= 1000) {
+        return `+${Math.round(num / 1000)}k€/an`;
+      }
+    }
+    return `+${amount}/an`;
+  }
+  
+  if (percentMatch) {
+    return `-${percentMatch[1]}% impôts`;
+  }
+  
+  // Fallback: raccourcir le texte
+  if (impact.length > 25) {
+    return impact.substring(0, 22) + '...';
+  }
+  
+  return impact;
+};
 
 export function RecommandationsIA({
   isLoading,
@@ -63,13 +93,15 @@ export function RecommandationsIA({
             <Sparkles className="w-8 h-8 text-primary" />
           </div>
           <p className="text-lg font-medium text-foreground">Prêt pour l'analyse</p>
-          <p className="text-sm text-muted-foreground">Cliquez sur "Générer le bilan" pour obtenir vos recommandations IA</p>
+          <p className="text-sm text-muted-foreground text-center">
+            Cliquez sur "Générer le bilan" pour obtenir vos recommandations IA
+          </p>
         </CardContent>
       </Card>
     );
   }
 
-  // Parse potential annual savings from recommendations
+  // Calculate potential annual savings
   const calculatePotentiel = () => {
     let total = 0;
     [...haute, ...moyenne, ...longTerme].forEach((reco) => {
@@ -79,122 +111,143 @@ export function RecommandationsIA({
         if (!isNaN(num)) total += num;
       }
     });
-    return total || 5000; // Default fallback
+    return total || 5000;
   };
 
   const potentielAnnuel = calculatePotentiel();
   const actionsUrgentes = haute.length;
 
-  const getPriorityIcon = (priority: "haute" | "moyenne" | "longTerme") => {
-    switch (priority) {
-      case "haute":
-        return <AlertTriangle className="w-5 h-5" />;
-      case "moyenne":
-        return <Lightbulb className="w-5 h-5" />;
-      case "longTerme":
-        return <Clock className="w-5 h-5" />;
-    }
-  };
-
-  const getPriorityColors = (priority: "haute" | "moyenne" | "longTerme") => {
+  const getPriorityConfig = (priority: "haute" | "moyenne" | "longTerme") => {
     switch (priority) {
       case "haute":
         return {
-          bg: "bg-red-500/10",
-          border: "border-red-500/30",
-          text: "text-red-500",
-          icon: "text-red-500",
-          line: "bg-gradient-to-b from-red-500 to-red-300",
+          icon: AlertTriangle,
+          title: "Priorité Haute",
+          subtitle: "À réaliser sous 3 mois",
+          gradient: "from-red-500 to-orange-500",
+          bg: "bg-red-50 dark:bg-red-500/10",
+          border: "border-red-200 dark:border-red-500/20",
+          badge: "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400",
+          dot: "bg-red-500",
+          iconColor: "text-red-500",
         };
       case "moyenne":
         return {
-          bg: "bg-amber-500/10",
-          border: "border-amber-500/30",
-          text: "text-amber-500",
-          icon: "text-amber-500",
-          line: "bg-gradient-to-b from-amber-500 to-amber-300",
+          icon: Lightbulb,
+          title: "Priorité Moyenne",
+          subtitle: "À planifier sous 6 mois",
+          gradient: "from-amber-500 to-yellow-500",
+          bg: "bg-amber-50 dark:bg-amber-500/10",
+          border: "border-amber-200 dark:border-amber-500/20",
+          badge: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400",
+          dot: "bg-amber-500",
+          iconColor: "text-amber-500",
         };
       case "longTerme":
         return {
-          bg: "bg-blue-500/10",
-          border: "border-blue-500/30",
-          text: "text-blue-500",
-          icon: "text-blue-500",
-          line: "bg-gradient-to-b from-blue-500 to-blue-300",
+          icon: Clock,
+          title: "Vision Long Terme",
+          subtitle: "Stratégie 1-3 ans",
+          gradient: "from-blue-500 to-indigo-500",
+          bg: "bg-blue-50 dark:bg-blue-500/10",
+          border: "border-blue-200 dark:border-blue-500/20",
+          badge: "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400",
+          dot: "bg-blue-500",
+          iconColor: "text-blue-500",
         };
     }
   };
 
-  const renderRecommandations = (
+  const RecommendationCard = ({ 
+    reco, 
+    index, 
+    config, 
+    delay 
+  }: { 
+    reco: Recommandation; 
+    index: number; 
+    config: ReturnType<typeof getPriorityConfig>;
+    delay: number;
+  }) => (
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: delay + index * 0.1 }}
+      className={`relative ${config.bg} ${config.border} border rounded-xl p-4 hover:shadow-md transition-shadow`}
+    >
+      <div className="flex items-start gap-3">
+        {/* Numéro */}
+        <div className={`flex-shrink-0 w-7 h-7 rounded-full ${config.dot} text-white text-sm font-bold flex items-center justify-center`}>
+          {index + 1}
+        </div>
+        
+        {/* Contenu */}
+        <div className="flex-1 min-w-0">
+          {/* Header avec titre et badge */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
+            <h4 className="font-semibold text-foreground text-sm leading-tight">
+              {reco.titre}
+            </h4>
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${config.badge}`}>
+              <TrendingUp className="w-3 h-3" />
+              {formatImpact(reco.impact)}
+            </span>
+          </div>
+          
+          {/* Description concise */}
+          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+            {reco.description}
+          </p>
+        </div>
+        
+        {/* Chevron */}
+        <ChevronRight className="flex-shrink-0 w-5 h-5 text-muted-foreground/50" />
+      </div>
+    </motion.div>
+  );
+
+  const renderSection = (
     recos: Recommandation[],
     priority: "haute" | "moyenne" | "longTerme",
-    title: string,
     delay: number
   ) => {
     if (recos.length === 0) return null;
 
-    const colors = getPriorityColors(priority);
+    const config = getPriorityConfig(priority);
+    const Icon = config.icon;
 
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay }}
-        className="relative"
+        className="space-y-3"
       >
         {/* Section Header */}
-        <div className={`flex items-center gap-3 mb-4`}>
-          <div className={`p-2 rounded-xl ${colors.bg}`}>
-            <span className={colors.icon}>{getPriorityIcon(priority)}</span>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl bg-gradient-to-br ${config.gradient} text-white`}>
+            <Icon className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-semibold text-foreground">{title}</h3>
-            <p className="text-xs text-muted-foreground">
-              {priority === "haute" && "Actions à réaliser dans les 3 prochains mois"}
-              {priority === "moyenne" && "À planifier sur les 6 prochains mois"}
-              {priority === "longTerme" && "Vision stratégique sur 1-3 ans"}
-            </p>
+            <h3 className="font-semibold text-foreground text-sm">{config.title}</h3>
+            <p className="text-xs text-muted-foreground">{config.subtitle}</p>
+          </div>
+          <div className={`ml-auto px-2 py-0.5 rounded-full text-xs font-medium ${config.badge}`}>
+            {recos.length} action{recos.length > 1 ? 's' : ''}
           </div>
         </div>
 
-        {/* Timeline */}
-        <div className="relative pl-8">
-          {/* Vertical line */}
-          <div className={`absolute left-3 top-0 bottom-0 w-0.5 ${colors.line} rounded-full`} />
-
-          <div className="space-y-4">
-            {recos.map((reco, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: delay + index * 0.1 }}
-                className={`relative p-4 rounded-xl border ${colors.border} ${colors.bg} backdrop-blur-sm`}
-              >
-                {/* Timeline dot */}
-                <div
-                  className={`absolute -left-5 top-5 w-3 h-3 rounded-full border-2 border-background ${colors.text.replace("text-", "bg-")}`}
-                />
-
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
-                  <h4 className="font-semibold text-foreground flex items-center gap-2">
-                    <ArrowRight className={`w-4 h-4 ${colors.text}`} />
-                    {reco.titre}
-                  </h4>
-                  <Badge
-                    variant="outline"
-                    className={`${colors.text} ${colors.border} whitespace-nowrap self-start`}
-                  >
-                    <TrendingUp className="w-3 h-3 mr-1" />
-                    {reco.impact}
-                  </Badge>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed pl-6">
-                  {reco.description}
-                </p>
-              </motion.div>
-            ))}
-          </div>
+        {/* Cards */}
+        <div className="space-y-2">
+          {recos.map((reco, index) => (
+            <RecommendationCard
+              key={index}
+              reco={reco}
+              index={index}
+              config={config}
+              delay={delay}
+            />
+          ))}
         </div>
       </motion.div>
     );
@@ -202,144 +255,134 @@ export function RecommandationsIA({
 
   return (
     <div className="space-y-6">
-      {/* Synthèse with KPI Cards */}
+      {/* Synthèse avec KPIs */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
         <Card className="border-0 shadow-lg overflow-hidden">
-          <div className="bg-gradient-to-br from-primary/10 via-violet-500/5 to-primary/10">
-            <CardHeader className="pb-2">
+          <div className="bg-gradient-to-br from-primary/5 via-violet-500/5 to-primary/5">
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-primary/20">
-                  <Sparkles className="w-5 h-5 text-primary" />
+                <div className="p-2 rounded-xl bg-gradient-to-br from-primary to-violet-500 text-white">
+                  <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-lg">Synthèse de votre situation</span>
+                  <span className="text-base font-semibold">Synthèse de votre situation</span>
                   <p className="text-xs font-normal text-muted-foreground mt-0.5">
                     Analyse générée par intelligence artificielle
                   </p>
                 </div>
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              {/* KPI Cards */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 text-center border border-border/50">
-                  <AlertTriangle className={`w-5 h-5 mx-auto mb-2 ${actionsUrgentes > 0 ? "text-red-500" : "text-emerald-500"}`} />
-                  <div className="text-xs text-muted-foreground mb-1">Actions Urgentes</div>
+            <CardContent className="space-y-4">
+              {/* KPI Cards - Plus compacts */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-background rounded-xl p-3 text-center border border-border/50 shadow-sm">
                   <div className={`text-2xl font-bold ${actionsUrgentes > 0 ? "text-red-500" : "text-emerald-500"}`}>
                     {actionsUrgentes}
                   </div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mt-1">
+                    Actions urgentes
+                  </div>
                 </div>
-                <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 text-center border border-border/50">
-                  <PiggyBank className="w-5 h-5 mx-auto mb-2 text-primary" />
-                  <div className="text-xs text-muted-foreground mb-1">Patrimoine</div>
+                <div className="bg-background rounded-xl p-3 text-center border border-border/50 shadow-sm">
                   <div className="text-2xl font-bold text-primary">
                     {patrimoineTotal >= 1000000
                       ? `${(patrimoineTotal / 1000000).toFixed(1)}M€`
                       : `${Math.round(patrimoineTotal / 1000)}k€`}
                   </div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mt-1">
+                    Patrimoine
+                  </div>
                 </div>
-                <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 text-center border border-border/50">
-                  <TrendingUp className="w-5 h-5 mx-auto mb-2 text-emerald-500" />
-                  <div className="text-xs text-muted-foreground mb-1">Potentiel/an</div>
+                <div className="bg-background rounded-xl p-3 text-center border border-border/50 shadow-sm">
                   <div className="text-2xl font-bold text-emerald-500">
                     +{potentielAnnuel >= 1000 ? `${Math.round(potentielAnnuel / 1000)}k€` : `${potentielAnnuel}€`}
+                  </div>
+                  <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mt-1">
+                    Potentiel/an
                   </div>
                 </div>
               </div>
 
-              {/* Synthèse Text */}
-              <div className="bg-background/60 rounded-xl p-4 border border-border/50">
-                <p className="text-muted-foreground leading-relaxed">{synthese}</p>
+              {/* Synthèse Text - Plus lisible */}
+              <div className="bg-background/80 rounded-xl p-4 border border-border/50">
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {synthese}
+                </p>
               </div>
             </CardContent>
           </div>
         </Card>
       </motion.div>
 
-      {/* Recommandations Timeline */}
-      <div className="space-y-8">
-        {renderRecommandations(haute, "haute", "Priorité Haute", 0.1)}
-        {renderRecommandations(moyenne, "moyenne", "Priorité Moyenne", 0.2)}
-        {renderRecommandations(longTerme, "longTerme", "Vision Long Terme", 0.3)}
-      </div>
+      {/* Recommandations - Nouveau design épuré */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
+              <Target className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-base font-semibold">Plan d'optimisation patrimoniale</span>
+              <p className="text-xs font-normal text-muted-foreground mt-0.5">
+                {haute.length + moyenne.length + longTerme.length} recommandations personnalisées
+              </p>
+            </div>
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {renderSection(haute, "haute", 0.1)}
+          {renderSection(moyenne, "moyenne", 0.2)}
+          {renderSection(longTerme, "longTerme", 0.3)}
+        </CardContent>
+      </Card>
 
-      {/* Plan d'action 12 mois - Horizontal Timeline */}
+      {/* Plan d'action 12 mois */}
       {planAction.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <Card className="border-0 shadow-lg overflow-hidden">
-            <CardHeader className="pb-2">
+          <Card className="border-0 shadow-lg">
+            <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-violet-500/10">
-                  <CheckCircle2 className="w-5 h-5 text-violet-500" />
+                <div className="p-2 rounded-xl bg-gradient-to-br from-violet-500 to-purple-500 text-white">
+                  <CheckCircle2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-lg">Plan d'action 12 mois</span>
+                  <span className="text-base font-semibold">Feuille de route 12 mois</span>
                   <p className="text-xs font-normal text-muted-foreground mt-0.5">
-                    Feuille de route personnalisée
+                    Étapes clés pour atteindre vos objectifs
                   </p>
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {/* Horizontal Timeline */}
-              <div className="relative overflow-x-auto pb-4">
-                <div className="flex gap-4 min-w-max">
-                  {planAction.map((action, index) => (
-                    <motion.div
-                      key={index}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.4 + index * 0.05 }}
-                      className="relative flex flex-col items-center"
-                    >
-                      {/* Connector line */}
-                      {index < planAction.length - 1 && (
-                        <div className="absolute top-4 left-1/2 w-full h-0.5 bg-gradient-to-r from-primary/50 to-violet-500/50" />
-                      )}
-
-                      {/* Timeline node */}
-                      <div className="relative z-10 w-8 h-8 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-xs font-bold shadow-lg">
-                        {index + 1}
-                      </div>
-
-                      {/* Content card */}
-                      <div className="mt-3 p-3 rounded-xl bg-muted/50 border border-border/50 w-36 text-center">
-                        <div className="text-xs font-semibold text-primary mb-1">
-                          {action.mois}
-                        </div>
-                        <div className="text-xs text-muted-foreground leading-tight">
-                          {action.action}
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Mobile friendly alternative grid */}
-              <div className="grid grid-cols-2 sm:hidden gap-2 mt-4">
+              {/* Timeline compacte et lisible */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {planAction.map((action, index) => (
-                  <div
+                  <motion.div
                     key={index}
-                    className="p-3 rounded-xl bg-muted/50 border border-border/50"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.4 + index * 0.05 }}
+                    className="relative bg-gradient-to-br from-muted/50 to-muted/30 rounded-xl p-3 border border-border/50 hover:shadow-md transition-shadow"
                   >
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-[10px] font-bold">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center text-white text-xs font-bold shadow-sm">
                         {index + 1}
                       </div>
                       <span className="text-xs font-semibold text-primary">
                         {action.mois}
                       </span>
                     </div>
-                    <div className="text-xs text-muted-foreground">{action.action}</div>
-                  </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                      {action.action}
+                    </p>
+                  </motion.div>
                 ))}
               </div>
             </CardContent>
