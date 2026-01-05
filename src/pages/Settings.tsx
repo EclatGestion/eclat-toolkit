@@ -4,7 +4,8 @@ import { PremiumStatusCard } from "@/components/premium/PremiumStatusCard";
 import { ProfileSettingsModal } from "@/components/settings/ProfileSettingsModal";
 import { NotificationSettingsModal } from "@/components/settings/NotificationSettingsModal";
 import { SecuritySettingsModal } from "@/components/settings/SecuritySettingsModal";
-import { User, Bell, Shield, CreditCard, ChevronRight, LogOut } from "lucide-react";
+import { DeleteAccountModal } from "@/components/settings/DeleteAccountModal";
+import { User, Bell, Shield, CreditCard, ChevronRight, LogOut, Trash2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
@@ -51,6 +52,7 @@ const itemVariants = {
 
 export default function Settings() {
   const { signOut } = useAuth();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
 
   const handleSignOut = async () => {
@@ -116,6 +118,27 @@ export default function Settings() {
             Se déconnecter
           </Button>
         </motion.div>
+
+        {/* Danger Zone */}
+        <motion.div variants={itemVariants} className="pt-4">
+          <h2 className="text-lg font-semibold text-destructive mb-4 flex items-center gap-2">
+            <Trash2 className="w-5 h-5" />
+            Zone de danger
+          </h2>
+          <div 
+            onClick={() => setShowDeleteModal(true)}
+            className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 flex items-center gap-4 cursor-pointer hover:bg-destructive/10 transition-all duration-300"
+          >
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-destructive/10">
+              <Trash2 className="w-5 h-5 text-destructive" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-medium text-destructive">Supprimer mon compte</h3>
+              <p className="text-sm text-muted-foreground">Action irréversible</p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-destructive/50" />
+          </div>
+        </motion.div>
       </motion.div>
 
       {/* Modals */}
@@ -130,6 +153,10 @@ export default function Settings() {
       <SecuritySettingsModal 
         open={openModal === "security"} 
         onOpenChange={(open) => setOpenModal(open ? "security" : null)} 
+      />
+      <DeleteAccountModal 
+        open={showDeleteModal} 
+        onOpenChange={setShowDeleteModal} 
       />
     </MainLayout>
   );
