@@ -157,24 +157,7 @@ export default function BlogArticle() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="article-content prose prose-lg prose-gray max-w-none
-              prose-headings:font-bold prose-headings:text-gray-900 prose-headings:tracking-tight
-              prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-5 prose-h2:pb-3 prose-h2:border-b prose-h2:border-gray-100
-              prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-4 prose-h3:text-gray-800
-              prose-p:text-gray-600 prose-p:leading-[1.8] prose-p:mb-5
-              prose-ul:text-gray-600 prose-ul:my-6 prose-ul:space-y-2
-              prose-ol:text-gray-600 prose-ol:my-6 prose-ol:space-y-2
-              prose-li:leading-relaxed prose-li:pl-2
-              prose-blockquote:border-l-4 prose-blockquote:border-[#2D60FF] prose-blockquote:bg-gradient-to-r prose-blockquote:from-blue-50 prose-blockquote:to-transparent prose-blockquote:py-5 prose-blockquote:px-6 prose-blockquote:rounded-r-xl prose-blockquote:not-italic prose-blockquote:my-8 prose-blockquote:shadow-sm
-              prose-table:border-collapse prose-table:w-full prose-table:my-8 prose-table:rounded-xl prose-table:overflow-hidden prose-table:shadow-sm
-              prose-thead:bg-gray-50
-              prose-th:bg-gray-50 prose-th:p-4 prose-th:text-left prose-th:font-semibold prose-th:text-gray-900 prose-th:border-b prose-th:border-gray-200
-              prose-td:border-b prose-td:border-gray-100 prose-td:p-4 prose-td:text-gray-600
-              prose-tr:transition-colors hover:prose-tr:bg-gray-50/50
-              prose-strong:text-gray-900 prose-strong:font-semibold
-              prose-a:text-[#2D60FF] prose-a:no-underline prose-a:font-medium hover:prose-a:underline
-              [&>ul]:list-none [&>ul]:pl-0 [&>ul>li]:relative [&>ul>li]:pl-6 [&>ul>li:before]:content-['→'] [&>ul>li:before]:absolute [&>ul>li:before]:left-0 [&>ul>li:before]:text-[#2D60FF] [&>ul>li:before]:font-bold
-              [&>ol]:list-decimal [&>ol]:pl-6 [&>ol>li]:pl-2 [&>ol>li::marker]:text-[#2D60FF] [&>ol>li::marker]:font-semibold"
+            className="article-content"
             dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
           />
 
