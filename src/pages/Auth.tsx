@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Mail, Lock, User } from "lucide-react";
+import eclatLogo from "@/assets/eclat-logo.png";
 
 const loginSchema = z.object({
   email: z.string().email("Adresse email invalide"),
@@ -125,8 +126,8 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md shadow-xl border-0 bg-card">
         <CardHeader className="text-center space-y-2">
-          <div className="mx-auto w-12 h-12 mb-2">
-            <img src="/src/assets/eclat-logo.png" alt="Éclat Patrimoine" className="w-full h-full object-contain" />
+          <div className="mx-auto mb-2">
+            <img src={eclatLogo} alt="Éclat logo" className="w-10 h-10" />
           </div>
           <CardTitle className="text-2xl font-bold text-foreground">Éclat Patrimoine</CardTitle>
           <CardDescription className="text-muted-foreground">
