@@ -153,6 +153,7 @@ const Landing = () => {
               <nav className="hidden md:flex items-center gap-8">
                 <Link to="/simulateur-ir" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Simulateur IR</Link>
                 <Link to="/diagnostic" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Diagnostic</Link>
+                <Link to="/academie" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Académie</Link>
                 <Link to="/pricing" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Tarifs</Link>
                 <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
               </nav>
@@ -195,15 +196,24 @@ const Landing = () => {
                 </motion.div>
               </motion.div>
 
-              {/* Floating Cards */}
+              {/* Floating Cards - Plus grandes et plus lentes */}
               <div className="hidden lg:block relative w-full h-[500px]">
-                {floatingCards.map((card) => (
-                  <motion.div key={card.id} initial={{ opacity: 0, y: 40, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ duration: 0.8, delay: card.delay, ease: [0.16, 1, 0.3, 1] }} className={`absolute ${card.position}`}>
-                    <div className="animate-float p-5 min-w-[180px] rounded-2xl bg-card/90 backdrop-blur-sm border border-border/50 shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300">
-                      <span className="text-xs text-muted-foreground font-medium">{card.title}</span>
-                      <p className="text-xl font-bold text-foreground mt-1">{card.value}</p>
-                      {card.change && <span className="text-xs text-success font-medium flex items-center gap-0.5"><TrendingUp className="w-3 h-3" />{card.change}</span>}
-                      {card.subtitle && <span className="text-xs text-muted-foreground">{card.subtitle}</span>}
+                {floatingCards.map((card, idx) => (
+                  <motion.div 
+                    key={card.id} 
+                    initial={{ opacity: 0, y: 40, scale: 0.9 }} 
+                    animate={{ opacity: 1, y: 0, scale: 1 }} 
+                    transition={{ duration: 0.8, delay: card.delay, ease: [0.16, 1, 0.3, 1] }} 
+                    className={`absolute ${card.position}`}
+                  >
+                    <div 
+                      className="animate-float-slow p-6 min-w-[220px] rounded-2xl bg-card/95 backdrop-blur-md border border-border/50 shadow-2xl hover:shadow-3xl hover:scale-[1.02] transition-all duration-500"
+                      style={{ animationDelay: `${idx * 2}s` }}
+                    >
+                      <span className="text-sm text-muted-foreground font-medium">{card.title}</span>
+                      <p className="text-2xl font-bold text-foreground mt-1">{card.value}</p>
+                      {card.change && <span className="text-sm text-success font-medium flex items-center gap-1 mt-1"><TrendingUp className="w-4 h-4" />{card.change}</span>}
+                      {card.subtitle && <span className="text-sm text-muted-foreground mt-1">{card.subtitle}</span>}
                     </div>
                   </motion.div>
                 ))}
