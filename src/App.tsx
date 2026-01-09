@@ -61,9 +61,9 @@ const App = () => <QueryClientProvider client={queryClient}>
             <BrowserRouter>
               <Suspense fallback={<PageLoader />}>
                 <Routes>
-                {/* Public SEO Pages */}
+{/* Public SEO Pages */}
                   <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-                  
+                  <Route path="/auth" element={<Auth />} />
                   <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
                   <Route path="/academie" element={<AcademiePublic />} />
                   <Route path="/pricing" element={<Pricing />} />

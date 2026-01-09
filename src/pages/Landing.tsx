@@ -352,15 +352,24 @@ export default function Landing() {
                 Tarifs
               </Button>
             </motion.div>
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/blog")}
-                className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
-              >
-                Blog
-              </Button>
-            </motion.div>
+              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate("/blog")}
+                  className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
+                >
+                  Blog
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate("/academie")}
+                  className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
+                >
+                  Académie
+                </Button>
+              </motion.div>
             <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
               <Button 
                 variant="ghost" 
