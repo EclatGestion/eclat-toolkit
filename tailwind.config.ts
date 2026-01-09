@@ -118,54 +118,15 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
-        "rotate-3d": {
-          "0%, 100%": { transform: "rotateY(-2deg) rotateX(1deg)" },
-          "50%": { transform: "rotateY(2deg) rotateX(-1deg)" },
-        },
-        "glow-intense": {
-          "0%, 100%": { 
-            boxShadow: "0 0 30px hsl(var(--primary) / 0.3), 0 0 60px hsl(var(--primary) / 0.1)" 
-          },
-          "50%": { 
-            boxShadow: "0 0 50px hsl(var(--primary) / 0.5), 0 0 100px hsl(var(--primary) / 0.2)" 
-          },
-        },
-        "marquee": {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-50%)" },
-        },
-        "shimmer": {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
-        "blob": {
-          "0%, 100%": { borderRadius: "60% 40% 30% 70%/60% 30% 70% 40%" },
-          "50%": { borderRadius: "30% 60% 70% 40%/50% 60% 30% 60%" },
-        },
-        "float-delayed": {
-          "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
-          "50%": { transform: "translateY(-20px) rotate(2deg)" },
-        },
-        "pulse-soft": {
-          "0%, 100%": { opacity: "0.4" },
-          "50%": { opacity: "0.8" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "float": "float 8s ease-in-out infinite",
+        "float": "float 6s ease-in-out infinite",
         "glow-pulse": "glow-pulse 3s ease-in-out infinite",
         "underline-draw": "underline-draw 0.8s ease-out forwards",
         "slide-up": "slide-up 0.6s ease-out",
         "scale-in": "scale-in 0.5s ease-out",
-        "rotate-3d": "rotate-3d 8s ease-in-out infinite",
-        "glow-intense": "glow-intense 2s ease-in-out infinite",
-        "marquee": "marquee 120s linear infinite",
-        "shimmer": "shimmer 2s linear infinite",
-        "blob": "blob 8s ease-in-out infinite",
-        "float-delayed": "float-delayed 10s ease-in-out infinite",
-        "pulse-soft": "pulse-soft 4s ease-in-out infinite",
       },
     },
   },
