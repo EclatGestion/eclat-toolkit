@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/seo/SEO";
+import eclatLogo from "@/assets/eclat-logo.png";
 
 interface PublicPageLayoutProps {
   children: ReactNode;
@@ -44,9 +45,7 @@ export function PublicPageLayout({
             onClick={() => navigate("/")}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="w-8 h-8 bg-[#2D60FF] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">É</span>
-            </div>
+            <img src={eclatLogo} alt="Éclat logo" className="w-8 h-8" />
             <span className="text-xl font-bold text-gray-900">Éclat Toolkit</span>
           </button>
           <div className="flex items-center gap-3">
@@ -105,9 +104,7 @@ export function PublicPageLayout({
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-[#2D60FF] rounded-md flex items-center justify-center">
-                <span className="text-white font-bold text-xs">É</span>
-              </div>
+              <img src={eclatLogo} alt="Éclat logo" className="w-6 h-6" />
               <span className="text-sm text-gray-600">© 2025 Éclat Toolkit</span>
             </div>
             <nav className="flex flex-wrap items-center justify-center gap-4 md:gap-6 text-sm text-gray-500">
