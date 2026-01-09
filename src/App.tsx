@@ -50,11 +50,8 @@ const MentionsLegales = lazy(() => import("./pages/public/MentionsLegales"));
 const PolitiqueConfidentialite = lazy(() => import("./pages/public/PolitiqueConfidentialite"));
 const CGU = lazy(() => import("./pages/public/CGU"));
 const DiagnosticPatrimonial = lazy(() => import("./pages/public/DiagnosticPatrimonial"));
-
 const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <PremiumProvider>
         <WealthProvider>
@@ -66,7 +63,7 @@ const App = () => (
                 <Routes>
                 {/* Public SEO Pages */}
                   <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
-                  <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
+                  
                   <Route path="/simulateur-impot" element={<SimulateurIRPublic />} />
                   <Route path="/academie" element={<AcademiePublic />} />
                   <Route path="/pricing" element={<Pricing />} />
@@ -116,7 +113,5 @@ const App = () => (
         </WealthProvider>
       </PremiumProvider>
     </AuthProvider>
-  </QueryClientProvider>
-);
-
+  </QueryClientProvider>;
 export default App;
