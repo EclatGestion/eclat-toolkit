@@ -50,7 +50,7 @@ export default function Inflation() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-2xl mx-auto"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 text-orange-600 text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-sm font-medium mb-4">
             <TrendingDown className="h-4 w-4" />
             Fondamentaux Financiers
           </div>

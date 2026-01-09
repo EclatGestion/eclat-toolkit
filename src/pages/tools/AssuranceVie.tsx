@@ -138,8 +138,8 @@ export default function AssuranceVie() {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-4"
         >
-          <div className="p-3 rounded-2xl bg-violet-500/10">
-            <Shield className="h-8 w-8 text-violet-500" />
+          <div className="p-3 rounded-2xl bg-primary/10">
+            <Shield className="h-8 w-8 text-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-bold">Simulateur d'Assurance-Vie</h1>
@@ -270,11 +270,11 @@ export default function AssuranceVie() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
         >
-          <Card className="rounded-3xl bg-gradient-to-r from-violet-500/5 to-primary/5 border-violet-500/20">
+          <Card className="rounded-3xl bg-gradient-to-r from-primary/5 to-accent/5 border-primary/20">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-violet-500/10">
-                  <BookOpen className="h-6 w-6 text-violet-500" />
+                <div className="p-3 rounded-xl bg-primary/10">
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold mb-1">
