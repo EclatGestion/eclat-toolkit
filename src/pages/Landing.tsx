@@ -1,5 +1,6 @@
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { AnimatedUnderline } from "@/components/ui/animated-underline";
 import { 
   Shield, 
   TrendingUp, 
@@ -19,7 +20,8 @@ import {
   BarChart3,
   Scale,
   Building2,
-  Wallet
+  Wallet,
+  ArrowRight
 } from "lucide-react";
 import { financialProducts } from "@/data/financialProducts";
 import { ProductCard } from "@/components/academy/ProductCard";
@@ -93,13 +95,13 @@ const FaqItem = ({ question, answer }: { question: string; answer: string }) => 
     <article className="border-b border-border last:border-0" itemScope itemProp="mainEntity" itemType="https://schema.org/Question">
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full py-4 text-left group"
+        className="flex items-center justify-between w-full py-5 text-left group"
         aria-expanded={isOpen}
       >
-        <h3 className="text-lg font-medium text-foreground group-hover:text-primary transition-colors" itemProp="name">
+        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors pr-4" itemProp="name">
           {question}
         </h3>
-        {isOpen ? <Minus className="w-5 h-5 text-primary" aria-hidden="true" /> : <Plus className="w-5 h-5 text-muted-foreground" aria-hidden="true" />}
+        {isOpen ? <Minus className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" /> : <Plus className="w-5 h-5 text-muted-foreground flex-shrink-0" aria-hidden="true" />}
       </button>
       <AnimatePresence>
         {isOpen && (
@@ -110,7 +112,7 @@ const FaqItem = ({ question, answer }: { question: string; answer: string }) => 
             className="overflow-hidden"
             itemScope itemProp="acceptedAnswer" itemType="https://schema.org/Answer"
           >
-            <p className="pb-4 text-muted-foreground leading-relaxed" itemProp="text">{answer}</p>
+            <p className="pb-5 text-muted-foreground leading-relaxed" itemProp="text">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -134,7 +136,7 @@ const tierData = {
   premium: {
     name: "Premium",
     price: "5,99€/mois",
-    color: "border-amber-400/50 bg-amber-50",
+    color: "border-amber-400/50 bg-amber-50/50",
     badgeColor: "bg-amber-100 text-amber-700",
     tools: [
       { icon: Calculator, name: "Simulateur IR complet" },
@@ -147,7 +149,7 @@ const tierData = {
   expert: {
     name: "Expert",
     price: "14,99€/mois",
-    color: "border-violet-400/50 bg-violet-50",
+    color: "border-violet-400/50 bg-violet-50/50",
     badgeColor: "bg-violet-100 text-violet-700",
     tools: [
       { icon: Brain, name: "Bilan Patrimonial IA" },
@@ -319,7 +321,7 @@ export default function Landing() {
   ];
 
   return (
-    <div className="min-h-screen bg-card">
+    <div className="min-h-screen bg-background">
       <SEO
         title="Simulateur Impôt 2025 & Gestion de Patrimoine | Outils Gratuits"
         description="Calculez votre impôt sur le revenu 2025, simulez vos droits de succession, planifiez votre retraite FIRE. Simulateurs fiscaux gratuits et conseiller IA patrimonial."
@@ -329,62 +331,37 @@ export default function Landing() {
         author="Éclat Gestion Privée"
       />
       
-      {/* Navigation Header */}
+      {/* Navigation Header - Minimal Premium Style */}
       <motion.header 
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="fixed top-0 left-0 right-0 z-50 bg-card/80 backdrop-blur-lg border-b border-border"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50"
         role="banner"
       >
-        <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between" aria-label="Navigation principale">
-          <Link to="/" className="flex items-center gap-2" aria-label="Éclat Toolkit - Accueil">
-            <img src={eclatLogo} alt="Éclat Toolkit - Application de gestion de patrimoine" className="w-8 h-8" width="32" height="32" />
-            <span className="text-xl font-bold text-foreground">Éclat Toolkit</span>
+        <nav className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between" aria-label="Navigation principale">
+          <Link to="/" className="flex items-center gap-3" aria-label="Éclat Toolkit - Accueil">
+            <img src={eclatLogo} alt="Éclat Toolkit" className="w-10 h-10" width="40" height="40" />
+            <span className="text-2xl font-bold text-foreground tracking-tight">Éclat</span>
           </Link>
-          <div className="flex items-center gap-3">
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/pricing")}
-                className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
-              >
-                Tarifs
-              </Button>
-            </motion.div>
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate("/blog")}
-                  className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
-                >
-                  Blog
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => navigate("/academie")}
-                  className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex"
-                >
-                  Académie
-                </Button>
-              </motion.div>
-            <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate("/auth")}
-                className="text-muted-foreground hover:text-foreground font-medium"
-              >
-                Se connecter
-              </Button>
-            </motion.div>
-            <motion.div whileHover={{ y: -2, boxShadow: "0 8px 30px rgba(0,0,0,0.12)" }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                onClick={() => navigate("/auth")}
-                className="bg-foreground hover:bg-foreground/90 text-card rounded-full px-6"
-              >
-                S'inscrire
+          <div className="hidden md:flex items-center gap-8">
+            <Button variant="ghost" onClick={() => navigate("/pricing")} className="text-muted-foreground hover:text-foreground font-medium">
+              Tarifs
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("/blog")} className="text-muted-foreground hover:text-foreground font-medium">
+              Blog
+            </Button>
+            <Button variant="ghost" onClick={() => navigate("/academie")} className="text-muted-foreground hover:text-foreground font-medium">
+              Académie
+            </Button>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" onClick={() => navigate("/auth")} className="text-muted-foreground hover:text-foreground font-medium hidden sm:inline-flex">
+              Se connecter
+            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button variant="premium" onClick={() => navigate("/auth")} className="rounded-full px-6">
+                Commencer
               </Button>
             </motion.div>
           </div>
@@ -392,176 +369,171 @@ export default function Landing() {
       </motion.header>
 
       <main>
-        {/* Hero Section */}
-        <section className="pt-32 pb-20 px-6" aria-labelledby="hero-title">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+        {/* Hero Section - Premium Asymmetric Design */}
+        <section className="min-h-screen pt-32 pb-20 px-6 relative overflow-hidden" aria-labelledby="hero-title">
+          {/* Background subtle gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-primary/5 pointer-events-none" />
+          
+          <div className="max-w-7xl mx-auto relative z-10">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Text Content */}
               <article className="space-y-8">
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <span className="inline-block px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold mb-6">
+                    Gestion de patrimoine intelligente
+                  </span>
+                </motion.div>
+                
                 <motion.h1 
                   id="hero-title"
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, ease: "easeOut" }}
-                  className="text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] tracking-tight"
+                  transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-5xl lg:text-7xl font-bold text-foreground leading-[1.05] tracking-tight"
                 >
-                  Faites le point sur votre situation financière{" "}
-                  <span className="text-primary">en 5 minutes</span>
+                  Faites le point sur votre situation{" "}
+                  <AnimatedUnderline underlineClassName="h-[4px]">
+                    financière
+                  </AnimatedUnderline>
                 </motion.h1>
+                
                 <motion.p 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-                  className="text-xl text-muted-foreground leading-relaxed max-w-lg font-normal"
+                  transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-xl text-muted-foreground leading-relaxed max-w-xl"
                 >
-                  Sans jargon. Sans produit à vendre. <strong className="text-foreground">Juste pour y voir clair.</strong>{" "}
-                  Recevez un diagnostic personnalisé et des recommandations adaptées à votre situation.
+                  Sans jargon. Sans produit à vendre. Juste des outils puissants 
+                  pour comprendre et optimiser votre patrimoine.
                 </motion.p>
                 
-                {/* Benefit Badges */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-                  className="flex flex-wrap gap-3"
-                  role="list"
-                  aria-label="Avantages clés"
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex flex-col sm:flex-row gap-4 pt-4"
                 >
-                  <div className="flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-medium" role="listitem">
-                    <Brain className="w-4 h-4" aria-hidden="true" />
-                    <span>Analyse IA personnalisée</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-medium" role="listitem">
-                    <Calculator className="w-4 h-4" aria-hidden="true" />
-                    <span>Simulateurs puissants</span>
-                  </div>
-                  <div className="flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full text-sm font-medium" role="listitem">
-                    <Target className="w-4 h-4" aria-hidden="true" />
-                    <span>Objectifs concrets</span>
-                  </div>
-                </motion.div>
-
-                {/* CTAs */}
-                <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.4, ease: "easeOut" }}
-                  className="flex flex-col sm:flex-row gap-4"
-                >
-                  <motion.div 
-                    whileHover={{ y: -2, boxShadow: "0 12px 40px hsl(var(--primary) / 0.35)" }} 
-                    whileTap={{ scale: 0.98 }}
-                  >
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button 
-                      size="lg"
+                      variant="premium" 
+                      size="xl"
                       onClick={() => navigate("/diagnostic")}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-8 py-6 text-lg font-semibold shadow-lg"
+                      className="rounded-full animate-glow-pulse"
                     >
-                      Commencer mon diagnostic gratuit
-                      <ChevronRight className="ml-2 w-5 h-5" aria-hidden="true" />
+                      Diagnostic gratuit
+                      <ChevronRight className="ml-2 w-5 h-5" />
                     </Button>
                   </motion.div>
-                  <motion.div 
-                    whileHover={{ y: -2 }} 
-                    whileTap={{ scale: 0.98 }}
-                  >
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button 
-                      size="lg"
-                      variant="outline"
+                      variant="outlineDark" 
+                      size="xl"
                       onClick={scrollToTools}
-                      className="rounded-full px-8 py-6 text-lg font-medium border-border"
+                      className="rounded-full"
                     >
-                      Voir les outils
+                      Découvrir les outils
                     </Button>
                   </motion.div>
                 </motion.div>
-
-                {/* Trust Badges */}
+                
+                {/* Trust indicators */}
                 <motion.div 
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.5, ease: "easeOut" }}
-                  className="flex items-center gap-6 pt-4 text-sm text-muted-foreground"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="flex items-center gap-8 pt-8 text-sm text-muted-foreground"
                 >
                   <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                    <span>Aucun engagement</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-amber-500" aria-hidden="true" />
-                    <span>Données confidentielles</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calculator className="w-4 h-4 text-primary" aria-hidden="true" />
+                    <div className="w-2 h-2 rounded-full bg-success" />
                     <span>Gratuit</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-success" />
+                    <span>Sans engagement</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-success" />
+                    <span>RGPD</span>
                   </div>
                 </motion.div>
               </article>
-
-              {/* Right: Dashboard Preview */}
-              <motion.aside 
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
-                className="relative"
-                aria-label="Aperçu du tableau de bord"
-              >
-                <div className="relative transform lg:rotate-2 lg:translate-x-8">
-                  {/* Browser Frame */}
-                  <motion.div 
-                    whileHover={{ rotate: 0, scale: 1.02 }}
-                    transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="bg-foreground rounded-2xl p-2 shadow-2xl"
-                  >
-                    {/* Browser Header */}
-                    <div className="flex items-center gap-2 px-4 py-2">
-                      <div className="flex gap-1.5">
-                        <div className="w-3 h-3 rounded-full bg-red-500" aria-hidden="true" />
-                        <div className="w-3 h-3 rounded-full bg-yellow-500" aria-hidden="true" />
-                        <div className="w-3 h-3 rounded-full bg-green-500" aria-hidden="true" />
-                      </div>
-                      <div className="flex-1 mx-4">
-                        <div className="bg-muted-foreground/30 rounded-lg px-4 py-1.5 text-xs text-muted-foreground text-center">
-                          app.eclat-toolkit.fr
-                        </div>
-                      </div>
+              
+              {/* Right: Floating Cards */}
+              <div className="relative h-[600px] hidden lg:block">
+                {/* Card 1 - Dashboard preview */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40, rotateY: -5 }}
+                  animate={{ opacity: 1, y: 0, rotateY: 0 }}
+                  transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-0 right-0 w-80 bg-card rounded-3xl shadow-2xl shadow-black/10 p-6 animate-float border border-border/50"
+                  style={{ animationDelay: "0s" }}
+                >
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
+                      <Wallet className="w-6 h-6 text-primary" />
                     </div>
-                    {/* Screen Content */}
-                    <div className="bg-background rounded-xl overflow-hidden">
-                      <img 
-                        src="/dashboard-preview.webp"
-                        alt="Tableau de bord Éclat Toolkit - Gestion de patrimoine avec KPIs, graphiques et simulateurs fiscaux"
-                        className="w-full h-auto"
-                        loading="eager"
-                      />
+                    <div>
+                      <p className="text-xs text-muted-foreground">Patrimoine total</p>
+                      <p className="text-2xl font-bold text-foreground">247 500 €</p>
                     </div>
-                  </motion.div>
-                  {/* Floating Badge */}
-                  <motion.div 
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.6, delay: 1, ease: "easeOut" }}
-                    whileHover={{ scale: 1.05, y: -2 }}
-                    className="absolute -bottom-4 -left-4 bg-card rounded-2xl p-4 shadow-xl border border-border"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-emerald-600" aria-hidden="true" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Objectif FIRE</p>
-                        <p className="text-sm font-bold text-foreground">68% atteint</p>
-                      </div>
+                  </div>
+                  <div className="h-24 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl flex items-end p-4">
+                    <div className="flex gap-1 items-end w-full">
+                      {[40, 65, 45, 80, 60, 90, 75].map((h, i) => (
+                        <div key={i} className="flex-1 bg-primary/40 rounded-t" style={{ height: `${h}%` }} />
+                      ))}
                     </div>
-                  </motion.div>
-                </div>
-              </motion.aside>
+                  </div>
+                </motion.div>
+                
+                {/* Card 2 - FIRE progress */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40, rotateY: 5 }}
+                  animate={{ opacity: 1, y: 0, rotateY: 0 }}
+                  transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-44 left-0 w-64 bg-card rounded-3xl shadow-2xl shadow-black/10 p-6 animate-float border border-border/50"
+                  style={{ animationDelay: "1s" }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 bg-success/10 rounded-full flex items-center justify-center">
+                      <TrendingUp className="w-7 h-7 text-success" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Objectif FIRE</p>
+                      <p className="text-3xl font-bold text-foreground">68%</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 h-2 bg-muted rounded-full overflow-hidden">
+                    <div className="h-full w-[68%] bg-success rounded-full" />
+                  </div>
+                </motion.div>
+                
+                {/* Card 3 - Tax optimization */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 1, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute bottom-20 right-20 w-72 bg-card rounded-3xl shadow-2xl shadow-black/10 p-6 animate-float border border-border/50"
+                  style={{ animationDelay: "2s" }}
+                >
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm font-semibold text-foreground">Économie fiscale</p>
+                    <span className="px-3 py-1 bg-accent/10 text-accent text-xs font-semibold rounded-full">PER</span>
+                  </div>
+                  <p className="text-4xl font-bold text-accent">-3 240 €</p>
+                  <p className="text-xs text-muted-foreground mt-1">sur votre IR 2025</p>
+                </motion.div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Tools by Tier Section */}
-        <section id="tools-section" className="py-20 px-6 bg-background" aria-labelledby="tools-title">
+        <section id="tools-section" className="py-24 px-6 bg-card" aria-labelledby="tools-title">
           <div className="max-w-7xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -572,7 +544,7 @@ export default function Landing() {
               className="text-center mb-16"
             >
               <h2 id="tools-title" className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Simulateurs Fiscaux et Patrimoniaux Gratuits
+                Simulateurs Fiscaux et Patrimoniaux
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Choisissez la formule adaptée à vos besoins : calcul d'impôt, simulation immobilière, planification retraite.
@@ -585,28 +557,30 @@ export default function Landing() {
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="grid md:grid-cols-3 gap-6 mb-12"
+              className="grid md:grid-cols-3 gap-8 mb-12"
             >
               {/* Free Tier */}
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className={`bg-card rounded-3xl p-8 border-2 ${tierData.free.color}`}
+                whileHover={{ scale: 1.02, y: -8 }}
+                className={`bg-background rounded-3xl p-8 border-2 ${tierData.free.color} transition-all duration-300`}
               >
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${tierData.free.badgeColor}`}>
+                <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 ${tierData.free.badgeColor}`}>
                   <Sparkles className="w-4 h-4" aria-hidden="true" />
                   {tierData.free.name}
                 </div>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-foreground">0€</span>
+                  <span className="text-5xl font-bold text-foreground">0€</span>
                   <span className="text-muted-foreground ml-2">pour toujours</span>
                 </div>
-                <ul className="space-y-3" aria-label="Outils gratuits inclus">
+                <ul className="space-y-4" aria-label="Outils gratuits inclus">
                   {tierData.free.tools.map((tool, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
-                      <tool.icon className="w-5 h-5 text-primary" aria-hidden="true" />
-                      <span>{tool.name}</span>
+                      <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <tool.icon className="w-4 h-4 text-primary" aria-hidden="true" />
+                      </div>
+                      <span className="font-medium">{tool.name}</span>
                     </li>
                   ))}
                 </ul>
@@ -616,22 +590,24 @@ export default function Landing() {
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className={`bg-card rounded-3xl p-8 border-2 ${tierData.premium.color} relative`}
+                whileHover={{ scale: 1.02, y: -8 }}
+                className={`bg-background rounded-3xl p-8 border-2 ${tierData.premium.color} relative transition-all duration-300`}
               >
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${tierData.premium.badgeColor}`}>
+                <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 ${tierData.premium.badgeColor}`}>
                   <Crown className="w-4 h-4" aria-hidden="true" />
                   {tierData.premium.name}
                 </div>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-foreground">{tierData.premium.price?.split('/')[0]}</span>
+                  <span className="text-5xl font-bold text-foreground">{tierData.premium.price?.split('/')[0]}</span>
                   <span className="text-muted-foreground ml-2">/mois</span>
                 </div>
-                <ul className="space-y-3" aria-label="Outils Premium inclus">
+                <ul className="space-y-4" aria-label="Outils Premium inclus">
                   {tierData.premium.tools.map((tool, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
-                      <tool.icon className="w-5 h-5 text-amber-600" aria-hidden="true" />
-                      <span>{tool.name}</span>
+                      <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
+                        <tool.icon className="w-4 h-4 text-amber-600" aria-hidden="true" />
+                      </div>
+                      <span className="font-medium">{tool.name}</span>
                     </li>
                   ))}
                 </ul>
@@ -641,22 +617,24 @@ export default function Landing() {
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ scale: 1.02, y: -4 }}
-                className={`bg-card rounded-3xl p-8 border-2 ${tierData.expert.color} relative`}
+                whileHover={{ scale: 1.02, y: -8 }}
+                className={`bg-background rounded-3xl p-8 border-2 ${tierData.expert.color} relative transition-all duration-300`}
               >
-                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${tierData.expert.badgeColor}`}>
+                <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-semibold mb-6 ${tierData.expert.badgeColor}`}>
                   <Zap className="w-4 h-4" aria-hidden="true" />
                   {tierData.expert.name}
                 </div>
                 <div className="mb-6">
-                  <span className="text-4xl font-bold text-foreground">{tierData.expert.price?.split('/')[0]}</span>
+                  <span className="text-5xl font-bold text-foreground">{tierData.expert.price?.split('/')[0]}</span>
                   <span className="text-muted-foreground ml-2">/mois</span>
                 </div>
-                <ul className="space-y-3" aria-label="Outils Expert inclus">
+                <ul className="space-y-4" aria-label="Outils Expert inclus">
                   {tierData.expert.tools.map((tool, i) => (
                     <li key={i} className="flex items-center gap-3 text-foreground">
-                      <tool.icon className="w-5 h-5 text-violet-600" aria-hidden="true" />
-                      <span>{tool.name}</span>
+                      <div className="w-8 h-8 bg-violet-100 rounded-lg flex items-center justify-center">
+                        <tool.icon className="w-4 h-4 text-violet-600" aria-hidden="true" />
+                      </div>
+                      <span className="font-medium">{tool.name}</span>
                     </li>
                   ))}
                 </ul>
@@ -671,15 +649,15 @@ export default function Landing() {
               transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
               className="text-center"
             >
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button 
-                  variant="outline"
+                  variant="outlineDark"
                   size="lg"
                   onClick={() => navigate("/pricing")}
-                  className="rounded-full px-8 border-border"
+                  className="rounded-full px-8"
                 >
                   Comparer tous les tarifs
-                  <ChevronRight className="ml-2 w-4 h-4" aria-hidden="true" />
+                  <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
                 </Button>
               </motion.div>
             </motion.div>
@@ -687,7 +665,7 @@ export default function Landing() {
         </section>
 
         {/* Values Section */}
-        <section className="py-20 px-6 bg-muted/50" aria-labelledby="values-title">
+        <section className="py-24 px-6 bg-background" aria-labelledby="values-title">
           <div className="max-w-7xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -698,7 +676,7 @@ export default function Landing() {
               className="text-center mb-16"
             >
               <h2 id="values-title" className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Conseils Patrimoniaux Pédagogiques et IA
+                Conseils Patrimoniaux Pédagogiques
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Comprenez votre situation financière grâce à des explications claires et des recommandations personnalisées.
@@ -710,22 +688,22 @@ export default function Landing() {
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="grid md:grid-cols-3 gap-8"
+              className="grid md:grid-cols-3 gap-12"
             >
               {valuesData.map((value, i) => (
                 <motion.article 
                   key={i}
                   variants={fadeUpVariant}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  whileHover={{ y: -4 }}
+                  whileHover={{ y: -8 }}
                   className="text-center"
                 >
-                  <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                    <value.icon className="w-8 h-8 text-primary" aria-hidden="true" />
+                  <div className="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto mb-8">
+                    <value.icon className="w-10 h-10 text-primary" aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-bold text-foreground mb-3">{value.title}</h3>
-                  <p className="text-muted-foreground mb-4">{value.description}</p>
-                  <p className="text-sm font-medium text-primary italic">{value.tagline}</p>
+                  <h3 className="text-2xl font-bold text-foreground mb-4">{value.title}</h3>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">{value.description}</p>
+                  <p className="text-sm font-semibold text-primary italic">{value.tagline}</p>
                 </motion.article>
               ))}
             </motion.div>
@@ -733,7 +711,7 @@ export default function Landing() {
         </section>
 
         {/* Popular Tools Section */}
-        <section className="py-20 px-6 bg-card" aria-labelledby="popular-tools-title">
+        <section className="py-24 px-6 bg-card" aria-labelledby="popular-tools-title">
           <div className="max-w-7xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -744,10 +722,10 @@ export default function Landing() {
               className="text-center mb-16"
             >
               <h2 id="popular-tools-title" className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Nos Simulateurs Financiers les Plus Utilisés
+                Nos Simulateurs les Plus Utilisés
               </h2>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Découvrez nos simulateurs phares utilisés par des milliers d'investisseurs pour optimiser leur fiscalité et leur patrimoine.
+                Découvrez nos simulateurs phares utilisés par des milliers d'investisseurs.
               </p>
             </motion.header>
 
@@ -763,15 +741,15 @@ export default function Landing() {
                   key={tool.id}
                   variants={fadeUpVariant}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  whileHover={{ scale: 1.01, y: -2 }}
+                  whileHover={{ scale: 1.01, y: -4 }}
                   onClick={() => navigate(tool.route)}
-                  className="bg-background rounded-3xl p-8 border border-border cursor-pointer hover:shadow-lg transition-shadow"
+                  className="bg-background rounded-3xl p-8 border border-border/50 cursor-pointer hover:shadow-xl transition-all duration-300 group"
                 >
                   <div className="flex flex-col md:flex-row md:items-center gap-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-2xl font-bold text-foreground">{tool.name}</h3>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        <h3 className="text-2xl font-bold text-foreground group-hover:text-primary transition-colors">{tool.name}</h3>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           tool.tier === 'expert' 
                             ? 'bg-violet-100 text-violet-700' 
                             : 'bg-amber-100 text-amber-700'
@@ -779,27 +757,20 @@ export default function Landing() {
                           {tool.tier === 'expert' ? 'Expert' : 'Premium'}
                         </span>
                       </div>
-                      <p className="text-muted-foreground mb-4">{tool.description}</p>
+                      <p className="text-muted-foreground mb-4 leading-relaxed">{tool.description}</p>
                       <ul className="flex flex-wrap gap-2" aria-label="Fonctionnalités">
                         {tool.features.map((feature, j) => (
-                          <li key={j} className="flex items-center gap-1 text-sm text-foreground bg-muted px-3 py-1 rounded-full">
-                            <Check className="w-3 h-3 text-emerald-500" aria-hidden="true" />
+                          <li key={j} className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-full text-sm text-muted-foreground">
+                            <Check className="w-3 h-3 text-success" aria-hidden="true" />
                             {feature}
                           </li>
                         ))}
                       </ul>
                     </div>
-                    <div>
-                      <Button 
-                        className="rounded-full px-6"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(tool.route);
-                        }}
-                      >
-                        Essayer
-                        <ChevronRight className="ml-2 w-4 h-4" aria-hidden="true" />
-                      </Button>
+                    <div className="flex items-center">
+                      <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                        <ArrowRight className="w-5 h-5 text-primary group-hover:text-white transition-colors" />
+                      </div>
                     </div>
                   </div>
                 </motion.article>
@@ -808,8 +779,8 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Academy Teaser Section */}
-        <section className="py-20 px-6 bg-background" aria-labelledby="academy-title">
+        {/* Academy Section */}
+        <section className="py-24 px-6 bg-background" aria-labelledby="academy-title">
           <div className="max-w-7xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -817,47 +788,29 @@ export default function Landing() {
               viewport={{ once: true, margin: "-100px" }}
               variants={fadeUpVariant}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="text-center mb-12"
+              className="text-center mb-16"
             >
               <h2 id="academy-title" className="text-4xl lg:text-5xl font-bold text-foreground mb-4">
-                Académie Financière : Guides PER, Assurance-Vie, SCPI
+                Académie Financière Éclat
               </h2>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                Notre Académie vous guide à travers les solutions patrimoniales françaises, sans jargon financier.
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Apprenez les fondamentaux de l'investissement avec nos fiches pédagogiques gratuites.
               </p>
             </motion.header>
 
-            {/* Internal links to blog articles */}
-            <motion.div 
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUpVariant}
-              className="text-center mb-8"
-            >
-              <p className="text-muted-foreground">
-                Découvrez nos guides complets sur le{" "}
-                <Link to="/blog/per-plan-epargne-retraite-guide-2025" className="text-primary hover:underline font-medium">Plan d'Épargne Retraite (PER)</Link>,{" "}
-                l'<Link to="/blog/guide-assurance-vie-2025" className="text-primary hover:underline font-medium">Assurance-Vie</Link>,{" "}
-                le <Link to="/blog/girardin-industriel-defiscalisation-guide" className="text-primary hover:underline font-medium">Girardin Industriel</Link>{" "}
-                et la <Link to="/blog/droits-succession-guide-complet" className="text-primary hover:underline font-medium">transmission de patrimoine</Link>.
-              </p>
-            </motion.div>
-
-            {/* Product Cards */}
             <motion.div 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="grid md:grid-cols-3 gap-6 mb-12"
+              className="grid md:grid-cols-3 gap-8 mb-12"
             >
               {featuredProducts.map((product) => (
                 <motion.div
                   key={product.id}
                   variants={scaleUpVariant}
                   transition={{ duration: 0.5, ease: "easeOut" }}
-                  whileHover={{ scale: 1.02, y: -4 }}
+                  whileHover={{ scale: 1.02, y: -8 }}
                 >
                   <ProductCard product={product} />
                 </motion.div>
@@ -872,15 +825,15 @@ export default function Landing() {
               transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
               className="text-center"
             >
-              <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button 
-                  variant="outline"
+                  variant="outlineDark"
                   size="lg"
                   onClick={() => navigate("/academie")}
-                  className="rounded-full px-8 border-border"
+                  className="rounded-full px-8"
                 >
                   Découvrir l'Académie complète
-                  <ChevronRight className="ml-2 w-4 h-4" aria-hidden="true" />
+                  <ArrowRight className="ml-2 w-4 h-4" aria-hidden="true" />
                 </Button>
               </motion.div>
             </motion.div>
@@ -888,7 +841,7 @@ export default function Landing() {
         </section>
 
         {/* Pricing Section (Simplified) */}
-        <section className="py-20 px-6 bg-muted/50" aria-labelledby="pricing-title">
+        <section className="py-24 px-6 bg-card" aria-labelledby="pricing-title">
           <div className="max-w-5xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -904,7 +857,7 @@ export default function Landing() {
               
               {/* Toggle */}
               <div className="flex items-center justify-center gap-4 mt-8">
-                <span className={`text-sm font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensuel</span>
+                <span className={`text-sm font-semibold ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>Mensuel</span>
                 <button 
                   onClick={() => setIsAnnual(!isAnnual)}
                   className={`relative w-14 h-7 rounded-full transition-colors ${isAnnual ? 'bg-primary' : 'bg-border'}`}
@@ -912,9 +865,9 @@ export default function Landing() {
                 >
                   <div className={`absolute top-1 w-5 h-5 bg-card rounded-full shadow transition-transform ${isAnnual ? 'translate-x-8' : 'translate-x-1'}`} />
                 </button>
-                <span className={`text-sm font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+                <span className={`text-sm font-semibold ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
                   Annuel
-                  <span className="ml-2 text-emerald-600 font-semibold">-30%</span>
+                  <span className="ml-2 text-success font-bold">-30%</span>
                 </span>
               </div>
             </motion.header>
@@ -924,20 +877,20 @@ export default function Landing() {
               whileInView="visible"
               viewport={{ once: true, margin: "-50px" }}
               variants={staggerContainer}
-              className="grid md:grid-cols-3 gap-6"
+              className="grid md:grid-cols-3 gap-8"
             >
               {/* Free */}
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ y: -4 }}
-                className="bg-card rounded-2xl p-6 border border-border text-center"
+                whileHover={{ y: -8 }}
+                className="bg-background rounded-3xl p-8 border border-border/50 text-center"
               >
-                <h3 className="text-lg font-bold text-foreground mb-2">Gratuit</h3>
-                <div className="text-3xl font-bold text-foreground mb-4">0€</div>
+                <h3 className="text-xl font-bold text-foreground mb-2">Gratuit</h3>
+                <div className="text-4xl font-bold text-foreground mb-4">0€</div>
                 <p className="text-sm text-muted-foreground mb-6">4 outils essentiels</p>
                 <Button 
-                  variant="outline" 
+                  variant="outlineDark" 
                   className="w-full rounded-full"
                   onClick={() => navigate("/auth")}
                 >
@@ -949,14 +902,14 @@ export default function Landing() {
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ y: -4 }}
-                className="bg-card rounded-2xl p-6 border-2 border-amber-400 text-center relative"
+                whileHover={{ y: -8 }}
+                className="bg-background rounded-3xl p-8 border-2 border-amber-400 text-center relative"
               >
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1 rounded-full">
                   POPULAIRE
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2">Premium</h3>
-                <div className="text-3xl font-bold text-foreground mb-4">
+                <h3 className="text-xl font-bold text-foreground mb-2">Premium</h3>
+                <div className="text-4xl font-bold text-foreground mb-4">
                   {isAnnual ? '49,99€' : '5,99€'}
                   <span className="text-base font-normal text-muted-foreground">/{isAnnual ? 'an' : 'mois'}</span>
                 </div>
@@ -973,11 +926,11 @@ export default function Landing() {
               <motion.article 
                 variants={fadeUpVariant}
                 transition={{ duration: 0.5, ease: "easeOut" }}
-                whileHover={{ y: -4 }}
-                className="bg-card rounded-2xl p-6 border-2 border-violet-400 text-center"
+                whileHover={{ y: -8 }}
+                className="bg-background rounded-3xl p-8 border-2 border-violet-400 text-center"
               >
-                <h3 className="text-lg font-bold text-foreground mb-2">Expert</h3>
-                <div className="text-3xl font-bold text-foreground mb-4">
+                <h3 className="text-xl font-bold text-foreground mb-2">Expert</h3>
+                <div className="text-4xl font-bold text-foreground mb-4">
                   {isAnnual ? '149,99€' : '14,99€'}
                   <span className="text-base font-normal text-muted-foreground">/{isAnnual ? 'an' : 'mois'}</span>
                 </div>
@@ -1001,16 +954,17 @@ export default function Landing() {
             >
               <Link 
                 to="/pricing"
-                className="text-primary hover:underline font-medium"
+                className="text-primary hover:underline font-semibold inline-flex items-center gap-2"
               >
-                Comparer en détail →
+                Comparer en détail
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </motion.div>
           </div>
         </section>
 
-        {/* SEO Content Section - "En savoir plus" */}
-        <section className="py-20 px-6 bg-card border-t border-border" aria-labelledby="seo-content-title">
+        {/* SEO Content Section */}
+        <section className="py-24 px-6 bg-background border-t border-border/50" aria-labelledby="seo-content-title">
           <div className="max-w-4xl mx-auto">
             <motion.article 
               initial="hidden"
@@ -1034,10 +988,10 @@ export default function Landing() {
                 Simulateur Impôt sur le Revenu 2025 : Comment ça marche ?
               </h3>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Notre <Link to="/simulateur-impot" className="text-primary hover:underline">calculateur d'impôt</Link> utilise le barème officiel 2025 
+                Notre <Link to="/simulateur-impot" className="text-primary hover:underline font-medium">calculateur d'impôt</Link> utilise le barème officiel 2025 
                 de l'administration fiscale française. Il calcule votre <strong className="text-foreground">Tranche Marginale d'Imposition (TMI)</strong>,
                 applique le quotient familial selon votre situation (célibataire, couple, enfants à charge), 
-                et intègre les plafonnements légaux. Résultat : vous connaissez précisément votre impôt à payer avant même de recevoir votre avis.
+                et intègre les plafonnements légaux.
               </p>
 
               <h3 className="text-2xl font-bold text-foreground mb-4 mt-8">
@@ -1048,28 +1002,21 @@ export default function Landing() {
                 de votre revenu imposable, dans la limite de 35 194€ en 2025. C'est l'un des leviers les plus efficaces pour{" "}
                 <strong className="text-foreground">réduire son impôt</strong> tout en préparant sa retraite.
               </p>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Le <strong className="text-foreground">Girardin Industriel</strong> offre une réduction d'impôt immédiate pouvant atteindre 115% du montant investi,
-                dans le cadre du soutien à l'industrie ultramarine. Découvrez notre{" "}
-                <Link to="/blog/girardin-industriel-defiscalisation-guide" className="text-primary hover:underline">guide complet du Girardin</Link>.
-              </p>
 
               <h3 className="text-2xl font-bold text-foreground mb-4 mt-8">
                 Planifiez votre indépendance financière avec la méthode FIRE
               </h3>
               <p className="text-muted-foreground leading-relaxed">
                 Le mouvement <strong className="text-foreground">FIRE (Financial Independence, Retire Early)</strong> gagne en popularité en France. 
-                Notre <Link to="/tools/interets-composes" className="text-primary hover:underline">calculateur d'intérêts composés</Link> vous aide à projeter 
-                la croissance de votre épargne sur 10, 20 ou 30 ans, avec différents scénarios de rendement. 
-                Combiné à notre module de <strong className="text-foreground">simulation retraite anticipée</strong>, vous pouvez estimer précisément 
-                le capital nécessaire pour vivre de vos rentes et atteindre votre liberté financière.
+                Notre <Link to="/tools/interets-composes" className="text-primary hover:underline font-medium">calculateur d'intérêts composés</Link> vous aide à projeter 
+                la croissance de votre épargne sur 10, 20 ou 30 ans, avec différents scénarios de rendement.
               </p>
             </motion.article>
           </div>
         </section>
 
         {/* FAQ Section */}
-        <section className="py-20 px-6 bg-background border-t border-border" aria-labelledby="faq-title" itemScope itemType="https://schema.org/FAQPage">
+        <section className="py-24 px-6 bg-card border-t border-border/50" aria-labelledby="faq-title" itemScope itemType="https://schema.org/FAQPage">
           <div className="max-w-3xl mx-auto">
             <motion.header 
               initial="hidden"
@@ -1080,10 +1027,10 @@ export default function Landing() {
               className="text-center mb-12"
             >
               <h2 id="faq-title" className="text-3xl lg:text-4xl font-bold text-foreground">
-                FAQ - Réduire ses Impôts et Gérer son Patrimoine
+                Questions Fréquentes
               </h2>
               <p className="text-muted-foreground mt-4">
-                Trouvez les réponses à vos questions sur la fiscalité, l'épargne et l'investissement en France.
+                Trouvez les réponses à vos questions sur la fiscalité, l'épargne et l'investissement.
               </p>
             </motion.header>
             <motion.div 
@@ -1092,7 +1039,7 @@ export default function Landing() {
               viewport={{ once: true }}
               variants={fadeUpVariant}
               transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="space-y-2"
+              className="bg-background rounded-3xl p-8 border border-border/50"
             >
               {faqData.map((faq, index) => (
                 <FaqItem 
@@ -1105,8 +1052,8 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 px-6 bg-foreground" aria-labelledby="cta-title">
+        {/* CTA Section - Dark Background */}
+        <section className="py-24 px-6 bg-foreground" aria-labelledby="cta-title">
           <motion.div 
             initial="hidden"
             whileInView="visible"
@@ -1115,20 +1062,21 @@ export default function Landing() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="max-w-4xl mx-auto text-center"
           >
-            <h2 id="cta-title" className="text-4xl lg:text-5xl font-bold text-card mb-6">
+            <h2 id="cta-title" className="text-4xl lg:text-5xl font-bold text-background mb-6">
               Prêt à optimiser votre patrimoine ?
             </h2>
-            <p className="text-xl text-muted-foreground mb-8">
-              Créez votre compte gratuitement et accédez à nos simulateurs fiscaux et patrimoniaux.
+            <p className="text-xl text-background/70 mb-10">
+              Créez votre compte gratuitement et accédez à nos simulateurs.
             </p>
             <motion.div 
-              whileHover={{ y: -2, boxShadow: "0 12px 40px hsl(var(--primary) / 0.4)" }} 
+              whileHover={{ scale: 1.02 }} 
               whileTap={{ scale: 0.98 }}
             >
               <Button 
-                size="lg"
+                variant="premium"
+                size="xl"
                 onClick={() => navigate("/auth")}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-full px-10 py-6 text-lg font-semibold"
+                className="rounded-full animate-glow-pulse"
               >
                 Commencer gratuitement
                 <ChevronRight className="ml-2 w-5 h-5" aria-hidden="true" />
@@ -1144,14 +1092,14 @@ export default function Landing() {
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="py-12 px-6 bg-card border-t border-border"
+        className="py-12 px-6 bg-background border-t border-border/50"
         role="contentinfo"
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link to="/" className="flex items-center gap-2" aria-label="Éclat Toolkit - Accueil">
-              <img src={eclatLogo} alt="Éclat logo" className="w-8 h-8" />
-              <span className="text-lg font-bold text-foreground">Éclat Toolkit</span>
+            <Link to="/" className="flex items-center gap-3" aria-label="Éclat Toolkit - Accueil">
+              <img src={eclatLogo} alt="Éclat logo" className="w-10 h-10" />
+              <span className="text-xl font-bold text-foreground">Éclat</span>
             </Link>
             <nav className="flex items-center gap-8 text-sm text-muted-foreground" aria-label="Liens légaux">
               <Link to="/mentions-legales" className="hover:text-foreground transition-colors">Mentions Légales</Link>
@@ -1160,7 +1108,7 @@ export default function Landing() {
               <a href="mailto:contact@eclat-gp.com" className="hover:text-foreground transition-colors">Contact</a>
             </nav>
             <p className="text-sm text-muted-foreground">
-              © 2025 Éclat Gestion Privée. Tous droits réservés.
+              © 2025 Éclat Gestion Privée
             </p>
           </div>
         </div>
