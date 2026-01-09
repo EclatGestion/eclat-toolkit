@@ -1141,9 +1141,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <Link to="/" className="flex items-center gap-2" aria-label="Éclat Toolkit - Accueil">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">É</span>
-              </div>
+              <img src={eclatLogo} alt="Éclat logo" className="w-8 h-8" />
               <span className="text-lg font-bold text-foreground">Éclat Toolkit</span>
             </Link>
             <nav className="flex items-center gap-8 text-sm text-muted-foreground" aria-label="Liens légaux">
