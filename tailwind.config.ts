@@ -161,7 +161,7 @@ export default {
         "scale-in": "scale-in 0.5s ease-out",
         "rotate-3d": "rotate-3d 8s ease-in-out infinite",
         "glow-intense": "glow-intense 2s ease-in-out infinite",
-        "marquee": "marquee 60s linear infinite",
+        "marquee": "marquee 120s linear infinite",
         "shimmer": "shimmer 2s linear infinite",
         "blob": "blob 8s ease-in-out infinite",
         "float-delayed": "float-delayed 10s ease-in-out infinite",
