@@ -22,22 +22,22 @@ const settingsSections = [{
   title: "Notifications",
   description: "Configurez vos préférences de notifications",
   icon: Bell,
-  iconColor: "text-amber-500",
-  iconBg: "bg-amber-500/10"
+  iconColor: "text-warning",
+  iconBg: "bg-warning/10"
 }, {
   id: "security",
   title: "Sécurité",
   description: "Mot de passe et authentification",
   icon: Shield,
-  iconColor: "text-emerald-500",
-  iconBg: "bg-emerald-500/10"
+  iconColor: "text-success",
+  iconBg: "bg-success/10"
 }, {
   id: "export",
   title: "Exporter mes données",
   description: "Télécharger une copie de vos données (RGPD)",
   icon: Download,
-  iconColor: "text-blue-500",
-  iconBg: "bg-blue-500/10"
+  iconColor: "text-primary",
+  iconBg: "bg-primary/10"
 }];
 const containerVariants = {
   hidden: {

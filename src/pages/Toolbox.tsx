@@ -39,8 +39,8 @@ const popularTools = [
     title: "Crédit Immo",
     description: "Mensualité et capacité",
     icon: Home,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10",
+    iconColor: "text-success",
+    iconBg: "bg-success/10",
     path: "/tools/simulateur-immobilier",
   },
   {
@@ -48,8 +48,8 @@ const popularTools = [
     title: "Intérêts Composés",
     description: "Projetez vos placements",
     icon: TrendingUp,
-    iconColor: "text-rose-500",
-    iconBg: "bg-rose-500/10",
+    iconColor: "text-accent",
+    iconBg: "bg-accent/10",
     path: "/tools/interets-composes",
   },
 ];
@@ -60,8 +60,8 @@ const freeTools = [
     title: "Épargne Mensuelle",
     description: "Calculez votre potentiel d'épargne.",
     icon: PiggyBank,
-    iconColor: "text-teal-500",
-    iconBg: "bg-teal-500/10",
+    iconColor: "text-chart-3",
+    iconBg: "bg-chart-3/10",
     path: "/tools/capacite-epargne",
   },
   {
@@ -69,8 +69,8 @@ const freeTools = [
     title: "Inflation",
     description: "Impact sur votre pouvoir d'achat.",
     icon: TrendingDown,
-    iconColor: "text-orange-500",
-    iconBg: "bg-orange-500/10",
+    iconColor: "text-accent",
+    iconBg: "bg-accent/10",
     path: "/tools/inflation",
   },
   {
@@ -99,8 +99,8 @@ const premiumTools = [
     title: "Crédit Immobilier",
     description: "Mensualité et capacité d'emprunt.",
     icon: Home,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10",
+    iconColor: "text-success",
+    iconBg: "bg-success/10",
     path: "/tools/simulateur-immobilier",
   },
   {
@@ -108,8 +108,8 @@ const premiumTools = [
     title: "Intérêts Composés",
     description: "Projections multi-scénarios.",
     icon: TrendingUp,
-    iconColor: "text-rose-500",
-    iconBg: "bg-rose-500/10",
+    iconColor: "text-accent",
+    iconBg: "bg-accent/10",
     path: "/tools/interets-composes",
   },
   {
@@ -117,8 +117,8 @@ const premiumTools = [
     title: "Assurance-Vie",
     description: "Projection et impact des frais.",
     icon: Shield,
-    iconColor: "text-violet-500",
-    iconBg: "bg-violet-500/10",
+    iconColor: "text-chart-3",
+    iconBg: "bg-chart-3/10",
     path: "/tools/assurance-vie",
   },
   {
@@ -126,8 +126,8 @@ const premiumTools = [
     title: "Plan Épargne Retraite",
     description: "Réduction d'impôt et projection.",
     icon: Target,
-    iconColor: "text-emerald-500",
-    iconBg: "bg-emerald-500/10",
+    iconColor: "text-success",
+    iconBg: "bg-success/10",
     path: "/tools/optimisation-per",
   },
 ];
@@ -138,8 +138,8 @@ const expertTools = [
     title: "Analyse Actions",
     description: "Scoring IA et recommandation.",
     icon: LineChart,
-    iconColor: "text-indigo-500",
-    iconBg: "bg-indigo-500/10",
+    iconColor: "text-chart-3",
+    iconBg: "bg-chart-3/10",
     path: "/tools/analyse-action",
   },
   {
@@ -147,8 +147,8 @@ const expertTools = [
     title: "Conseiller IA",
     description: "Stratégie sur mesure par IA.",
     icon: MessageSquare,
-    iconColor: "text-indigo-500",
-    iconBg: "bg-indigo-500/10",
+    iconColor: "text-chart-3",
+    iconBg: "bg-chart-3/10",
     path: "/tools/goal-based-investment",
   },
   {
@@ -156,8 +156,8 @@ const expertTools = [
     title: "Succession",
     description: "Droits et optimisation transmission.",
     icon: Scale,
-    iconColor: "text-purple-500",
-    iconBg: "bg-purple-500/10",
+    iconColor: "text-primary",
+    iconBg: "bg-primary/10",
     path: "/tools/droits-succession",
   },
   {
@@ -165,8 +165,8 @@ const expertTools = [
     title: "LMNP vs Nu",
     description: "Comparatif fiscalité locative.",
     icon: Key,
-    iconColor: "text-amber-500",
-    iconBg: "bg-amber-500/10",
+    iconColor: "text-warning",
+    iconBg: "bg-warning/10",
     path: "/tools/comparateur-lmnp",
   },
 ];
@@ -178,8 +178,8 @@ const freePremiumTools = [
     title: "Bilan Patrimonial",
     description: "Analyse complète de votre patrimoine avec scores par pilier et recommandations.",
     icon: Brain,
-    iconColor: "text-violet-500",
-    iconBg: "bg-violet-500/10",
+    iconColor: "text-chart-3",
+    iconBg: "bg-chart-3/10",
     path: "/tools/bilan-patrimonial",
   },
 ];
@@ -309,12 +309,12 @@ export default function Toolbox() {
         <motion.section variants={itemVariants}>
           <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center gap-2">
-              <Brain className="w-5 h-5 text-violet-500" />
+              <Brain className="w-5 h-5 text-chart-3" />
               <h3 className="text-lg font-semibold text-foreground">
                 Outil Phare
               </h3>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-600 text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-chart-3/10 text-chart-3 text-xs font-medium">
               Gratuit
             </span>
           </div>
@@ -334,7 +334,7 @@ export default function Toolbox() {
             <h3 className="text-lg font-semibold text-foreground">
               🆓 Outils Gratuits
             </h3>
-            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
               {freeTools.length} outils
             </span>
           </div>
@@ -380,12 +380,12 @@ export default function Toolbox() {
         <motion.section variants={itemVariants}>
           <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-500" />
+              <Sparkles className="w-5 h-5 text-chart-3" />
               <h3 className="text-lg font-semibold text-foreground">
                 Outils Expert
               </h3>
             </div>
-            <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 text-xs font-medium">
+            <span className="px-2 py-0.5 rounded-full bg-chart-3/10 text-chart-3 text-xs font-medium">
               14,99€/mois
             </span>
           </div>
@@ -398,7 +398,7 @@ export default function Toolbox() {
                 key={tool.id} 
                 {...tool}
                 badge="Expert"
-                badgeColor="bg-indigo-500/10 text-indigo-600"
+                badgeColor="bg-chart-3/10 text-chart-3"
               />
             ))}
           </div>
@@ -409,8 +409,8 @@ export default function Toolbox() {
           <div className="bg-card rounded-3xl p-6 shadow-card border border-border">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                  <Brain className="w-6 h-6 text-violet-500" />
+                <div className="w-12 h-12 rounded-xl bg-chart-3/10 flex items-center justify-center">
+                  <Brain className="w-6 h-6 text-chart-3" />
                 </div>
                 <div>
                   <h4 className="font-semibold text-foreground">Besoin d'approfondir vos connaissances ?</h4>

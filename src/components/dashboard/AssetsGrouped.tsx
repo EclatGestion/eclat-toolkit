@@ -12,39 +12,39 @@ const ASSET_CONFIG: Record<string, {
 }> = {
   Immobilier: { 
     icon: Building2, 
-    color: "text-blue-600 dark:text-blue-400",
-    bgColor: "bg-blue-50 dark:bg-blue-900/20",
-    borderColor: "border-l-blue-500"
+    color: "text-primary",
+    bgColor: "bg-primary/10",
+    borderColor: "border-l-primary"
   },
   Bourse: { 
     icon: TrendingUp, 
-    color: "text-teal-600 dark:text-teal-400",
-    bgColor: "bg-teal-50 dark:bg-teal-900/20",
-    borderColor: "border-l-teal-500"
+    color: "text-accent",
+    bgColor: "bg-accent/10",
+    borderColor: "border-l-accent"
   },
   Épargne: { 
     icon: PiggyBank, 
-    color: "text-amber-600 dark:text-amber-400",
-    bgColor: "bg-amber-50 dark:bg-amber-900/20",
-    borderColor: "border-l-amber-500"
+    color: "text-warning",
+    bgColor: "bg-warning/10",
+    borderColor: "border-l-warning"
   },
   Crypto: { 
     icon: Coins, 
-    color: "text-purple-600 dark:text-purple-400",
-    bgColor: "bg-purple-50 dark:bg-purple-900/20",
-    borderColor: "border-l-purple-500"
+    color: "text-chart-3",
+    bgColor: "bg-chart-3/10",
+    borderColor: "border-l-chart-3"
   },
   Cash: { 
     icon: Wallet, 
-    color: "text-green-600 dark:text-green-400",
-    bgColor: "bg-green-50 dark:bg-green-900/20",
-    borderColor: "border-l-green-500"
+    color: "text-success",
+    bgColor: "bg-success/10",
+    borderColor: "border-l-success"
   },
   Autre: { 
     icon: MoreHorizontal, 
-    color: "text-slate-600 dark:text-slate-400",
-    bgColor: "bg-slate-50 dark:bg-slate-900/20",
-    borderColor: "border-l-slate-500"
+    color: "text-muted-foreground",
+    bgColor: "bg-muted",
+    borderColor: "border-l-muted-foreground"
   },
 };
 

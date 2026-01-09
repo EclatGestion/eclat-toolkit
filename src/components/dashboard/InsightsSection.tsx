@@ -69,8 +69,8 @@ export function InsightsSection() {
     if (assets.length === 0) {
       return {
         icon: Lightbulb,
-        color: "text-blue-500",
-        bgColor: "bg-blue-50 dark:bg-blue-900/20",
+        color: "text-primary",
+        bgColor: "bg-primary/10",
         title: "Commencez votre bilan",
         text: "Ajoutez vos actifs pour obtenir des conseils personnalisés sur votre patrimoine.",
       };
@@ -79,8 +79,8 @@ export function InsightsSection() {
     if (concentration && concentration.percentage > 70) {
       return {
         icon: AlertTriangle,
-        color: "text-amber-500",
-        bgColor: "bg-amber-50 dark:bg-amber-900/20",
+        color: "text-accent",
+        bgColor: "bg-accent/10",
         title: "Diversification recommandée",
         text: `Votre patrimoine est concentré à ${concentration.percentage}% en ${concentration.type}. Diversifiez vers d'autres classes d'actifs pour réduire le risque.`,
       };
@@ -89,8 +89,8 @@ export function InsightsSection() {
     if (runway !== null && runway < 6) {
       return {
         icon: Shield,
-        color: "text-rose-500",
-        bgColor: "bg-rose-50 dark:bg-rose-900/20",
+        color: "text-destructive",
+        bgColor: "bg-destructive/10",
         title: "Épargne de précaution",
         text: "Constituez une épargne de précaution de 6 mois de dépenses minimum pour faire face aux imprévus.",
       };
@@ -99,8 +99,8 @@ export function InsightsSection() {
     if (diversification.count >= 3) {
       return {
         icon: TrendingUp,
-        color: "text-emerald-500",
-        bgColor: "bg-emerald-50 dark:bg-emerald-900/20",
+        color: "text-success",
+        bgColor: "bg-success/10",
         title: "Patrimoine équilibré",
         text: "Votre diversification est bonne. Continuez à épargner régulièrement et rééquilibrez annuellement.",
       };
@@ -108,8 +108,8 @@ export function InsightsSection() {
 
     return {
       icon: Lightbulb,
-      color: "text-blue-500",
-      bgColor: "bg-blue-50 dark:bg-blue-900/20",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
       title: "Optimisez votre patrimoine",
       text: "Explorez nos simulateurs pour découvrir les meilleures stratégies d'investissement adaptées à votre profil.",
     };
@@ -117,28 +117,28 @@ export function InsightsSection() {
 
   const getRunwayColor = () => {
     if (runway === null) return "text-muted-foreground";
-    if (runway >= 12) return "text-emerald-500";
-    if (runway >= 6) return "text-amber-500";
-    return "text-rose-500";
+    if (runway >= 12) return "text-success";
+    if (runway >= 6) return "text-warning";
+    return "text-destructive";
   };
 
   const getRunwayBg = () => {
     if (runway === null) return "bg-muted";
-    if (runway >= 12) return "bg-emerald-50 dark:bg-emerald-900/20";
-    if (runway >= 6) return "bg-amber-50 dark:bg-amber-900/20";
-    return "bg-rose-50 dark:bg-rose-900/20";
+    if (runway >= 12) return "bg-success/10";
+    if (runway >= 6) return "bg-warning/10";
+    return "bg-destructive/10";
   };
 
   const getFireColor = () => {
-    if (fireProgress >= 50) return "text-emerald-500";
-    if (fireProgress >= 25) return "text-amber-500";
-    return "text-blue-500";
+    if (fireProgress >= 50) return "text-success";
+    if (fireProgress >= 25) return "text-warning";
+    return "text-primary";
   };
 
   const getFireBg = () => {
-    if (fireProgress >= 50) return "bg-emerald-50 dark:bg-emerald-900/20";
-    if (fireProgress >= 25) return "bg-amber-50 dark:bg-amber-900/20";
-    return "bg-blue-50 dark:bg-blue-900/20";
+    if (fireProgress >= 50) return "bg-success/10";
+    if (fireProgress >= 25) return "bg-warning/10";
+    return "bg-primary/10";
   };
 
   const AdviceIcon = advice.icon;
@@ -198,15 +198,15 @@ export function InsightsSection() {
 
         {/* Rendement potentiel */}
         <motion.div 
-          className="rounded-2xl p-4 bg-emerald-50 dark:bg-emerald-900/20"
+          className="rounded-2xl p-4 bg-success/10"
           whileHover={{ scale: 1.02 }}
           transition={{ type: "spring", stiffness: 400, damping: 25 }}
         >
           <div className="flex items-center gap-2 mb-2">
-            <Coins className="w-4 h-4 text-emerald-500" />
+            <Coins className="w-4 h-4 text-success" />
             <span className="text-xs text-muted-foreground uppercase tracking-wide">Potentiel</span>
           </div>
-          <p className="text-2xl font-bold text-emerald-500">
+          <p className="text-2xl font-bold text-success">
             +{formatCurrency(potentialReturn)}
           </p>
           <p className="text-xs text-muted-foreground mt-1">/mois à 5%</p>

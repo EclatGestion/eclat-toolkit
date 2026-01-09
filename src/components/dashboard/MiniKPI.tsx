@@ -11,9 +11,9 @@ interface MiniKPIProps {
 
 export function MiniKPI({ label, value, badge, badgeColor = "green", onClick }: MiniKPIProps) {
   const badgeColorClasses = {
-    green: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    orange: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    red: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
+    green: "bg-success/20 text-success",
+    orange: "bg-warning/20 text-warning",
+    red: "bg-destructive/20 text-destructive",
   };
 
   return (

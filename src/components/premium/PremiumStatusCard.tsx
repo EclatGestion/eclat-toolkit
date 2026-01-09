@@ -117,11 +117,11 @@ export function PremiumStatusCard() {
   if (isPremium || isExpert) {
     const TierIcon = isExpert ? Diamond : Crown;
     const tierLabel = isExpert ? PLAN_LABELS.expert : PLAN_LABELS.premium;
-    const iconColor = isExpert ? "text-violet-500" : "text-primary";
-    const iconBg = isExpert ? "bg-violet-500/10" : "bg-primary/10";
-    const gradientFrom = isExpert ? "from-violet-500/5" : "from-primary/5";
-    const gradientTo = isExpert ? "to-violet-500/5" : "to-amber-500/5";
-    const borderColor = isExpert ? "border-violet-500/20" : "border-primary/20";
+    const iconColor = isExpert ? "text-chart-3" : "text-primary";
+    const iconBg = isExpert ? "bg-chart-3/10" : "bg-primary/10";
+    const gradientFrom = isExpert ? "from-chart-3/5" : "from-primary/5";
+    const gradientTo = isExpert ? "to-chart-3/5" : "to-accent/5";
+    const borderColor = isExpert ? "border-chart-3/20" : "border-primary/20";
 
     return (
       <motion.div
@@ -139,7 +139,7 @@ export function PremiumStatusCard() {
               <p className="text-sm text-muted-foreground">Actif</p>
             </div>
           </div>
-          <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 text-xs font-medium rounded-full">
+          <span className="px-3 py-1 bg-success/10 text-success text-xs font-medium rounded-full">
             Actif
           </span>
         </div>
@@ -236,8 +236,8 @@ export function PremiumStatusCard() {
                     <div className="flex items-center gap-2">
                       <span className={`px-2 py-0.5 text-xs rounded-full ${
                         invoice.status === 'paid' 
-                          ? 'bg-emerald-500/10 text-emerald-600' 
-                          : 'bg-amber-500/10 text-amber-600'
+                          ? 'bg-success/10 text-success' 
+                          : 'bg-warning/10 text-warning'
                       }`}>
                         {invoice.status === 'paid' ? 'Payé' : invoice.status}
                       </span>
