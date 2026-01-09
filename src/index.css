@@ -4,110 +4,112 @@
 
 @layer base {
   :root {
-    /* BankDash Color Palette */
-    --background: 220 20% 97%;
-    --foreground: 228 24% 25%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 228 24% 25%;
-
+    /* Nouvelle palette Ventriloc-inspired */
+    --background: 0 0% 96%;           /* #f5f5f5 */
+    --foreground: 0 0% 13%;           /* #202020 */
+    
+    --card: 0 0% 100%;                /* Blanc pur */
+    --card-foreground: 0 0% 13%;      /* #202020 */
+    
     --popover: 0 0% 100%;
-    --popover-foreground: 228 24% 25%;
-
-    --primary: 227 100% 59%;
+    --popover-foreground: 0 0% 13%;
+    
+    /* Bronze comme couleur primaire - #81672a */
+    --primary: 43 51% 34%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 220 20% 97%;
-    --secondary-foreground: 228 24% 25%;
-
-    --muted: 220 14% 96%;
-    --muted-foreground: 220 9% 46%;
-
-    --accent: 227 100% 59%;
+    
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 13%;
+    
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 45%;
+    
+    /* Orange comme accent - #ff682c */
+    --accent: 15 100% 59%;
     --accent-foreground: 0 0% 100%;
-
+    
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
+    
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-
+    
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 227 100% 59%;
-
+    
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 43 51% 34%;               /* Bronze */
+    
     --radius: 1rem;
-
-    /* Sidebar */
+    
+    /* Sidebar avec nouvelle palette */
     --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 220 9% 46%;
-    --sidebar-primary: 227 100% 59%;
+    --sidebar-foreground: 0 0% 45%;
+    --sidebar-primary: 43 51% 34%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 227 100% 97%;
-    --sidebar-accent-foreground: 227 100% 59%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 227 100% 59%;
-
-    /* Chart colors */
-    --chart-1: 227 100% 59%;
-    --chart-2: 172 66% 50%;
-    --chart-3: 291 64% 42%;
-    --chart-4: 38 92% 50%;
-    --chart-5: 0 84% 60%;
+    --sidebar-accent: 43 20% 95%;
+    --sidebar-accent-foreground: 43 51% 34%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 43 51% 34%;
+    
+    /* Charts avec nouvelle palette */
+    --chart-1: 43 51% 34%;            /* Bronze */
+    --chart-2: 15 100% 59%;           /* Orange */
+    --chart-3: 172 66% 50%;           /* Teal */
+    --chart-4: 0 0% 25%;              /* Gris fonce */
+    --chart-5: 0 0% 60%;              /* Gris moyen */
   }
 
   .dark {
-    --background: 224 71% 4%;
-    --foreground: 213 31% 91%;
-
-    --card: 224 71% 8%;
-    --card-foreground: 213 31% 91%;
-
-    --popover: 224 71% 8%;
-    --popover-foreground: 213 31% 91%;
-
-    --primary: 227 100% 59%;
+    --background: 0 0% 6%;
+    --foreground: 0 0% 92%;
+    
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 92%;
+    
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 92%;
+    
+    --primary: 43 55% 45%;
     --primary-foreground: 0 0% 100%;
-
-    --secondary: 224 71% 12%;
-    --secondary-foreground: 213 31% 91%;
-
-    --muted: 223 47% 11%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 227 100% 59%;
+    
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 92%;
+    
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+    
+    --accent: 15 100% 65%;
     --accent-foreground: 0 0% 100%;
-
+    
     --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
-
+    
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-
+    
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-    --ring: 227 100% 59%;
-
-    --sidebar-background: 224 71% 8%;
-    --sidebar-foreground: 215 20% 65%;
-    --sidebar-primary: 227 100% 59%;
+    
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 43 55% 45%;
+    
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 60%;
+    --sidebar-primary: 43 55% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 224 71% 12%;
-    --sidebar-accent-foreground: 227 100% 70%;
-    --sidebar-border: 216 34% 17%;
-    --sidebar-ring: 227 100% 59%;
-
-    --chart-1: 227 100% 65%;
-    --chart-2: 172 66% 55%;
-    --chart-3: 291 64% 55%;
-    --chart-4: 38 92% 55%;
-    --chart-5: 0 84% 65%;
+    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent-foreground: 43 55% 55%;
+    --sidebar-border: 0 0% 20%;
+    --sidebar-ring: 43 55% 45%;
+    
+    --chart-1: 43 55% 50%;
+    --chart-2: 15 100% 65%;
+    --chart-3: 172 66% 55%;
+    --chart-4: 0 0% 40%;
+    --chart-5: 0 0% 70%;
   }
 }
 
@@ -118,13 +120,17 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
 }
 
 @layer utilities {
   .shadow-card {
     box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.06);
+  }
+  
+  .shadow-premium {
+    box-shadow: 0 10px 40px -10px rgba(129, 103, 42, 0.3);
   }
 }
 
