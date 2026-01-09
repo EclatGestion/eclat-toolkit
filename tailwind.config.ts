@@ -118,6 +118,25 @@ export default {
           "0%": { opacity: "0", transform: "scale(0.95)" },
           "100%": { opacity: "1", transform: "scale(1)" },
         },
+        // New premium animations
+        "marquee": {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "blob-morph": {
+          "0%, 100%": { borderRadius: "60% 40% 30% 70%/60% 30% 70% 40%" },
+          "25%": { borderRadius: "30% 60% 70% 40%/50% 60% 30% 60%" },
+          "50%": { borderRadius: "50% 50% 40% 60%/40% 50% 60% 50%" },
+          "75%": { borderRadius: "40% 60% 50% 50%/60% 40% 50% 50%" },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
+        "parallax-float": {
+          "0%, 100%": { transform: "translateY(0) rotateY(-2deg) rotateX(1deg)" },
+          "50%": { transform: "translateY(-20px) rotateY(2deg) rotateX(-1deg)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -127,6 +146,11 @@ export default {
         "underline-draw": "underline-draw 0.8s ease-out forwards",
         "slide-up": "slide-up 0.6s ease-out",
         "scale-in": "scale-in 0.5s ease-out",
+        // New premium animations
+        "marquee": "marquee 40s linear infinite",
+        "blob-morph": "blob-morph 15s ease-in-out infinite",
+        "shimmer": "shimmer 3s linear infinite",
+        "parallax-float": "parallax-float 8s ease-in-out infinite",
       },
     },
   },

@@ -132,6 +132,27 @@
   .shadow-premium {
     box-shadow: 0 10px 40px -10px rgba(129, 103, 42, 0.3);
   }
+
+  /* Link underline animation */
+  .link-underline {
+    @apply relative inline-block;
+  }
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-[2px] bg-primary;
+    @apply transition-all duration-300;
+  }
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Premium card hover */
+  .card-premium-hover {
+    @apply transition-all duration-300;
+  }
+  .card-premium-hover:hover {
+    @apply shadow-xl -translate-y-1;
+  }
 }
 
 /* Blog Article Content Styles */
