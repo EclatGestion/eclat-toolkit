@@ -68,38 +68,38 @@ const goalConfig: Record<string, { label: string; icon: React.ComponentType<{ cl
   reduire_impots: { 
     label: "Réduire vos impôts", 
     icon: TrendingDown,
-    color: "text-red-500",
-    bgGradient: "from-red-500/10 to-orange-500/10"
+    color: "text-destructive",
+    bgGradient: "from-destructive/10 to-accent/10"
   },
   preparer_retraite: { 
     label: "Préparer votre retraite", 
     icon: Clock,
-    color: "text-teal-500",
-    bgGradient: "from-teal-500/10 to-cyan-500/10"
+    color: "text-chart-3",
+    bgGradient: "from-chart-3/10 to-chart-3/5"
   },
   acheter_immo: { 
     label: "Acheter un bien immobilier", 
     icon: Home,
-    color: "text-blue-500",
-    bgGradient: "from-blue-500/10 to-sky-500/10"
+    color: "text-primary",
+    bgGradient: "from-primary/10 to-primary/5"
   },
   faire_fructifier: { 
     label: "Faire fructifier votre épargne", 
     icon: PiggyBank,
-    color: "text-emerald-500",
-    bgGradient: "from-emerald-500/10 to-green-500/10"
+    color: "text-success",
+    bgGradient: "from-success/10 to-success/5"
   },
   transmettre: { 
     label: "Transmettre votre patrimoine", 
     icon: Users,
-    color: "text-violet-500",
-    bgGradient: "from-violet-500/10 to-purple-500/10"
+    color: "text-accent",
+    bgGradient: "from-accent/10 to-accent/5"
   },
   ne_sais_pas: { 
     label: "Définir vos objectifs", 
     icon: Target,
-    color: "text-slate-500",
-    bgGradient: "from-slate-500/10 to-gray-500/10"
+    color: "text-muted-foreground",
+    bgGradient: "from-muted to-muted/50"
   },
 };
 
@@ -318,7 +318,7 @@ export default function MonParcours() {
                   <span className="text-muted-foreground">Votre objectif :</span>
                   <span className={cn("font-medium", goalInfo.color)}>{goalInfo.label}</span>
                   {hasCompletedOnboarding && (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-xs font-medium">
+                    <span className="px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
                       ✓ Diagnostic complété
                     </span>
                   )}
@@ -350,8 +350,8 @@ export default function MonParcours() {
                 <span className="text-sm font-medium text-foreground">Progression</span>
                 <span className={cn(
                   "text-sm font-semibold",
-                  progressPercentage >= 70 ? "text-emerald-500" :
-                  progressPercentage >= 40 ? "text-amber-500" : "text-red-500"
+                  progressPercentage >= 70 ? "text-success" :
+                  progressPercentage >= 40 ? "text-warning" : "text-destructive"
                 )}>
                   {progressPercentage}%
                 </span>
@@ -373,9 +373,9 @@ export default function MonParcours() {
                   const isInProgress = currentStatus === "in_progress";
                   
                   const priorityConfig = {
-                    haute: { icon: AlertTriangle, color: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/20" },
-                    moyenne: { icon: Lightbulb, color: "text-amber-500", bg: "bg-amber-500/10", border: "border-amber-500/20" },
-                    longTerme: { icon: Target, color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+                    haute: { icon: AlertTriangle, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" },
+                    moyenne: { icon: Lightbulb, color: "text-warning", bg: "bg-warning/10", border: "border-warning/20" },
+                    longTerme: { icon: Target, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" },
                   }[action.priority] || { icon: Target, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20" };
                   
                   const PriorityIcon = priorityConfig.icon;
@@ -416,13 +416,13 @@ export default function MonParcours() {
                       {/* Status indicator */}
                       <div className="flex items-center gap-2 shrink-0">
                         {isCompleted && (
-                          <span className="px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 text-xs font-medium flex items-center gap-1">
+                          <span className="px-2 py-1 rounded-lg bg-success/10 text-success text-xs font-medium flex items-center gap-1">
                             <CheckCircle2 className="w-3 h-3" />
                             Fait
                           </span>
                         )}
                         {isInProgress && (
-                          <span className="px-2 py-1 rounded-lg bg-amber-500/10 text-amber-600 text-xs font-medium flex items-center gap-1">
+                          <span className="px-2 py-1 rounded-lg bg-warning/10 text-warning text-xs font-medium flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             En cours
                           </span>
