@@ -116,8 +116,8 @@ export default function OptimisationPER() {
           className="space-y-2"
         >
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-primary/20">
-              <Target className="h-6 w-6 text-emerald-500" />
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-success/20 to-primary/20">
+              <Target className="h-6 w-6 text-success" />
             </div>
             <div>
               <h1 className="text-2xl lg:text-3xl font-bold text-foreground">
@@ -196,8 +196,8 @@ export default function OptimisationPER() {
           <Card className="bg-gradient-to-r from-primary/5 to-amber-500/5 border-0 rounded-3xl">
             <CardContent className="p-6">
               <div className="flex items-start gap-4">
-                <div className="p-2 rounded-xl bg-amber-500/10">
-                  <Lock className="h-5 w-5 text-amber-500" />
+                <div className="p-2 rounded-xl bg-primary/10">
+                  <Lock className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 space-y-3">
                   <h3 className="text-lg font-semibold text-foreground">
@@ -232,10 +232,10 @@ export default function OptimisationPER() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          <Card className="bg-gradient-to-r from-emerald-500/10 to-primary/10 border-0 rounded-3xl overflow-hidden">
+          <Card className="bg-gradient-to-r from-success/10 to-primary/10 border-0 rounded-3xl overflow-hidden">
             <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center gap-4">
-              <div className="p-3 rounded-2xl bg-emerald-500/20">
-                <BookOpen className="h-6 w-6 text-emerald-600" />
+              <div className="p-3 rounded-2xl bg-success/20">
+                <BookOpen className="h-6 w-6 text-success" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-foreground mb-1">

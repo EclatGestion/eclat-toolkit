@@ -342,8 +342,8 @@ export default function SimulateurIR() {
                 <div className="bg-card rounded-3xl p-6 shadow-card">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-emerald-500/10 rounded-xl">
-                        <PiggyBank className="w-5 h-5 text-emerald-500" />
+                      <div className="p-2 bg-success/10 rounded-xl">
+                        <PiggyBank className="w-5 h-5 text-success" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground">PER - Épargne Retraite</h3>
@@ -414,8 +414,8 @@ export default function SimulateurIR() {
                 <div className="bg-card rounded-3xl p-6 shadow-card">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-500/10 rounded-xl">
-                        <Palmtree className="w-5 h-5 text-blue-500" />
+                      <div className="p-2 bg-accent/10 rounded-xl">
+                        <Palmtree className="w-5 h-5 text-accent" />
                       </div>
                       <div>
                         <h3 className="text-lg font-semibold text-foreground">Girardin Industriel</h3>
@@ -440,16 +440,16 @@ export default function SimulateurIR() {
                         unit="€"
                       />
                       
-                      <div className="p-3 bg-blue-500/10 rounded-xl space-y-2">
+                      <div className="p-3 bg-accent/10 rounded-xl space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-muted-foreground">Crédit d'impôt obtenu</span>
-                          <span className="font-bold text-blue-500">
+                          <span className="font-bold text-accent">
                             {formatCurrency(Math.min(montantGirardin, plafondGirardin) * (1 + GIRARDIN_RENDEMENT))}
                           </span>
                         </div>
                         <div className="flex justify-between text-xs">
                           <span className="text-muted-foreground">Rendement</span>
-                          <span className="text-emerald-500 font-medium">+15%</span>
+                          <span className="text-success font-medium">+15%</span>
                         </div>
                       </div>
 
@@ -602,7 +602,7 @@ export default function SimulateurIR() {
 
                   {girardinActif && resultatOptimise.creditGirardin > 0 && (
                     <>
-                      <div className="flex justify-between text-blue-500">
+                      <div className="flex justify-between text-accent">
                         <span>Crédit Girardin</span>
                         <span className="font-medium">-{formatCurrency(resultatOptimise.creditGirardin)}</span>
                       </div>

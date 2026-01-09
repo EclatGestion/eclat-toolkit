@@ -166,7 +166,7 @@ export default function SimulateurSuccession() {
               <Card className="rounded-2xl shadow-md border-0 bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <Users className="h-5 w-5 text-emerald-500" />
+                    <Users className="h-5 w-5 text-success" />
                     Héritiers (enfants)
                   </CardTitle>
                 </CardHeader>
@@ -206,7 +206,7 @@ export default function SimulateurSuccession() {
               <Card className="rounded-2xl shadow-md border-0 bg-card">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <Shield className="h-5 w-5 text-blue-500" />
+                    <Shield className="h-5 w-5 text-primary" />
                     Bouclier Fiscal - Assurance-Vie
                   </CardTitle>
                 </CardHeader>
@@ -272,7 +272,7 @@ export default function SimulateurSuccession() {
                     </div>
                     <div>
                       <p className="text-muted-foreground">Abattement</p>
-                      <p className="font-semibold text-emerald-600">- {formatCurrency(ABATTEMENT_LIGNE_DIRECTE)}</p>
+                      <p className="font-semibold text-success">- {formatCurrency(ABATTEMENT_LIGNE_DIRECTE)}</p>
                     </div>
                     <div>
                       <p className="text-muted-foreground">Part taxable</p>
@@ -288,7 +288,7 @@ export default function SimulateurSuccession() {
 
               {/* Comparateur (si AV activé) */}
               {assuranceVieActif && results.economie > 0 && (
-                <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-950/30 dark:to-blue-950/30">
+                <Card className="rounded-2xl shadow-md border-0 bg-gradient-to-br from-success/10 to-primary/10">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-base font-semibold text-foreground">Comparaison</CardTitle>
                   </CardHeader>
@@ -300,7 +300,7 @@ export default function SimulateurSuccession() {
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-sm text-muted-foreground">Avec Assurance-Vie</span>
-                        <span className="font-semibold text-emerald-600">{formatCurrency(results.avecAV.droitsTotaux)}</span>
+                        <span className="font-semibold text-success">{formatCurrency(results.avecAV.droitsTotaux)}</span>
                       </div>
                       <div className="pt-3 border-t border-border">
                         <div className="flex justify-between items-center">
@@ -315,11 +315,11 @@ export default function SimulateurSuccession() {
 
               {/* Message pédagogique */}
               {currentResults.droitsTotaux > 10000 && (
-                <Card className="rounded-2xl shadow-md border-0 bg-amber-50 dark:bg-amber-950/30 border-l-4 border-l-amber-500">
+                <Card className="rounded-2xl shadow-md border-0 bg-warning/10 border-l-4 border-l-warning">
                   <CardContent className="pt-4">
                     <div className="flex gap-3">
-                      <AlertTriangle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                      <div className="text-sm text-amber-800 dark:text-amber-200">
+                      <AlertTriangle className="h-5 w-5 text-warning flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-foreground">
                         <p className="font-medium mb-1">Important à savoir</p>
                         <p>
                           Vos enfants devront payer {formatCurrency(currentResults.droitsTotaux)} dans les 6 mois suivant le décès, 
