@@ -18,6 +18,7 @@ import { OverviewTab } from "@/components/cabinet/OverviewTab";
 import { ClientsTab } from "@/components/cabinet/ClientsTab";
 import { RevenusTab } from "@/components/cabinet/RevenusTab";
 import { PipelineTab } from "@/components/cabinet/PipelineTab";
+import { BusinessPlanTab } from "@/components/cabinet/BusinessPlanTab";
 import { useCabinetData } from "@/hooks/useCabinetData";
 import { computeKpis } from "@/lib/cabinet/aggregate";
 import { formatEuro } from "@/lib/cabinet/format";
@@ -131,6 +132,7 @@ export default function Cabinet() {
             <TabsTrigger value="clients">Clients</TabsTrigger>
             <TabsTrigger value="revenus">Revenus & Trésorerie</TabsTrigger>
             <TabsTrigger value="pipeline">Pipeline & Engagements</TabsTrigger>
+            <TabsTrigger value="bp">Objectifs BP</TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
             <OverviewTab data={data} />
@@ -143,6 +145,9 @@ export default function Cabinet() {
           </TabsContent>
           <TabsContent value="pipeline">
             <PipelineTab data={data} />
+          </TabsContent>
+          <TabsContent value="bp">
+            <BusinessPlanTab data={data} />
           </TabsContent>
         </Tabs>
       </div>
