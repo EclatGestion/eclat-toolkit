@@ -1,0 +1,3527 @@
+{
+ "snapshotDate": "2026-06-12",
+ "contracts": [
+  {
+   "company": "Abeille Assurances",
+   "client": "VELAY Regis",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130021390",
+   "subscriptionDate": "2020-07-20",
+   "encours": 31479.81,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 11.07,
+   "pvmvAnnualise": 1.88
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PICAULT Maxime",
+   "contract": "ABEILLE EPARGNE PLURIELLE C900048382",
+   "subscriptionDate": "2020-10-09",
+   "encours": 13322.07,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 33.32,
+   "pvmvAnnualise": 5.88
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "MARTINEZ Leyre",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130050046",
+   "subscriptionDate": "2021-03-24",
+   "encours": 6894.48,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 11.04,
+   "pvmvAnnualise": 2.12
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PEREZ David",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130052417",
+   "subscriptionDate": "2021-04-14",
+   "encours": 18814.43,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 17.14,
+   "pvmvAnnualise": 3.32
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PEREZ David",
+   "contract": "ABEILLE EPARGNE PLURIELLE C900059201",
+   "subscriptionDate": "2021-04-06",
+   "encours": 9641.42,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 11.21,
+   "pvmvAnnualise": 2.16
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PEREZ David",
+   "contract": "ABEILLE EPARGNE ACTIVE D220005902",
+   "subscriptionDate": "2022-10-18",
+   "encours": 6658.86,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.05,
+   "pvmvAnnualise": 1.93
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "AYMARD Philippe",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130051160",
+   "subscriptionDate": "2021-03-31",
+   "encours": 56363.35,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 22.98,
+   "pvmvAnnualise": 4.42
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PEREZ MARTINEZ Eneko",
+   "contract": "ABEILLE EPARGNE PLURIELLE C900060100",
+   "subscriptionDate": "2021-04-06",
+   "encours": 8262.54,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.24,
+   "pvmvAnnualise": 1.4
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "PEREZ MARTINEZ Iker",
+   "contract": "ABEILLE EPARGNE PLURIELLE C900060124",
+   "subscriptionDate": "2021-04-06",
+   "encours": 8262.54,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.24,
+   "pvmvAnnualise": 1.4
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "CORRON Antoine",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130063191",
+   "subscriptionDate": "2021-08-04",
+   "encours": 4284.71,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 29.6,
+   "pvmvAnnualise": 6.1
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "TEPPE Fanny",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130062477",
+   "subscriptionDate": "2021-07-23",
+   "encours": 5816.22,
+   "vlDate": "2026-05-03",
+   "profile": "GP Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 14.52,
+   "pvmvAnnualise": 2.97
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "CAMPUS Thierry",
+   "contract": "ABEILLE EPARGNE PLURIELLE C900075336",
+   "subscriptionDate": "2022-02-28",
+   "encours": 8827.41,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 9.88,
+   "pvmvAnnualise": 2.31
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Brune",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130091023",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1995.42,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 13.45,
+   "pvmvAnnualise": 3.32
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Gaspard",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130091015",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1335.04,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 18.15,
+   "pvmvAnnualise": 4.48
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Bosco",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130090997",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1335.04,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 18.15,
+   "pvmvAnnualise": 4.48
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Castille",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130091021",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1335.04,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 18.15,
+   "pvmvAnnualise": 4.48
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Mahaut",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130090664",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1335.04,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 18.15,
+   "pvmvAnnualise": 4.48
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "JUSOT Pacome",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130091009",
+   "subscriptionDate": "2022-05-23",
+   "encours": 1335.04,
+   "vlDate": "2026-05-03",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 18.15,
+   "pvmvAnnualise": 4.48
+  },
+  {
+   "company": "Abeille Assurances",
+   "client": "AYMARD Capucine",
+   "contract": "ABEILLE RETRAITE PLURIELLE D130055977",
+   "subscriptionDate": "2021-04-30",
+   "encours": 9284.33,
+   "vlDate": "2026-05-03",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 13.15,
+   "pvmvAnnualise": 2.57
+  },
+  {
+   "company": "Altaroc",
+   "client": "POURQUIER Nicolas",
+   "contract": "AO2025-Part A 0079142321",
+   "subscriptionDate": null,
+   "encours": 20000.0,
+   "vlDate": "2026-04-28",
+   "profile": "Altaroc",
+   "advisor": "Antonin",
+   "type": "PE",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Altaroc",
+   "client": "ANCEY Pierre",
+   "contract": "AO2022-Part A 912264502",
+   "subscriptionDate": null,
+   "encours": 76901.29,
+   "vlDate": "2026-04-28",
+   "profile": "Altaroc",
+   "advisor": "Antonin",
+   "type": "PE",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Altaroc",
+   "client": "CAPIVALO DEVELOPPEMENT",
+   "contract": "AO2025-Part A 0735858714",
+   "subscriptionDate": null,
+   "encours": 20000.0,
+   "vlDate": "2026-04-28",
+   "profile": "Altaroc",
+   "advisor": "Anthony",
+   "type": "PE",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Altaroc",
+   "client": "ANCEY Pierre",
+   "contract": "AO2025-Part A 1651405240",
+   "subscriptionDate": null,
+   "encours": 60000.0,
+   "vlDate": "2026-04-28",
+   "profile": "Altaroc",
+   "advisor": "Antonin",
+   "type": "PE",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Altaroc",
+   "client": "RAYE Anne-Sophie",
+   "contract": "AO2025-Part A 0322337856",
+   "subscriptionDate": null,
+   "encours": 20000.0,
+   "vlDate": "2026-04-28",
+   "profile": "Altaroc",
+   "advisor": "Antonin",
+   "type": "PE",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Apicil",
+   "client": "DE BATTISTI Arnaud",
+   "contract": "INTENCIAL LIBERALYS RETRAITE 7020456",
+   "subscriptionDate": "2022-08-10",
+   "encours": 28115.54,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 10.34,
+   "pvmvAnnualise": 2.69
+  },
+  {
+   "company": "Apicil",
+   "client": "RIBEIRO Nicolas",
+   "contract": "INTENCIAL LIBERALYS RETRAITE 7020308",
+   "subscriptionDate": "2022-07-11",
+   "encours": 6538.18,
+   "vlDate": "2026-05-08",
+   "profile": "ETF",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 8.38,
+   "pvmvAnnualise": 2.14
+  },
+  {
+   "company": "Apicil",
+   "client": "DE BATTISTI Arnaud",
+   "contract": "Intencial Liberalys Vie 4086486",
+   "subscriptionDate": "2022-08-10",
+   "encours": 81054.73,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 13.69,
+   "pvmvAnnualise": 3.57
+  },
+  {
+   "company": "Apicil",
+   "client": "RIBEIRO Nicolas",
+   "contract": "Intencial Liberalys Vie 4085024",
+   "subscriptionDate": "2022-07-01",
+   "encours": 21975.98,
+   "vlDate": "2026-05-08",
+   "profile": "ETF",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 8.08,
+   "pvmvAnnualise": 2.05
+  },
+  {
+   "company": "Apicil",
+   "client": "POURQUIER Nicolas",
+   "contract": "Intencial Liberalys Vie 4126335",
+   "subscriptionDate": "2025-09-22",
+   "encours": 16252.85,
+   "vlDate": "2026-05-08",
+   "profile": "ETF",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.0,
+   "pvmvAnnualise": 9.79
+  },
+  {
+   "company": "Eres",
+   "client": "CAMPUS Thierry",
+   "contract": "LE PER ERES 0010538479001",
+   "subscriptionDate": "2021-11-20",
+   "encours": 34282.38,
+   "vlDate": "2026-05-07",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 123.13,
+   "pvmvAnnualise": 27.03
+  },
+  {
+   "company": "Eres",
+   "client": "CONTE Elisabeth",
+   "contract": "LE PER ERES 0010548028001",
+   "subscriptionDate": "2021-12-15",
+   "encours": 40355.73,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Eres",
+   "client": "KAMALIY ZONOZY Sarah",
+   "contract": "LE PER ERES 0010556779001",
+   "subscriptionDate": "2022-01-07",
+   "encours": 3123.78,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Eres",
+   "client": "CABINET ANNE-SOPHIE GODEFROY",
+   "contract": "OFFRE ERES PACK SELECTION 11 - PARTS P 1798702-PEI-115178370",
+   "subscriptionDate": "2025-06-26",
+   "encours": 57751.17,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PEE/PERCO",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Eres",
+   "client": "CABINET ANNE-SOPHIE GODEFROY",
+   "contract": "OFFRE ERES PACK SELECTION 11 - PARTS P 1798702-PEI-115178377",
+   "subscriptionDate": "2025-06-26",
+   "encours": 51882.03,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PEE/PERCO",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Iroko",
+   "client": "DUFRESNE Patricia",
+   "contract": "Parts SCPI Iroko 11452-1001-F",
+   "subscriptionDate": "2023-05-31",
+   "encours": 30000.0,
+   "vlDate": "2026-05-10",
+   "profile": "Iroko",
+   "advisor": "Antonin",
+   "type": "SCPI",
+   "pvmv": 2.0,
+   "pvmvAnnualise": 0.66
+  },
+  {
+   "company": "Iroko",
+   "client": "POURQUIER Nicolas",
+   "contract": "Parts SCPI Iroko 32889-1000-N",
+   "subscriptionDate": "2025-08-20",
+   "encours": 21679.4,
+   "vlDate": "2026-05-10",
+   "profile": "Iroko",
+   "advisor": "Antonin",
+   "type": "SCPI",
+   "pvmv": 0.0,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "MMA",
+   "client": "PRUDHOMME Pascale",
+   "contract": "SIGNATURE PREMIUM 01598393",
+   "subscriptionDate": "2019-01-24",
+   "encours": 1779.71,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "MMA",
+   "client": "PRUDHOMME Didier",
+   "contract": "SIGNATURE PREMIUM 01598397",
+   "subscriptionDate": "2019-01-24",
+   "encours": 1946.53,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "MMA",
+   "client": "DURAND Marie-France",
+   "contract": "SIGNATURE CAPI 01617256",
+   "subscriptionDate": "2020-07-31",
+   "encours": 106878.53,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "CAPI",
+   "pvmv": 19.26,
+   "pvmvAnnualise": 3.28
+  },
+  {
+   "company": "MMA",
+   "client": "CASANOVA Elisabeth",
+   "contract": "SIGNATURE PREMIUM 01625234",
+   "subscriptionDate": "2020-12-18",
+   "encours": 133206.34,
+   "vlDate": "2026-05-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 10.68,
+   "pvmvAnnualise": 1.95
+  },
+  {
+   "company": "Mon Livret C",
+   "client": "POURQUIER Nicolas",
+   "contract": "NP 0001",
+   "subscriptionDate": null,
+   "encours": 5000.0,
+   "vlDate": "2025-08-14",
+   "profile": "Mon Livret C",
+   "advisor": "Antonin",
+   "type": "CRYPTO",
+   "pvmv": 0.0,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Murano ( ex Primonial)",
+   "client": "MICHEL Elisa",
+   "contract": "SCPI Primovie PV-071772-PP",
+   "subscriptionDate": "2022-04-29",
+   "encours": 22087.52,
+   "vlDate": "2026-01-31",
+   "profile": "SCPI",
+   "advisor": "Antonin",
+   "type": "SCPI",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Murano ( ex Primonial)",
+   "client": "MICHEL Elisa",
+   "contract": "SCPI Primopierre PP-071772-PP",
+   "subscriptionDate": "2022-06-30",
+   "encours": 13821.81,
+   "vlDate": "2026-01-31",
+   "profile": "SCPI",
+   "advisor": "Antonin",
+   "type": "SCPI",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Nortia",
+   "client": "ANCEY Jérôme",
+   "contract": "PANTHEA VIE 533002889",
+   "subscriptionDate": "2025-04-15",
+   "encours": 356540.89,
+   "vlDate": "2026-05-08",
+   "profile": "Mandat TAM",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 4.79,
+   "pvmvAnnualise": 4.15
+  },
+  {
+   "company": "Nortia",
+   "client": "CREZ Annick",
+   "contract": "PANTHEA VIE 533001882",
+   "subscriptionDate": "2024-12-12",
+   "encours": 143702.41,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": -0.52,
+   "pvmvAnnualise": -0.35
+  },
+  {
+   "company": "Nortia",
+   "client": "PAUGET Jean-Marc",
+   "contract": "PANTHEA VIE 533001881",
+   "subscriptionDate": "2024-12-11",
+   "encours": 203556.22,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 3.96,
+   "pvmvAnnualise": 2.65
+  },
+  {
+   "company": "Nortia",
+   "client": "MICHEL Elisa",
+   "contract": "PANTHEA VIE 533001992",
+   "subscriptionDate": "2024-12-24",
+   "encours": 56826.46,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": -1.69,
+   "pvmvAnnualise": -1.16
+  },
+  {
+   "company": "Nortia",
+   "client": "MONNIER Marie-Claire",
+   "contract": "PANTHEA VIE 533001913",
+   "subscriptionDate": "2024-12-18",
+   "encours": 23568.6,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": -2.16,
+   "pvmvAnnualise": -1.46
+  },
+  {
+   "company": "Nortia",
+   "client": "FAUQUEMBERGUE Laetitia",
+   "contract": "PANTHEA VIE 533003078",
+   "subscriptionDate": "2025-05-09",
+   "encours": 141267.11,
+   "vlDate": "2026-05-08",
+   "profile": "Securitaire",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 1.01,
+   "pvmvAnnualise": 0.93
+  },
+  {
+   "company": "Nortia",
+   "client": "MAHINC Damien",
+   "contract": "PANTHEA VIE 533003052",
+   "subscriptionDate": "2025-05-06",
+   "encours": 91150.69,
+   "vlDate": "2026-05-08",
+   "profile": "Securitaire",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 1.45,
+   "pvmvAnnualise": 1.32
+  },
+  {
+   "company": "Nortia",
+   "client": "TAVARD Camille",
+   "contract": "PANTHEA VIE 533003202",
+   "subscriptionDate": "2025-05-26",
+   "encours": 40477.83,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": -2.92,
+   "pvmvAnnualise": -2.8
+  },
+  {
+   "company": "Nortia",
+   "client": "RAYE Anne-Sophie",
+   "contract": "PANTHEA VIE 533003048",
+   "subscriptionDate": "2025-04-30",
+   "encours": 288479.66,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": -0.26,
+   "pvmvAnnualise": -0.23
+  },
+  {
+   "company": "Nortia",
+   "client": "RAYE Anne-Sophie",
+   "contract": "PANTHEA VIE 533003050",
+   "subscriptionDate": "2025-04-30",
+   "encours": 44429.24,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 5.35,
+   "pvmvAnnualise": 4.81
+  },
+  {
+   "company": "Nortia",
+   "client": "COLLET Manon",
+   "contract": "PER PRIVATE 940400238",
+   "subscriptionDate": "2024-11-15",
+   "encours": 4743.38,
+   "vlDate": "2026-05-08",
+   "profile": "GP Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 4.34,
+   "pvmvAnnualise": 2.77
+  },
+  {
+   "company": "Nortia",
+   "client": "BOICHOT Paulette",
+   "contract": "Souscription Libre 8000001016",
+   "subscriptionDate": "2022-09-05",
+   "encours": 79386.52,
+   "vlDate": "2026-05-05",
+   "profile": "SCPI",
+   "advisor": "Anthony",
+   "type": "SCPI",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Nortia",
+   "client": "CATHELINEAU & CATHELINEAU SCI",
+   "contract": "Souscription Libre 8000001179",
+   "subscriptionDate": "2022-12-27",
+   "encours": 94092.8,
+   "vlDate": "2026-05-05",
+   "profile": "SCPI",
+   "advisor": "Anthony",
+   "type": "SCPI",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Nortia",
+   "client": "DUFRESNE Patricia",
+   "contract": "Souscription Libre 8000001327",
+   "subscriptionDate": "2023-06-01",
+   "encours": 45078.18,
+   "vlDate": "2026-05-05",
+   "profile": "SCPI",
+   "advisor": "Antonin",
+   "type": "SCPI",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Nortia",
+   "client": "BARBETT Quentin",
+   "contract": "92200240171",
+   "subscriptionDate": null,
+   "encours": 20682.44,
+   "vlDate": "2026-05-07",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "CTO",
+   "pvmv": 6.61,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Nortia",
+   "client": "TAVARD Philippe",
+   "contract": "PANTHEA VIE 533003852",
+   "subscriptionDate": "2025-08-25",
+   "encours": 408969.17,
+   "vlDate": "2026-05-08",
+   "profile": "Mandat TAM",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 0.64,
+   "pvmvAnnualise": 0.81
+  },
+  {
+   "company": "Nortia",
+   "client": "FEEL T MED",
+   "contract": "ENEDIA CAPI T390SUC00018",
+   "subscriptionDate": "2025-09-22",
+   "encours": 105128.93,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "CAPI",
+   "pvmv": 4.93,
+   "pvmvAnnualise": 6.89
+  },
+  {
+   "company": "Nortia",
+   "client": "BOISSARD Sophie",
+   "contract": "PANTHEA VIE 533004138",
+   "subscriptionDate": "2025-09-24",
+   "encours": 291496.54,
+   "vlDate": "2026-05-08",
+   "profile": "Mandat TAM",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": -4.24,
+   "pvmvAnnualise": -5.97
+  },
+  {
+   "company": "Nortia",
+   "client": "BAZAUGOUR Céline",
+   "contract": "PANTHEA VIE 533004162",
+   "subscriptionDate": "2025-09-26",
+   "encours": 36018.45,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 3.14,
+   "pvmvAnnualise": 4.45
+  },
+  {
+   "company": "Nortia",
+   "client": "VACHON Aurélien",
+   "contract": "PER PRIVATE 940400311",
+   "subscriptionDate": "2025-10-07",
+   "encours": 7980.12,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 0.02,
+   "pvmvAnnualise": 0.03
+  },
+  {
+   "company": "Nortia",
+   "client": "BAZAUGOUR Céline",
+   "contract": "PER PANTHEA 300000772",
+   "subscriptionDate": "2025-10-07",
+   "encours": 7897.72,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 2.58,
+   "pvmvAnnualise": 3.83
+  },
+  {
+   "company": "Nortia",
+   "client": "BISSUEL Quentin",
+   "contract": "PANTHEA VIE 533004302",
+   "subscriptionDate": "2025-10-14",
+   "encours": 156374.04,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 3.23,
+   "pvmvAnnualise": 4.93
+  },
+  {
+   "company": "Nortia",
+   "client": "CONTE Elisabeth",
+   "contract": "PANTHEA VIE 533004339",
+   "subscriptionDate": "2025-11-25",
+   "encours": 400785.74,
+   "vlDate": "2026-05-08",
+   "profile": "Mandat TAM",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 0.78,
+   "pvmvAnnualise": 1.45
+  },
+  {
+   "company": "Nortia",
+   "client": "BROCHOT Paul",
+   "contract": "PANTHEA VIE 533004664",
+   "subscriptionDate": "2025-12-03",
+   "encours": 30066.97,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 0.79,
+   "pvmvAnnualise": 1.53
+  },
+  {
+   "company": "Nortia",
+   "client": "BROCHOT Paul",
+   "contract": "PER PRIVATE 940400341",
+   "subscriptionDate": "2025-11-28",
+   "encours": 501.98,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 0.52,
+   "pvmvAnnualise": 0.99
+  },
+  {
+   "company": "Nortia",
+   "client": "PAUGET Isabelle",
+   "contract": "PER PRIVATE 940400347",
+   "subscriptionDate": "2025-12-11",
+   "encours": 49.78,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 1.1,
+   "pvmvAnnualise": 2.22
+  },
+  {
+   "company": "Nortia",
+   "client": "ROMANI Marc",
+   "contract": "PANTHEA VIE 2 572000134",
+   "subscriptionDate": "2025-12-17",
+   "encours": 73782.02,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 0.96,
+   "pvmvAnnualise": 2.01
+  },
+  {
+   "company": "Nortia",
+   "client": "VANSTEENKISTE Philippe",
+   "contract": "PANTHEA VIE 2 572000243",
+   "subscriptionDate": "2025-12-29",
+   "encours": 196705.67,
+   "vlDate": "2026-05-08",
+   "profile": "Mandat TAM",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 0.44,
+   "pvmvAnnualise": 0.98
+  },
+  {
+   "company": "Nortia",
+   "client": "VANSTEENKISTE Philippe",
+   "contract": "PER PANTHEA 300000951",
+   "subscriptionDate": "2025-12-30",
+   "encours": 42432.95,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 0.01,
+   "pvmvAnnualise": 0.03
+  },
+  {
+   "company": "Nortia",
+   "client": "BLOND Camille",
+   "contract": "PER PANTHEA 300000979",
+   "subscriptionDate": "2026-02-04",
+   "encours": 7143.24,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 0.95,
+   "pvmvAnnualise": 2.76
+  },
+  {
+   "company": "Nortia",
+   "client": "BLOND Camille",
+   "contract": "PANTHEA VIE 2 572000486",
+   "subscriptionDate": "2026-02-04",
+   "encours": 36141.12,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 0.04,
+   "pvmvAnnualise": 0.11
+  },
+  {
+   "company": "Nortia",
+   "client": "DUCRET Alain",
+   "contract": "PER PRIVATE 940400358",
+   "subscriptionDate": "2026-02-26",
+   "encours": 24375.0,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Selencia (ex Ageas)",
+   "client": "CLEMENT Patrick",
+   "contract": "Privilège Gestion Active 2454235",
+   "subscriptionDate": "2019-03-27",
+   "encours": 149217.01,
+   "vlDate": "2026-05-09",
+   "profile": "Prudent",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 20.18,
+   "pvmvAnnualise": 2.8
+  },
+  {
+   "company": "Selencia (ex Ageas)",
+   "client": "CLEMENT Nicole",
+   "contract": "Privilège Gestion Active 2454584",
+   "subscriptionDate": "2019-05-02",
+   "encours": 57731.93,
+   "vlDate": "2026-05-09",
+   "profile": "Prudent",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 15.34,
+   "pvmvAnnualise": 2.16
+  },
+  {
+   "company": "Selencia (ex Ageas)",
+   "client": "NEGRO Antonin",
+   "contract": "myPGA 2456313",
+   "subscriptionDate": "2019-11-27",
+   "encours": 73.4,
+   "vlDate": "2026-05-09",
+   "profile": "Suicidaire",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Selencia (ex Ageas)",
+   "client": "CASANOVA Elisabeth",
+   "contract": "myPGA 2462568",
+   "subscriptionDate": "2021-01-29",
+   "encours": 126219.42,
+   "vlDate": "2026-05-09",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 5.09,
+   "pvmvAnnualise": 0.95
+  },
+  {
+   "company": "SwissLife",
+   "client": "ROLLAND Martin",
+   "contract": "SwissLife PER Individuel 0010447314001",
+   "subscriptionDate": "2020-10-16",
+   "encours": 120105.47,
+   "vlDate": "2026-04-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 5.94,
+   "pvmvAnnualise": 1.05
+  },
+  {
+   "company": "SwissLife",
+   "client": "LAZARO Carole",
+   "contract": "SwissLife Stratégic Premium 0010489541001",
+   "subscriptionDate": "2021-04-09",
+   "encours": 198936.98,
+   "vlDate": "2026-04-07",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 2.54,
+   "pvmvAnnualise": 0.49
+  },
+  {
+   "company": "SwissLife",
+   "client": "BARBETT Quentin",
+   "contract": "SwissLife PER Individuel 0010515614001",
+   "subscriptionDate": "2021-08-05",
+   "encours": 5665.5,
+   "vlDate": "2026-04-07",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 14.53,
+   "pvmvAnnualise": 3.0
+  },
+  {
+   "company": "SwissLife",
+   "client": "PAUGET Benjamin",
+   "contract": "Expert Premium Plus 0010543657002",
+   "subscriptionDate": "2023-04-19",
+   "encours": 39967.29,
+   "vlDate": "2026-04-07",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": -4.38,
+   "pvmvAnnualise": -1.39
+  },
+  {
+   "company": "SwissLife",
+   "client": "VALLET Martine",
+   "contract": "Expert Premium Plus 0010691196001",
+   "subscriptionDate": "2023-06-09",
+   "encours": 309632.27,
+   "vlDate": "2026-04-07",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LORNE Anne",
+   "contract": "Version Absolue 2 443925004",
+   "subscriptionDate": "2025-04-01",
+   "encours": 8330.71,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 6.72,
+   "pvmvAnnualise": 5.64
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LORNE Cyril",
+   "contract": "Version Absolue 2 443925009",
+   "subscriptionDate": "2025-04-01",
+   "encours": 8593.14,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 7.06,
+   "pvmvAnnualise": 5.93
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "ANCEY Pierre",
+   "contract": "Version Absolue 2 443926550",
+   "subscriptionDate": "2025-06-04",
+   "encours": 54082.64,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 6.6,
+   "pvmvAnnualise": 6.49
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LORNE Cyril",
+   "contract": "Version Absolue Retraite 940109626",
+   "subscriptionDate": "2025-04-01",
+   "encours": 285086.73,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 5.96,
+   "pvmvAnnualise": 5.0
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LORNE Cyril",
+   "contract": "Version Absolue Retraite 940109802",
+   "subscriptionDate": "2025-04-08",
+   "encours": 11784.83,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 1.27,
+   "pvmvAnnualise": 1.09
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "FASSINOT Julien-Thomas",
+   "contract": "Version Absolue 2 443908439",
+   "subscriptionDate": "2022-10-20",
+   "encours": 21478.93,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 10.02,
+   "pvmvAnnualise": 2.75
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "BARBETT Quentin",
+   "contract": "Version Absolue 2 443912195",
+   "subscriptionDate": "2023-04-13",
+   "encours": 35708.83,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 22.0,
+   "pvmvAnnualise": 6.96
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "HABOUZIT Catherine",
+   "contract": "Version Absolue 2 443912671",
+   "subscriptionDate": "2023-05-31",
+   "encours": 70659.24,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 2.89,
+   "pvmvAnnualise": 0.95
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PELLE Elise",
+   "contract": "Version Absolue 2 443913372",
+   "subscriptionDate": "2023-07-21",
+   "encours": 2975.12,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 12.77,
+   "pvmvAnnualise": 4.42
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "DELAUX Kevin",
+   "contract": "Version Absolue 2 443913396",
+   "subscriptionDate": "2023-07-24",
+   "encours": 2974.89,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 12.76,
+   "pvmvAnnualise": 4.43
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "RAYE Jean-Jacques",
+   "contract": "Version Absolue 2 443915199",
+   "subscriptionDate": "2023-11-23",
+   "encours": 7950.11,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 6.13,
+   "pvmvAnnualise": 2.41
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "POURQUIER Nicolas",
+   "contract": "Version Absolue 2 443915468",
+   "subscriptionDate": "2023-12-05",
+   "encours": 115677.84,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.98,
+   "pvmvAnnualise": 3.17
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "ALONSO Aldric",
+   "contract": "Version Absolue 2 443915507",
+   "subscriptionDate": "2023-12-06",
+   "encours": 17612.52,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 17.03,
+   "pvmvAnnualise": 6.78
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "POURQUIER Violette",
+   "contract": "Version Absolue 2 443915573",
+   "subscriptionDate": "2023-12-08",
+   "encours": 140527.69,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 10.54,
+   "pvmvAnnualise": 4.21
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "IBRAHIM Chaher",
+   "contract": "Version Absolue 2 443916095",
+   "subscriptionDate": "2023-12-27",
+   "encours": 2895.04,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 2.25,
+   "pvmvAnnualise": 0.92
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "VANSTEENKISTE Luc",
+   "contract": "Version Absolue 2 443916697",
+   "subscriptionDate": "2024-02-09",
+   "encours": 44438.03,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 10.4,
+   "pvmvAnnualise": 4.46
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "POURQUIER Nathan",
+   "contract": "Version Absolue 2 443917047",
+   "subscriptionDate": "2024-02-22",
+   "encours": 7438.01,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 6.48,
+   "pvmvAnnualise": 2.82
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PORTE Julien",
+   "contract": "Version Absolue 2 443917102",
+   "subscriptionDate": "2024-03-05",
+   "encours": 20401.15,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 8.79,
+   "pvmvAnnualise": 3.88
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "MAHINC Emma",
+   "contract": "Version Absolue 2 443917351",
+   "subscriptionDate": "2024-03-04",
+   "encours": 11738.0,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 5.46,
+   "pvmvAnnualise": 2.41
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "MAHINC Eloïse",
+   "contract": "Version Absolue 2 443917353",
+   "subscriptionDate": "2024-03-06",
+   "encours": 11284.11,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 5.21,
+   "pvmvAnnualise": 2.3
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "GUERS Gilles",
+   "contract": "Version Absolue 2 443917478",
+   "subscriptionDate": "2024-03-26",
+   "encours": 50865.62,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 10.91,
+   "pvmvAnnualise": 4.94
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PRUDHOMME Pascale",
+   "contract": "Version Absolue 2 443918079",
+   "subscriptionDate": "2024-04-30",
+   "encours": 56398.31,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 7.19,
+   "pvmvAnnualise": 3.4
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PRUDHOMME Didier",
+   "contract": "Version Absolue 2 443918082",
+   "subscriptionDate": "2024-04-30",
+   "encours": 36127.99,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 8.05,
+   "pvmvAnnualise": 3.81
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "RIBEIRO Nélia",
+   "contract": "Version Absolue 2 443918107",
+   "subscriptionDate": "2024-05-02",
+   "encours": 86614.97,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 8.4,
+   "pvmvAnnualise": 3.99
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "ANCEY Pierre",
+   "contract": "Version Absolue 2 443918360",
+   "subscriptionDate": "2024-05-13",
+   "encours": 13158.08,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 11.07,
+   "pvmvAnnualise": 5.33
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "GODEFROY Anne-Sophie",
+   "contract": "Version Absolue 2 443918755",
+   "subscriptionDate": "2024-06-13",
+   "encours": 54835.11,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 13.08,
+   "pvmvAnnualise": 6.57
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "FASSINOT Julien-Thomas",
+   "contract": "Version Absolue Retraite 940102895",
+   "subscriptionDate": "2022-10-20",
+   "encours": 2594.27,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 16.22,
+   "pvmvAnnualise": 4.46
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "NEGRO Didier",
+   "contract": "Version Absolue Retraite 940102934",
+   "subscriptionDate": "2022-10-28",
+   "encours": 79557.68,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 29.92,
+   "pvmvAnnualise": 8.27
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "HABOUZIT Catherine",
+   "contract": "Version Absolue Retraite 940103552",
+   "subscriptionDate": "2022-12-14",
+   "encours": 48045.55,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 46.35,
+   "pvmvAnnualise": 13.28
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "DELATTRE LENGRAIS Gaelle",
+   "contract": "Version Absolue Retraite 940103674",
+   "subscriptionDate": "2022-12-12",
+   "encours": 40916.78,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 14.84,
+   "pvmvAnnualise": 4.25
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "SU PRETELL Lucia",
+   "contract": "Version Absolue Retraite 940104064",
+   "subscriptionDate": "2022-12-26",
+   "encours": 19027.04,
+   "vlDate": "2026-05-08",
+   "profile": "Securitaire",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": -4.84,
+   "pvmvAnnualise": -1.4
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "NEGRO Antonin",
+   "contract": "Version Absolue Retraite 940104461",
+   "subscriptionDate": "2023-03-27",
+   "encours": 4568.91,
+   "vlDate": "2026-05-08",
+   "profile": "Suicidaire",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 17.28,
+   "pvmvAnnualise": 5.39
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "WANGLER Anthony",
+   "contract": "Version Absolue Retraite 940104836",
+   "subscriptionDate": "2023-07-04",
+   "encours": 1591.46,
+   "vlDate": "2026-05-08",
+   "profile": "Suicidaire",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 19.96,
+   "pvmvAnnualise": 6.8
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "FRISTIOS Alexe",
+   "contract": "Version Absolue Retraite 940104845",
+   "subscriptionDate": "2023-07-05",
+   "encours": 8552.97,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 27.36,
+   "pvmvAnnualise": 9.32
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LARDET Justine",
+   "contract": "Version Absolue Retraite 940104878",
+   "subscriptionDate": "2023-07-13",
+   "encours": 8719.75,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 10.99,
+   "pvmvAnnualise": 3.77
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "MOLL Benjamin",
+   "contract": "Version Absolue Retraite 940104900",
+   "subscriptionDate": "2023-07-13",
+   "encours": 7063.11,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 11.53,
+   "pvmvAnnualise": 3.96
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "DELAUX Kevin",
+   "contract": "Version Absolue Retraite 940105021",
+   "subscriptionDate": "2023-07-27",
+   "encours": 2414.59,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 17.76,
+   "pvmvAnnualise": 6.18
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "JURON Christine",
+   "contract": "Version Absolue Retraite 940105100",
+   "subscriptionDate": "2023-09-08",
+   "encours": 9303.09,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 6.54,
+   "pvmvAnnualise": 2.37
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "ANCEY Pierre",
+   "contract": "Version Absolue Retraite 940105350",
+   "subscriptionDate": "2023-10-04",
+   "encours": 195082.05,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 12.73,
+   "pvmvAnnualise": 4.74
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "POURQUIER Nicolas",
+   "contract": "Version Absolue Retraite 940105569",
+   "subscriptionDate": "2023-11-21",
+   "encours": 6379.41,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 10.54,
+   "pvmvAnnualise": 4.13
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "GODEFROY Anne-Sophie",
+   "contract": "Version Absolue Retraite 940105589",
+   "subscriptionDate": "2023-11-22",
+   "encours": 151202.06,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 13.73,
+   "pvmvAnnualise": 5.38
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "RAYE Jean-Jacques",
+   "contract": "Version Absolue Retraite 940105604",
+   "subscriptionDate": "2023-11-23",
+   "encours": 5979.28,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 6.41,
+   "pvmvAnnualise": 2.52
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "POURQUIER Violette",
+   "contract": "Version Absolue Retraite 940105863",
+   "subscriptionDate": "2023-12-08",
+   "encours": 6543.92,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 10.34,
+   "pvmvAnnualise": 4.12
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "FAUQUEMBERGUE Laetitia",
+   "contract": "Version Absolue Retraite 940106075",
+   "subscriptionDate": "2023-12-15",
+   "encours": 27088.83,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 10.75,
+   "pvmvAnnualise": 4.32
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "MAHINC Damien",
+   "contract": "Version Absolue Retraite 940106106",
+   "subscriptionDate": "2023-12-15",
+   "encours": 58327.96,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 11.25,
+   "pvmvAnnualise": 4.52
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "CHENEVAT Michel",
+   "contract": "Version Absolue Retraite 940106528",
+   "subscriptionDate": "2023-12-26",
+   "encours": 216453.5,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 13.67,
+   "pvmvAnnualise": 5.56
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PAUGET Benjamin",
+   "contract": "Version Absolue Retraite 940106831",
+   "subscriptionDate": "2024-02-28",
+   "encours": 3491.09,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 6.66,
+   "pvmvAnnualise": 2.92
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "DRIGUZZI Quentin",
+   "contract": "Version Absolue Retraite 940107166",
+   "subscriptionDate": "2024-05-23",
+   "encours": 14249.85,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 8.54,
+   "pvmvAnnualise": 4.17
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "PELLE Elise",
+   "contract": "Version Absolue Retraite 940107214",
+   "subscriptionDate": "2024-06-02",
+   "encours": 2552.97,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 14.29,
+   "pvmvAnnualise": 7.07
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LAMBLIN Gery",
+   "contract": "Version Absolue Retraite 940107493",
+   "subscriptionDate": "2024-07-24",
+   "encours": 1613.59,
+   "vlDate": "2026-05-08",
+   "profile": "GP Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 6.27,
+   "pvmvAnnualise": 3.34
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LAMBLIN Aurélie",
+   "contract": "Version Absolue Retraite 940107661",
+   "subscriptionDate": "2024-09-04",
+   "encours": 8956.02,
+   "vlDate": "2026-05-08",
+   "profile": "GP Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 3.72,
+   "pvmvAnnualise": 2.11
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LORNE Anne",
+   "contract": "Version Absolue Retraite 940109917",
+   "subscriptionDate": "2025-04-01",
+   "encours": 36315.36,
+   "vlDate": "2026-05-08",
+   "profile": "Dynamique",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 48.12,
+   "pvmvAnnualise": 40.37
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "MASSON VACHON Helene",
+   "contract": "Version Absolue Retraite 940110705",
+   "subscriptionDate": "2025-10-14",
+   "encours": 777.41,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 2.37,
+   "pvmvAnnualise": 3.61
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "CHILLET Aurélie",
+   "contract": "Version Absolue 2 443930824",
+   "subscriptionDate": "2025-11-04",
+   "encours": 106183.81,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "ASV",
+   "pvmv": 0.13,
+   "pvmvAnnualise": 0.22
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "BOUCARDEY Vincent",
+   "contract": "Version Absolue 2 443918471",
+   "subscriptionDate": "2024-05-27",
+   "encours": 19307.29,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 13.45,
+   "pvmvAnnualise": 6.6
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "INGETRACKS",
+   "contract": "Spirica Capi 2 559901500",
+   "subscriptionDate": "2024-11-06",
+   "encours": 50843.94,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "CAPI",
+   "pvmv": 5.19,
+   "pvmvAnnualise": 3.26
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "GUILLET Stéphane",
+   "contract": "Version Absolue Retraite 940111185",
+   "subscriptionDate": "2025-11-26",
+   "encours": 10103.65,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 3.67,
+   "pvmvAnnualise": 6.84
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "GUILLET Maria-Rosa",
+   "contract": "Version Absolue Retraite 940111482",
+   "subscriptionDate": "2025-12-09",
+   "encours": 10028.03,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": 1.33,
+   "pvmvAnnualise": 2.65
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "JUSOT Louis-Marie",
+   "contract": "Version Absolue Retraite 940111803",
+   "subscriptionDate": "2025-12-17",
+   "encours": 145067.75,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 0.12,
+   "pvmvAnnualise": 0.24
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "JUSOT Axelle",
+   "contract": "Version Absolue Retraite 940111932",
+   "subscriptionDate": "2025-12-17",
+   "encours": 58751.26,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 0.15,
+   "pvmvAnnualise": 0.32
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "CHILLET Aurélie",
+   "contract": "Version Absolue Retraite 940111700",
+   "subscriptionDate": "2025-11-04",
+   "encours": 1544.57,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Anthony",
+   "type": "PER",
+   "pvmv": 2.44,
+   "pvmvAnnualise": 4.08
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "CABINET ANNE-SOPHIE GODEFROY",
+   "contract": "Spirica Capi 2 559902172",
+   "subscriptionDate": "2025-11-12",
+   "encours": 99048.04,
+   "vlDate": "2026-05-08",
+   "profile": "Prudent",
+   "advisor": "Antonin",
+   "type": "CAPI",
+   "pvmv": 1.04,
+   "pvmvAnnualise": 1.8
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "NEGRO Liliane",
+   "contract": "Version Absolue Retraite 940112574",
+   "subscriptionDate": "2026-03-05",
+   "encours": 2920.95,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "PER",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "UAF Life Patrimoine",
+   "client": "LARDET Justine",
+   "contract": "Version Absolue 2 443936110",
+   "subscriptionDate": "2026-04-03",
+   "encours": 20000.0,
+   "vlDate": "2026-05-08",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Wealins Life",
+   "client": "ANCEY Pierre",
+   "contract": "Wealins Life France FR053425",
+   "subscriptionDate": "2023-09-21",
+   "encours": 533866.62,
+   "vlDate": "2026-05-06",
+   "profile": "Mandat TAM",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": 9.84,
+   "pvmvAnnualise": 3.62
+  },
+  {
+   "company": "Wealins Life",
+   "client": "CHENEVAT Catherine",
+   "contract": "Wealins Life France FR058067",
+   "subscriptionDate": "2025-12-22",
+   "encours": 256973.84,
+   "vlDate": "2026-05-06",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  },
+  {
+   "company": "Wealins Life",
+   "client": "CHENEVAT Michel",
+   "contract": "Wealins Life France FR058068",
+   "subscriptionDate": "2025-12-22",
+   "encours": 256990.75,
+   "vlDate": "2026-05-06",
+   "profile": "Equilibre",
+   "advisor": "Antonin",
+   "type": "ASV",
+   "pvmv": null,
+   "pvmvAnnualise": null
+  }
+ ],
+ "perfByProfile": [
+  {
+   "profile": "Suicidaire",
+   "global": 18.62,
+   "annualized": 6.09
+  },
+  {
+   "profile": "Dynamique",
+   "global": 14.6,
+   "annualized": 5.83
+  },
+  {
+   "profile": "Equilibre",
+   "global": 9.65,
+   "annualized": 3.45
+  },
+  {
+   "profile": "GP Dynamique",
+   "global": 9.43,
+   "annualized": 2.87
+  },
+  {
+   "profile": "Prudent",
+   "global": 8.85,
+   "annualized": 3.0
+  },
+  {
+   "profile": "ETF",
+   "global": 7.82,
+   "annualized": 4.66
+  },
+  {
+   "profile": "GP Equilibre",
+   "global": 4.99,
+   "annualized": 2.72
+  },
+  {
+   "profile": "Mandat TAM",
+   "global": 2.04,
+   "annualized": 0.84
+  },
+  {
+   "profile": "Iroko",
+   "global": 1.0,
+   "annualized": 0.66
+  },
+  {
+   "profile": "Securitaire",
+   "global": -0.79,
+   "annualized": 0.28
+  }
+ ],
+ "pipeline": [
+  {
+   "company": "NORTIA",
+   "client": "HELOISE POULET",
+   "contract": "",
+   "expected": 71500.0
+  },
+  {
+   "company": "NORTIA",
+   "client": "HELOISE POULET",
+   "contract": "ASV",
+   "expected": 2500.0
+  },
+  {
+   "company": "Nortia",
+   "client": "DUCRET Alain",
+   "contract": "PER Transfert",
+   "expected": 29809.0
+  },
+  {
+   "company": "Wealins",
+   "client": "DUCRET Alain",
+   "contract": "ASV Auris",
+   "expected": 260000.0
+  },
+  {
+   "company": "Nortia",
+   "client": "FAUQEMBERGUE Laetitia",
+   "contract": "ASV Panthéa",
+   "expected": 40000.0
+  },
+  {
+   "company": "Nortia",
+   "client": "COFFY DESSUS Mailys",
+   "contract": "ASV Panthéa",
+   "expected": 16000.0
+  },
+  {
+   "company": "Wealins",
+   "client": "ancey pierre",
+   "contract": "asvwealins",
+   "expected": 150000.0
+  },
+  {
+   "company": "Nortia",
+   "client": "COFFY DESSUS Sylvain",
+   "contract": "ASV Panthéa",
+   "expected": 134000.0
+  },
+  {
+   "company": "",
+   "client": "LAURENCE BERNIER",
+   "contract": "",
+   "expected": 1400000.0
+  },
+  {
+   "company": "",
+   "client": "PAUGET & crez",
+   "contract": "",
+   "expected": 1100000.0
+  },
+  {
+   "company": "Altaroc",
+   "client": "REYNE Clément",
+   "contract": "Private Equity",
+   "expected": 100000.0
+  },
+  {
+   "company": "Wealins",
+   "client": "DUFRESNE Patricia",
+   "contract": "ASV Auris",
+   "expected": 400000.0
+  },
+  {
+   "company": "NORTIA",
+   "client": "DE BATTISTI",
+   "contract": "PEA/PME",
+   "expected": 180000.0
+  },
+  {
+   "company": "INTENTIAL",
+   "client": "DE BATTISTI",
+   "contract": "ASV reversement",
+   "expected": 59000.0
+  },
+  {
+   "company": "INTENTIAL",
+   "client": "DE BATTISTI",
+   "contract": "PER",
+   "expected": 18000.0
+  },
+  {
+   "company": "",
+   "client": "BEAUVILLAIN",
+   "contract": "",
+   "expected": 600000.0
+  },
+  {
+   "company": "NORTIA",
+   "client": "ANNIE GUTTIN",
+   "contract": "",
+   "expected": 600000.0
+  },
+  {
+   "company": "AGEAS",
+   "client": "MARIE CHEN",
+   "contract": "ASV",
+   "expected": 90000.0
+  }
+ ],
+ "avances": [
+  {
+   "client": "ANCEY Pierre",
+   "contract": "Version Absolue 2 443926550",
+   "amount": 20204.94
+  },
+  {
+   "client": "HABOUZIT Catherine",
+   "contract": "Version Absolue 2 443912671",
+   "amount": 43277.61
+  },
+  {
+   "client": "ANCEY Jérôme",
+   "contract": "PANTHEA VIE 533002889",
+   "amount": 8000.0
+  }
+ ],
+ "altarocEngagements": [
+  {
+   "client": "ANCEY Pierre",
+   "contract": "AO2022-Part A 912264502",
+   "vlDate": "2026-02-02",
+   "remaining": 23098.71
+  },
+  {
+   "client": "ANCEY Pierre",
+   "contract": "AO2025-Part A 1651405240",
+   "vlDate": "2026-02-02",
+   "remaining": 240000.0
+  },
+  {
+   "client": "CAPIVALO DEVELOPPEMENT",
+   "contract": "AO2025-Part A 0735858714",
+   "vlDate": "2026-02-25",
+   "remaining": 80000.0
+  },
+  {
+   "client": "POURQUIER Nicolas",
+   "contract": "AO2025-Part A 0079142321",
+   "vlDate": "2026-02-02",
+   "remaining": 80000.0
+  },
+  {
+   "client": "RAYE Anne-Sophie",
+   "contract": "AO2025-Part A 0322337856",
+   "vlDate": "2026-02-02",
+   "remaining": 80000.0
+  }
+ ],
+ "collecte": {
+  "Rachat Canopia": 3788258.0,
+  "Collecte": 5972075.0
+ },
+ "entryFees": [
+  {
+   "client": "RAYE Anne-Sophie",
+   "product": "PANTHEAVIE",
+   "contract": "533003048",
+   "month": "02/2026",
+   "valorisation": 200000.0,
+   "commission": 1000.0,
+   "paid": null
+  },
+  {
+   "client": "CONTE Elisabeth",
+   "product": "PANTHEAVIE",
+   "contract": "533004339",
+   "month": "12/2025",
+   "valorisation": 100000.0,
+   "commission": 500.0,
+   "paid": "06/02/2026"
+  },
+  {
+   "client": "FAUQUEMBERGUE Laetitia",
+   "product": "PANTHEAVIE",
+   "contract": "533003078",
+   "month": "12/2025",
+   "valorisation": 50000.0,
+   "commission": 250.0,
+   "paid": "06/02/2026"
+  },
+  {
+   "client": "VANSTEENKISTE Philippe",
+   "product": "PANTHEAVIE",
+   "contract": "572000243",
+   "month": "12/2025",
+   "valorisation": 195000.0,
+   "commission": 975.0,
+   "paid": "06/02/2026"
+  },
+  {
+   "client": "ROMANI Marc",
+   "product": "PANTHEAVIE",
+   "contract": "572000134",
+   "month": "12/2025",
+   "valorisation": 73000.0,
+   "commission": 365.0,
+   "paid": "06/02/2026"
+  },
+  {
+   "client": "BISSUEL Quentin",
+   "product": "PANTHEAVIE",
+   "contract": "AEP-PANVIE-16273",
+   "month": "09/2025",
+   "valorisation": 150000.0,
+   "commission": 750.0,
+   "paid": "24/11/2025"
+  },
+  {
+   "client": "CONTE Elisabeth",
+   "product": "PANTHEAVIE",
+   "contract": "533004339",
+   "month": "09/2025",
+   "valorisation": 300000.0,
+   "commission": 1500.0,
+   "paid": "24/12/2025"
+  },
+  {
+   "client": "CREZ Annick",
+   "product": "PANTHEAVIE",
+   "contract": "533001882",
+   "month": "07/2025",
+   "valorisation": 155306.37,
+   "commission": 750.0,
+   "paid": "StrikeIn"
+  },
+  {
+   "client": "PAUGET Jean-Marc",
+   "product": "PANTHEAVIE",
+   "contract": "533001881",
+   "month": "07/2025",
+   "valorisation": 202609.84,
+   "commission": 1000.0,
+   "paid": "StrikeIn"
+  },
+  {
+   "client": "MICHEL Elisa",
+   "product": "PANTHEAVIE",
+   "contract": "533001992",
+   "month": "07/2025",
+   "valorisation": 60997.64,
+   "commission": 300.0,
+   "paid": "StrikeIn"
+  },
+  {
+   "client": "ANCEY Jérôme",
+   "product": "PANTHEAVIE",
+   "contract": "533002889",
+   "month": "07/2025",
+   "valorisation": 349344.31,
+   "commission": 1500.0,
+   "paid": "StrikeIn"
+  },
+  {
+   "client": "TAVARD Philippe",
+   "product": "PANTHEAVIE",
+   "contract": "533003852",
+   "month": "07/2025",
+   "valorisation": 599033.64,
+   "commission": 1500.0,
+   "paid": "25/09/2025"
+  },
+  {
+   "client": "FEELTMED",
+   "product": "ENEDIACAPI",
+   "contract": "T390SUC00018",
+   "month": "07/2025",
+   "valorisation": 100958.59,
+   "commission": 500.0,
+   "paid": "28/10/2025"
+  },
+  {
+   "client": "BOISSARD Sophie",
+   "product": "PANTHEAVIE",
+   "contract": "533004138",
+   "month": "07/2025",
+   "valorisation": 309862.15,
+   "commission": 1488.0,
+   "paid": "28/10/2025"
+  },
+  {
+   "client": "FAUQUEMBERGUE Laetitia",
+   "product": "PANTHEAVIE",
+   "contract": "533003078",
+   "month": "05/2025",
+   "valorisation": 89800.0,
+   "commission": 500.0,
+   "paid": "25/06/2025"
+  },
+  {
+   "client": "MAHINC Damien",
+   "product": "PANTHEAVIE",
+   "contract": "533003052",
+   "month": "05/2025",
+   "valorisation": 89800.0,
+   "commission": 500.0,
+   "paid": "25/06/2025"
+  }
+ ],
+ "mandats": [
+  {
+   "client": "ANCEY J",
+   "assureur": "AEP",
+   "mandat": "Offensif +",
+   "depositaire": "CIC",
+   "valorisation": 350916.71,
+   "retroAnnuelle": 2807.33
+  },
+  {
+   "client": "TAVARD P",
+   "assureur": "AEP",
+   "mandat": "Offensif +",
+   "depositaire": "CIC",
+   "valorisation": 402564.36,
+   "retroAnnuelle": 3220.51
+  },
+  {
+   "client": "ANCEY P",
+   "assureur": "WEALINS",
+   "mandat": "Dynamique",
+   "depositaire": "Indosuez",
+   "valorisation": 518081.97,
+   "retroAnnuelle": 4144.66
+  },
+  {
+   "client": "BOISSARD S",
+   "assureur": "AEP",
+   "mandat": "Equilibre",
+   "depositaire": "CIC",
+   "valorisation": 217046.06,
+   "retroAnnuelle": 2278.98
+  },
+  {
+   "client": "CONTE E",
+   "assureur": "AEP",
+   "mandat": "Prudent",
+   "depositaire": "CIC",
+   "valorisation": 301231.58,
+   "retroAnnuelle": 3162.93
+  },
+  {
+   "client": "VANSTEENKISTE P",
+   "assureur": "AEP",
+   "mandat": "Equilibre",
+   "depositaire": "CIC",
+   "valorisation": 156000.0,
+   "retroAnnuelle": 1638.0
+  },
+  {
+   "client": "CHENEVAT M",
+   "assureur": "WEALINS",
+   "mandat": "Equilibre",
+   "depositaire": "Indosuez",
+   "valorisation": 249970.83,
+   "retroAnnuelle": 1999.77
+  }
+ ],
+ "caAssureurs": [
+  {
+   "assureur": "Nortia",
+   "encours": 3459831.87,
+   "caTotal": 33410.28,
+   "caFraisEntreeCIF": 10278.34,
+   "caFraisEntreeIAS": 15261.56,
+   "caEncoursCIF": 41.52,
+   "caEncoursIAS": 7828.86,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "UAF Life Patrimoine",
+   "encours": 2670805.43,
+   "caTotal": 44028.22,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 8495.82,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 20638.53,
+   "caStructures": 14893.87
+  },
+  {
+   "assureur": "Altaroc",
+   "encours": 700000.0,
+   "caTotal": 32622.5,
+   "caFraisEntreeCIF": 26547.5,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 6075.0,
+   "caEncoursIAS": 0.0,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "SwissLife",
+   "encours": 674307.51,
+   "caTotal": 5783.86,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 4359.13,
+   "caStructures": 1424.73
+  },
+  {
+   "assureur": "Selencia (ex Ageas)",
+   "encours": 333241.76,
+   "caTotal": 1341.85,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 1341.85,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "MMA",
+   "encours": 243811.11,
+   "caTotal": 690.3,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 690.3,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Abeille Assurances",
+   "encours": 196582.79,
+   "caTotal": 858.33,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 858.33,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Eres",
+   "encours": 187395.09,
+   "caTotal": 447.92,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 447.92,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Apicil",
+   "encours": 153937.28,
+   "caTotal": 1138.95,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 1138.95,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Murano ( ex Primonial)",
+   "encours": 35909.33,
+   "caTotal": 335.55,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 335.55,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Iroko",
+   "encours": 51679.4,
+   "caTotal": 76.4,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 226.6,
+   "caEncoursIAS": 0.0,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Mon Livret C",
+   "encours": 5000.0,
+   "caTotal": 0.0,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 0.0,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Generali",
+   "encours": 0.0,
+   "caTotal": 35.79,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 35.79,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "Wealins Life",
+   "encours": 1047831.21,
+   "caTotal": 1842.71,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 1842.71,
+   "caStructures": 0.0
+  },
+  {
+   "assureur": "AFI ESCA",
+   "encours": 0.0,
+   "caTotal": 625.19,
+   "caFraisEntreeCIF": 0.0,
+   "caFraisEntreeIAS": 0.0,
+   "caEncoursCIF": 0.0,
+   "caEncoursIAS": 625.19,
+   "caStructures": 0.0
+  }
+ ],
+ "prevoyance": [
+  {
+   "nom": "ANCEY",
+   "prenom": "Pierre",
+   "etablissement": null,
+   "intitule": "Hotlinepatrimoniale",
+   "typologie": "Honoraires",
+   "mensuelHT": 50.0
+  },
+  {
+   "nom": "LORNE",
+   "prenom": "Cyril",
+   "etablissement": null,
+   "intitule": "Hotlinepatrimoniale",
+   "typologie": "Honoraires",
+   "mensuelHT": 200.0
+  },
+  {
+   "nom": "BAZAUGOUR",
+   "prenom": "Celine",
+   "etablissement": "SwissLife",
+   "intitule": "PrevDeces",
+   "typologie": "Cotisations40%",
+   "mensuelHT": 33.2
+  },
+  {
+   "nom": "LORNE",
+   "prenom": "Cyril",
+   "etablissement": "SwissLife",
+   "intitule": "PrevHommeClés",
+   "typologie": "Cotisations40%",
+   "mensuelHT": 89.58
+  },
+  {
+   "nom": "LORNE",
+   "prenom": "Cyril",
+   "etablissement": "AfiEsca",
+   "intitule": "PrevDeces",
+   "typologie": "Previsy",
+   "mensuelHT": 9.0
+  },
+  {
+   "nom": "LORNE",
+   "prenom": "Cyril",
+   "etablissement": "AfiEsca",
+   "intitule": "AssEmprunteur",
+   "typologie": "Perenim",
+   "mensuelHT": 47.95
+  },
+  {
+   "nom": "ROMANI",
+   "prenom": "MARC",
+   "etablissement": "SwissLife",
+   "intitule": "PrevDeces",
+   "typologie": "Cotisations40%",
+   "mensuelHT": 20.4
+  }
+ ],
+ "transactions": [
+  {
+   "date": "2026-02-18",
+   "label": "ECLAT GESTION PRIVEE",
+   "subcategory": "",
+   "category": "Transferts Internes",
+   "side": "credit",
+   "amount": 20000.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "ECLAT GESTION PRIVEE",
+   "subcategory": "",
+   "category": "Transferts Internes",
+   "side": "credit",
+   "amount": 28000.0
+  },
+  {
+   "date": "2026-02-17",
+   "label": "NORTIA",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 3564.41
+  },
+  {
+   "date": "2026-02-06",
+   "label": "NORTIA",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 2090.0
+  },
+  {
+   "date": "2025-12-24",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 1500.0
+  },
+  {
+   "date": "2025-11-26",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 775.0
+  },
+  {
+   "date": "2025-10-29",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 2688.0
+  },
+  {
+   "date": "2025-09-26",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 1500.0
+  },
+  {
+   "date": "2025-06-25",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 500.0
+  },
+  {
+   "date": "2025-11-10",
+   "label": "Nortia",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 2644.15
+  },
+  {
+   "date": "2025-11-03",
+   "label": "Nortia",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 2487.1
+  },
+  {
+   "date": "2026-03-03",
+   "label": "NELIA TITRES",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 0.25
+  },
+  {
+   "date": "2026-03-02",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "credit",
+   "amount": 38.36
+  },
+  {
+   "date": "2026-03-02",
+   "label": "Google Workspace_eclat",
+   "subcategory": "Services d'hébergement web",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 44.76
+  },
+  {
+   "date": "2026-03-01",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 27.6
+  },
+  {
+   "date": "2026-02-01",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 27.6
+  },
+  {
+   "date": "2025-08-04",
+   "label": "Nortia",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 485.27
+  },
+  {
+   "date": "2026-02-09",
+   "label": "NORTIA",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 4856.26
+  },
+  {
+   "date": "2026-02-27",
+   "label": "MME FRANCOISE HOAREAU",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 250.0
+  },
+  {
+   "date": "2026-02-27",
+   "label": "ADOBE",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 23.99
+  },
+  {
+   "date": "2025-05-01",
+   "label": "CELEB DU LEZARD",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 300.5
+  },
+  {
+   "date": "2025-07-02",
+   "label": "CELEB DU LEZARD",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 106.5
+  },
+  {
+   "date": "2025-04-30",
+   "label": "LE CAFE FRANCAIS",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 65.5
+  },
+  {
+   "date": "2025-09-27",
+   "label": "MC DONALD'S",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 17.7
+  },
+  {
+   "date": "2025-09-27",
+   "label": "MC DONALD'S",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 15.85
+  },
+  {
+   "date": "2026-02-24",
+   "label": "EasyPark SARL",
+   "subcategory": "Transport",
+   "category": "Travel Expenses",
+   "side": "debit",
+   "amount": 1.39
+  },
+  {
+   "date": "2026-02-24",
+   "label": "SNCF-VOYAGEURS",
+   "subcategory": "Transport",
+   "category": "Travel Expenses",
+   "side": "debit",
+   "amount": 126.0
+  },
+  {
+   "date": "2026-02-23",
+   "label": "UAF LIFE PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 3621.87
+  },
+  {
+   "date": "2026-02-23",
+   "label": "ANCEY",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 60.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "BDJ",
+   "subcategory": "Frais d'assurance",
+   "category": "Dépenses administratives",
+   "side": "debit",
+   "amount": 900.0
+  },
+  {
+   "date": "2026-02-21",
+   "label": "BUFFALO GRILL",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 137.65
+  },
+  {
+   "date": "2026-02-23",
+   "label": "ERES ASSURANCES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 102.97
+  },
+  {
+   "date": "2026-02-20",
+   "label": "IPANEMADS",
+   "subcategory": "Prestataires de service",
+   "category": "Dépenses administratives",
+   "side": "debit",
+   "amount": 960.0
+  },
+  {
+   "date": "2026-02-20",
+   "label": "SWISSLIFE PREVOYANCE ET SANTE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 327.71
+  },
+  {
+   "date": "2026-02-19",
+   "label": "LE TABAGNON DU 6",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 52.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "Comptes courants associés",
+   "subcategory": "",
+   "category": "Transferts Internes",
+   "side": "debit",
+   "amount": 20000.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "MAISON MOLY",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 57.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "CCA + IS",
+   "subcategory": "",
+   "category": "Transferts Internes",
+   "side": "debit",
+   "amount": 28000.0
+  },
+  {
+   "date": "2026-02-18",
+   "label": "EasyPark SARL",
+   "subcategory": "Transport",
+   "category": "Travel Expenses",
+   "side": "debit",
+   "amount": 11.02
+  },
+  {
+   "date": "2026-02-03",
+   "label": "L'INSTANT M",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 93.4
+  },
+  {
+   "date": "2026-02-06",
+   "label": "LCL ECLAT GESTION PRIVEE",
+   "subcategory": "Remboursements de prêts",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 863.34
+  },
+  {
+   "date": "2026-02-17",
+   "label": "SELENCIA PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 476.41
+  },
+  {
+   "date": "2026-02-17",
+   "label": "EasyPark SARL",
+   "subcategory": "Transport",
+   "category": "Travel Expenses",
+   "side": "debit",
+   "amount": 5.58
+  },
+  {
+   "date": "2026-02-16",
+   "label": "APICIL TRANSVERSE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 266.62
+  },
+  {
+   "date": "2026-02-16",
+   "label": "AFI.ESCA PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 94.26
+  },
+  {
+   "date": "2026-02-12",
+   "label": "UAF LIFE PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 2555.76
+  },
+  {
+   "date": "2025-08-19",
+   "label": "IROKO",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 15.15
+  },
+  {
+   "date": "2025-10-09",
+   "label": "BPVF banque pop Val de France - IROKO SAS - FR76187070008032421787063",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 61.25
+  },
+  {
+   "date": "2026-01-30",
+   "label": "SAS IROKO - BPRI - 24215530811 - EUR",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 73.15
+  },
+  {
+   "date": "2025-11-11",
+   "label": "FINANC'ILE",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 5028.98
+  },
+  {
+   "date": "2026-01-07",
+   "label": "FINANC'ILE",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 6130.25
+  },
+  {
+   "date": "2025-09-01",
+   "label": "Nelia Titres",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 89.16
+  },
+  {
+   "date": "2025-09-03",
+   "label": "Nelia Titres",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 24.31
+  },
+  {
+   "date": "2025-10-27",
+   "label": "Nelia Titres",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 252.44
+  },
+  {
+   "date": "2025-12-01",
+   "label": "Nelia Titres",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 16.96
+  },
+  {
+   "date": "2026-01-30",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 1125.0
+  },
+  {
+   "date": "2025-12-23",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 20000.0
+  },
+  {
+   "date": "2025-10-27",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 450.0
+  },
+  {
+   "date": "2025-10-27",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Encours CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 225.0
+  },
+  {
+   "date": "2025-09-03",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 1500.0
+  },
+  {
+   "date": "2025-07-29",
+   "label": "ALTAROC PARTNERS",
+   "subcategory": "CA Frais d'entrées CIF",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 5047.5
+  },
+  {
+   "date": "2026-02-12",
+   "label": "ABEILLE RETRAITE PROFESSIONNELLE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 49.59
+  },
+  {
+   "date": "2026-02-12",
+   "label": "Nespresso France SAS",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 163.9
+  },
+  {
+   "date": "2026-02-11",
+   "label": "ABEILLE VIE SOCIETE ANONYME D ASSURANCES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 29.96
+  },
+  {
+   "date": "2026-02-09",
+   "label": "LES TRICOLORES",
+   "subcategory": "Domiciliation",
+   "category": "Dépenses opérationnelles",
+   "side": "debit",
+   "amount": 21.38
+  },
+  {
+   "date": "2026-02-07",
+   "label": "EasyPark SARL",
+   "subcategory": "Transport",
+   "category": "Travel Expenses",
+   "side": "debit",
+   "amount": 3.52
+  },
+  {
+   "date": "2026-02-06",
+   "label": "CLAUDE.AI SUBSCRIPTION",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 18.0
+  },
+  {
+   "date": "2026-02-06",
+   "label": "SWISSLIFE PREVOYANCE ET SANTE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 331.4
+  },
+  {
+   "date": "2026-02-06",
+   "label": "PRIMONIAL PARTENAIRES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 103.94
+  },
+  {
+   "date": "2026-02-04",
+   "label": "COMPTOIR DE LA B",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 102.7
+  },
+  {
+   "date": "2026-02-05",
+   "label": "MME FRANCOISE HOAREAU",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 250.0
+  },
+  {
+   "date": "2026-02-05",
+   "label": "KARBONALPHA",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 369.96
+  },
+  {
+   "date": "2026-02-05",
+   "label": "COWORK ENGINEERING",
+   "subcategory": "Loyer",
+   "category": "Dépenses opérationnelles",
+   "side": "debit",
+   "amount": 900.0
+  },
+  {
+   "date": "2026-02-02",
+   "label": "SARL  BUSINOVE",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 240.0
+  },
+  {
+   "date": "2026-02-02",
+   "label": "S A S TAILOR A M",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 4309.58
+  },
+  {
+   "date": "2026-02-02",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "credit",
+   "amount": 42.47
+  },
+  {
+   "date": "2026-02-02",
+   "label": "Google Workspace_eclat",
+   "subcategory": "Services d'hébergement web",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 30.36
+  },
+  {
+   "date": "2026-01-01",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 27.6
+  },
+  {
+   "date": "2025-10-23",
+   "label": "UAF LIFE PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 3256.77
+  },
+  {
+   "date": "2026-01-07",
+   "label": "UAF LIFE PATRIMOINE",
+   "subcategory": "CA Frais d'entrées IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 20.17
+  },
+  {
+   "date": "2026-01-27",
+   "label": "MAISON MOLY",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 49.0
+  },
+  {
+   "date": "2026-01-28",
+   "label": "AMVP",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 9.2
+  },
+  {
+   "date": "2026-01-20",
+   "label": "WEALINS SA",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 95.08
+  },
+  {
+   "date": "2026-01-30",
+   "label": "ADOBE",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 23.99
+  },
+  {
+   "date": "2026-01-29",
+   "label": "BELLE LURETTE",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 28.0
+  },
+  {
+   "date": "2026-01-27",
+   "label": "ERES ASSURANCES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 13.95
+  },
+  {
+   "date": "2026-01-21",
+   "label": "ANCEY",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 60.0
+  },
+  {
+   "date": "2026-01-20",
+   "label": "WANGLER Anthony",
+   "subcategory": "",
+   "category": "Avoirs et CCA",
+   "side": "debit",
+   "amount": 349.88
+  },
+  {
+   "date": "2026-01-20",
+   "label": "NEGRO Antonin",
+   "subcategory": "",
+   "category": "Avoirs et CCA",
+   "side": "debit",
+   "amount": 1008.58
+  },
+  {
+   "date": "2026-01-19",
+   "label": "VINATIS",
+   "subcategory": "Cadeaux clients",
+   "category": "Dépenses liées au marketing",
+   "side": "debit",
+   "amount": 57.9
+  },
+  {
+   "date": "2026-01-16",
+   "label": "APICIL TRANSVERSE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 25.81
+  },
+  {
+   "date": "2026-01-14",
+   "label": "LE TABAGNON DU 6",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 84.0
+  },
+  {
+   "date": "2026-01-14",
+   "label": "AFI.ESCA PATRIMOINE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 94.26
+  },
+  {
+   "date": "2026-01-06",
+   "label": "ORIAS FRAIS AMF",
+   "subcategory": "AMF",
+   "category": "Dépenses administratives",
+   "side": "debit",
+   "amount": 450.0
+  },
+  {
+   "date": "2025-12-06",
+   "label": "LCL ECLAT GESTION PRIVEE",
+   "subcategory": "Remboursements de prêts",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 863.34
+  },
+  {
+   "date": "2026-01-06",
+   "label": "LCL ECLAT GESTION PRIVEE",
+   "subcategory": "Remboursements de prêts",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 863.34
+  },
+  {
+   "date": "2026-01-11",
+   "label": "LA TANIERE",
+   "subcategory": "Restaurants",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 167.7
+  },
+  {
+   "date": "2026-01-09",
+   "label": "KARBONALPHA",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 369.96
+  },
+  {
+   "date": "2026-01-09",
+   "label": "CHAMBRE NATIONALE DES CONSEILS EN G CHAMBRE NATIONALE DES CONSEI",
+   "subcategory": "CNCGP",
+   "category": "Dépenses administratives",
+   "side": "debit",
+   "amount": 211.0
+  },
+  {
+   "date": "2026-01-09",
+   "label": "ABEILLE RETRAITE PROFESSIONNELLE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 42.04
+  },
+  {
+   "date": "2026-01-08",
+   "label": "ABEILLE VIE SOCIETE ANONYME D ASSURANCES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 36.74
+  },
+  {
+   "date": "2026-01-08",
+   "label": "SWISSLIFE PREVOYANCE ET SANTE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 159.26
+  },
+  {
+   "date": "2026-01-07",
+   "label": "LES TRICOLORES",
+   "subcategory": "Domiciliation",
+   "category": "Dépenses opérationnelles",
+   "side": "debit",
+   "amount": 21.38
+  },
+  {
+   "date": "2025-12-30",
+   "label": "MME FRANCOISE HOAREAU",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 250.0
+  },
+  {
+   "date": "2026-01-06",
+   "label": "ORIAS",
+   "subcategory": "ORIAS",
+   "category": "Dépenses administratives",
+   "side": "debit",
+   "amount": 50.0
+  },
+  {
+   "date": "2026-01-06",
+   "label": "GENERALI VIE",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 0.1
+  },
+  {
+   "date": "2026-01-06",
+   "label": "Nespresso France SAS",
+   "subcategory": "Nespresso",
+   "category": "Frais de nourriture et boissons",
+   "side": "debit",
+   "amount": 105.7
+  },
+  {
+   "date": "2026-01-05",
+   "label": "COWORK ENGINEERING",
+   "subcategory": "Loyer",
+   "category": "Dépenses opérationnelles",
+   "side": "debit",
+   "amount": 900.0
+  },
+  {
+   "date": "2026-01-02",
+   "label": "SARL  BUSINOVE",
+   "subcategory": "CA Honoraires",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 240.0
+  },
+  {
+   "date": "2026-01-02",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "credit",
+   "amount": 42.47
+  },
+  {
+   "date": "2026-01-02",
+   "label": "Google Workspace_eclat",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 30.36
+  },
+  {
+   "date": "2025-12-01",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 21.6
+  },
+  {
+   "date": "2025-12-28",
+   "label": "Qonto",
+   "subcategory": "Frais d'abonnement",
+   "category": "Frais bancaires",
+   "side": "debit",
+   "amount": 8.0
+  },
+  {
+   "date": "2025-12-31",
+   "label": "ERES ASSURANCES",
+   "subcategory": "CA Encours IAS",
+   "category": "Chiffre d'affaires",
+   "side": "credit",
+   "amount": 23.7
+  },
+  {
+   "date": "2025-12-30",
+   "label": "ADOBE",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 23.99
+  },
+  {
+   "date": "2025-12-29",
+   "label": "LOVABLE",
+   "subcategory": "Licences logicielles",
+   "category": "Dépenses liées aux technologies",
+   "side": "debit",
+   "amount": 100.0
+  }
+ ]
+}

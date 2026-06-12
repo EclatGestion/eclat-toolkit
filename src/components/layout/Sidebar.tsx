@@ -1,4 +1,4 @@
-import { Compass, Wrench, Wallet, Settings, GraduationCap, FolderOpen } from "lucide-react";
+import { Compass, Wrench, Wallet, Settings, GraduationCap, FolderOpen, Briefcase } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import { cn } from "@/lib/utils";
 import eclatLogo from "@/assets/eclat-logo.png";
@@ -8,6 +8,12 @@ const navItems = [{
   icon: Compass,
   badge: null,
   primary: true
+}, {
+  title: "Pilotage Cabinet",
+  url: "/cabinet",
+  icon: Briefcase,
+  badge: null,
+  primary: false
 }, {
   title: "Mon Patrimoine",
   url: "/patrimoine",

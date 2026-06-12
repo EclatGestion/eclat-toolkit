@@ -20,6 +20,7 @@ import Landing from "./pages/Landing";
 const Auth = lazy(() => import("./pages/Auth"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 const MonParcours = lazy(() => import("./pages/MonParcours"));
+const Cabinet = lazy(() => import("./pages/Cabinet"));
 const Toolbox = lazy(() => import("./pages/Toolbox"));
 const Patrimoine = lazy(() => import("./pages/Patrimoine"));
 const Simulations = lazy(() => import("./pages/Simulations"));
@@ -84,6 +85,7 @@ const App = () => <QueryClientProvider client={queryClient}>
                   {/* Protected Pages */}
                   <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
                   <Route path="/mon-parcours" element={<ProtectedRoute><OnboardingGuard><MonParcours /></OnboardingGuard></ProtectedRoute>} />
+                  <Route path="/cabinet" element={<ProtectedRoute><OnboardingGuard><Cabinet /></OnboardingGuard></ProtectedRoute>} />
                   <Route path="/toolbox" element={<ProtectedRoute><OnboardingGuard><Toolbox /></OnboardingGuard></ProtectedRoute>} />
                   <Route path="/contact-eclat" element={<ProtectedRoute><OnboardingGuard><ContactEclat /></OnboardingGuard></ProtectedRoute>} />
                   <Route path="/patrimoine" element={<ProtectedRoute><OnboardingGuard><Patrimoine /></OnboardingGuard></ProtectedRoute>} />
